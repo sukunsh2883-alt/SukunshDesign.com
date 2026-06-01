@@ -1,0 +1,284 @@
+@import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Francois One Local";
+  src: url("/fonts/FrancoisOne-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AXIS Local";
+  src: url("/fonts/AXIS.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Baveuse Local";
+  src: url("/fonts/Baveuse.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Baveuse 3D Local";
+  src: url("/fonts/Baveuse%203d.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HIDROM Local";
+  src: url("/fonts/HIDROM.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: 0 0% 100%;
+  --surface: 0 0% 98%;
+  --text: 240 10% 3.9%;
+  --muted: 240 3.8% 46.1%;
+  --stroke: 240 5.9% 90%;
+  --accent: 25 100% 50%;
+}
+
+@theme {
+  --color-bg: hsl(var(--bg));
+  --color-surface: hsl(var(--surface));
+  --color-text-primary: hsl(var(--text));
+  --color-muted: hsl(var(--muted));
+  --color-stroke: hsl(var(--stroke));
+  --color-accent: hsl(var(--accent));
+  
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Inter", sans-serif;
+  --font-display: "Gasoek One", sans-serif;
+  --font-sixcaps: "Gasoek One", sans-serif;
+  --font-boldonse: "Inter", sans-serif;
+  --font-gasoek: "Gasoek One", sans-serif;
+  --font-racing: "Racing Sans One", sans-serif;
+  --font-francois: "Francois One Local", "Arial Narrow", Impact, sans-serif;
+  --font-shoulders: "Big Shoulders Display", sans-serif;
+
+  /* Restore standard neutral scale in Tailwind v4 for instant clean white tone styling */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f4f4f5;
+  --color-neutral-150: #ebebeb;
+  --color-neutral-200: #e4e4e7;
+  --color-neutral-250: #d8d8d8;
+  --color-neutral-300: #d4d4d8;
+  --color-neutral-350: #b5b5b5;
+  --color-neutral-400: #a1a1aa;
+  --color-neutral-500: #71717a;
+  --color-neutral-600: #52525b;
+  --color-neutral-700: #3f3f46;
+  --color-neutral-750: #2d2d30;
+  --color-neutral-800: #27272a;
+  --color-neutral-900: #18181b;
+  --color-neutral-950: #09090b;
+}
+
+body {
+  background-color: #ffffff;
+  color: #18181b;
+  font-family: "Inter", sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Minimal curve on visual surfaces: images, videos, project cards, and media screens. */
+img,
+video,
+:is(div, article, figure)[class*="overflow-hidden"]:has(img),
+:is(div, article, figure)[class*="overflow-hidden"]:has(video),
+:is(div, article, figure)[class*="aspect-"][class*="overflow-hidden"],
+:is(div, article, figure)[class*="bg-neutral-950"][class*="overflow-hidden"],
+:is(div, article, figure)[class*="bg-black"][class*="overflow-hidden"] {
+  border-radius: 12px !important;
+}
+
+/* Custom font styles settings */
+.font-boldonse {
+  font-family: "Inter", sans-serif !important;
+}
+.font-gasoek {
+  font-family: "Gasoek One", sans-serif !important;
+}
+.font-racing {
+  font-family: "Racing Sans One", sans-serif !important;
+}
+.font-francois {
+  font-family: "Francois One Local", "Arial Narrow", Impact, sans-serif !important;
+}
+.font-shoulders {
+  font-family: "Big Shoulders Display", sans-serif !important;
+}
+
+/* CSS variables definitions for utility usage */
+.accent-gradient {
+  background: linear-gradient(90deg, #FF6A00 0%, #FF8A00 100%);
+}
+
+.text-accent-gradient {
+  background: linear-gradient(90deg, #FF6A00 0%, #FF8A00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  padding-right: 0.15em;
+  margin-right: -0.15em;
+  vertical-align: bottom;
+}
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.72) !important;
+  background-blend-mode: normal;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 8px 32px rgba(0, 0, 0, 0.05) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.2px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(10, 132, 255, 0.12) 75%,
+    rgba(255, 255, 255, 0.2) 100%
+  ) !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: inherit;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.2px;
+  background: linear-gradient(90deg, #FF6A00 0%, #FF8A00 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.15;
+  transition: opacity 0.3s ease;
+}
+
+.gradient-border:hover::before {
+  opacity: 0.6;
+}
+
+/* Halftone pattern overlay */
+.halftone-overlay {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Custom CSS animations */
+@keyframes scroll-down {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(200%); opacity: 0; }
+}
+
+.animate-scroll-down {
+  animation: scroll-down 1.5s ease-in-out infinite;
+}
+
+@keyframes role-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-role-fade-in {
+  animation: role-fade-in 0.4s ease-out forwards;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes blur-fade-up {
+  from {
+    opacity: 0;
+    filter: blur(20px);
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.animate-blur-fade-up {
+  animation: blur-fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom horizontal infinite marquee */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee-scroll {
+  animation: marquee-scroll 45s linear infinite;
+}
+
+.pause-on-hover:hover .animate-marquee-scroll {
+  animation-play-state: paused;
+}
