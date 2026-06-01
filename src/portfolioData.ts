@@ -644,7 +644,7 @@ export const profile = {
   linkedin: "https://www.linkedin.com/in/sukunsh",
   behance: "https://www.behance.net/sukunshsharma",
   accentGradient: "linear-gradient(90deg, #FF6A00 0%, #FFB000 100%)",
-  logoFontFamily: "\"Francois One Local\", \"Arial Narrow\", Impact, sans-serif",
+  logoFontFamily: "\"HIDROM Local\", \"Arial Narrow\", Impact, sans-serif",
   heroVideoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1779644211/make_give_bit_loop_motion_202605242304_vd4fkj.mp4",
   aboutImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop"
 };

@@ -21,7 +21,7 @@ export const LOGO_FONT_OPTIONS = [
   },
 ];
 
-export const DEFAULT_LOGO_FONT = LOGO_FONT_OPTIONS[0].value;
+export const DEFAULT_LOGO_FONT = LOGO_FONT_OPTIONS[4].value;
 
 export const getLogoFontStyle = (fontFamily?: string) => {
   const selected = fontFamily || DEFAULT_LOGO_FONT;
