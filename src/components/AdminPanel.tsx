@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { UploadCloud, Plus, Settings, Check, ShieldAlert, Edit3, Trash2, Image as ImageIcon, Briefcase, Film, User, Sparkles, X, ChevronRight, Lock, Unlock, LogOut } from "lucide-react";
+import { UploadCloud, Plus, Settings, Check, ShieldAlert, Edit3, Trash2, Image as ImageIcon, Briefcase, Film, User, Sparkles, X, ChevronRight, Lock, Unlock, LogOut, Download } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { RESUME_CATEGORIES } from "../portfolioData";
 import { DEFAULT_LOGO_FONT, LOGO_FONT_OPTIONS, getLogoFontStyle } from "../localFonts";
@@ -67,6 +67,31 @@ export default function AdminPanel({
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem("sukunsh_creator_studio_auth");
+  };
+
+  const handleExportChanges = () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      profile,
+      films,
+      designs,
+      videos,
+      explorations,
+      aiArchiveImages: archiveImages,
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `sukunsh-portfolio-changes-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast("Changes exported. Send this JSON to Codex to make it permanent on GitHub.", "success");
   };
 
   const [consoleTab, setConsoleTab] = useState<"uploader" | "branding">("uploader");
@@ -627,6 +652,10 @@ export default function AdminPanel({
                   <p className="text-[10px] font-sans text-neutral-500 uppercase tracking-wider font-mono">
                     Verify credentials to continue
                   </p>
+                  <div className="mt-3 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-left font-mono text-[9px] uppercase tracking-widest text-neutral-500">
+                    <div>Username: <span className="font-bold text-neutral-950">Sukunsh</span></div>
+                    <div>Password: <span className="font-bold text-neutral-950">Cera@123</span></div>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -715,6 +744,15 @@ export default function AdminPanel({
                     <span>Branding details</span>
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleExportChanges}
+                  className="mb-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#FF6A00]/25 bg-[#FF6A00]/8 px-4 py-3 font-mono text-[9px] font-bold uppercase tracking-widest text-[#FF6A00] transition-colors hover:bg-[#FF6A00] hover:text-white"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Export Changes For GitHub
+                </button>
 
             {/* TAB CONTAINER 1: INTEGRATED PROJECT UPLOADER & LIST EDITOR */}
             {consoleTab === "uploader" && (
