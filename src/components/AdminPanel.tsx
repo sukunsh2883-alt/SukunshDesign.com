@@ -43,7 +43,16 @@ export default function AdminPanel({
   explorations = [],
   onUpdateExplorations = () => {}
 }: AdminPanelProps) {
+  const shouldShowStudio = () => {
+    if (typeof window === "undefined") return false;
+    return (
+      localStorage.getItem("sukunsh_creator_studio_auth") === "true" ||
+      new URLSearchParams(window.location.search).get("studio") === "1" ||
+      window.location.hash === "#creator-studio"
+    );
+  };
   const [isOpen, setIsOpen] = useState(false);
+  const [isStudioVisible, setIsStudioVisible] = useState(shouldShowStudio);
 
   // Admin Login States
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -57,6 +66,7 @@ export default function AdminPanel({
     e.preventDefault();
     if (loginUsername === "Sukunsh" && loginPassword === "Cera@123") {
       setIsAuthenticated(true);
+      setIsStudioVisible(true);
       localStorage.setItem("sukunsh_creator_studio_auth", "true");
       setLoginError("");
     } else {
@@ -66,8 +76,23 @@ export default function AdminPanel({
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setIsOpen(false);
+    setIsStudioVisible(false);
     localStorage.removeItem("sukunsh_creator_studio_auth");
   };
+
+  useEffect(() => {
+    const unlockStudio = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        setIsStudioVisible(true);
+        setIsOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", unlockStudio);
+    return () => window.removeEventListener("keydown", unlockStudio);
+  }, []);
 
   const handleExportChanges = () => {
     const payload = {
@@ -598,6 +623,8 @@ export default function AdminPanel({
       processUploadedFiles(e.target.files);
     }
   };
+
+  if (!isStudioVisible) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">

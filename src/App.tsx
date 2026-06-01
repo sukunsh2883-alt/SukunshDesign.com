@@ -111,6 +111,46 @@ export default function App() {
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [isAboutMeOpen, setIsAboutMeOpen] = useState(false);
 
+  const closePortals = () => {
+    setIsProjectsExplorerOpen(false);
+    setIsAIWorkExplorerOpen(false);
+    setIsResumeOpen(false);
+    setIsAboutMeOpen(false);
+  };
+
+  const openPortal = (portal: "projects" | "ai-work" | "resume" | "about") => {
+    closePortals();
+
+    if (portal === "projects") {
+      setIsProjectsExplorerOpen(true);
+    } else if (portal === "ai-work") {
+      setIsAIWorkExplorerOpen(true);
+    } else if (portal === "resume") {
+      setIsResumeOpen(true);
+    } else {
+      setIsAboutMeOpen(true);
+    }
+
+    window.history.pushState({ portal }, "", `#${portal}`);
+  };
+
+  const closePortalWithHistory = () => {
+    if (window.history.state?.portal) {
+      window.history.back();
+      return;
+    }
+    closePortals();
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      closePortals();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   // Synchronize state down to localStorage so data persists securely across page refreshes
   useEffect(() => {
     try {
@@ -167,17 +207,16 @@ export default function App() {
     const id = targetId.replace("#", "");
 
     // Close all active portal view states
-    setIsProjectsExplorerOpen(false);
-    setIsAIWorkExplorerOpen(false);
-    setIsResumeOpen(false);
-    setIsAboutMeOpen(false);
+    closePortals();
 
-    if (targetId === "#ai-work") {
-      setIsAIWorkExplorerOpen(true);
+    if (targetId === "#projects") {
+      openPortal("projects");
+    } else if (targetId === "#ai-work" || targetId === "#showreel") {
+      openPortal("ai-work");
     } else if (targetId === "#full-resume") {
-      setIsResumeOpen(true);
+      openPortal("resume");
     } else if (targetId === "#about-me-modal") {
-      setIsAboutMeOpen(true);
+      openPortal("about");
     } else {
       // Small delay to allow any transition state to settle, then scroll to section
       setTimeout(() => {
@@ -306,15 +345,15 @@ export default function App() {
               <Hero 
                 profile={profileState} 
                 onWatchShowreel={handleLaunchShowreel} 
-                onOpenProjects={() => setIsProjectsExplorerOpen(true)}
-                onOpenAIWork={() => setIsAIWorkExplorerOpen(true)}
+                onOpenProjects={() => openPortal("projects")}
+                onOpenAIWork={() => openPortal("ai-work")}
               />
 
               {/* Selected Design works bento grid */}
               <DesignWorks
                 projects={designs}
                 onSelectProject={handleSelectProject}
-                onOpenExplorer={() => setIsProjectsExplorerOpen(true)}
+                onOpenExplorer={() => openPortal("projects")}
               />
 
               {/* Motion reel archive */}
@@ -341,15 +380,15 @@ export default function App() {
                     description: film.description
                   })
                 }
-                onOpenExplorer={() => setIsAIWorkExplorerOpen(true)}
+                onOpenExplorer={() => openPortal("ai-work")}
               />
 
               {/* Seamless-picture homepage About Me Section */}
               <AboutMe
                 profile={profileState}
-                onOpenResume={() => setIsResumeOpen(true)}
-                onOpenAIWork={() => setIsAIWorkExplorerOpen(true)}
-                onOpenProjects={() => setIsProjectsExplorerOpen(true)}
+                onOpenResume={() => openPortal("resume")}
+                onOpenAIWork={() => openPortal("ai-work")}
+                onOpenProjects={() => openPortal("projects")}
               />
 
               {/* Parallax elements photo gallery */}
@@ -408,7 +447,7 @@ export default function App() {
               {isProjectsExplorerOpen && (
                 <ProjectsExplorer
                   isOpen={isProjectsExplorerOpen}
-                  onClose={() => setIsProjectsExplorerOpen(false)}
+                  onClose={closePortalWithHistory}
                   projects={designs}
                   onSelectProject={handleSelectProject}
                 />
@@ -419,7 +458,7 @@ export default function App() {
               {isAIWorkExplorerOpen && (
                 <AIWorkExplorer
                   isOpen={isAIWorkExplorerOpen}
-                  onClose={() => setIsAIWorkExplorerOpen(false)}
+                  onClose={closePortalWithHistory}
                   films={films}
                   videos={videosState}
                   explorations={explorationsState}
@@ -441,7 +480,7 @@ export default function App() {
               {isResumeOpen && (
                 <FullResumeModal
                   isOpen={isResumeOpen}
-                  onClose={() => setIsResumeOpen(false)}
+                  onClose={closePortalWithHistory}
                 />
               )}
             </AnimatePresence>
@@ -450,7 +489,7 @@ export default function App() {
               {isAboutMeOpen && (
                 <AboutMeModal
                   isOpen={isAboutMeOpen}
-                  onClose={() => setIsAboutMeOpen(false)}
+                  onClose={closePortalWithHistory}
                   profile={profileState}
                 />
               )}

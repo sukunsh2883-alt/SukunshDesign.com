@@ -162,7 +162,7 @@ export default function Hero({ onWatchShowreel, profile, onOpenProjects, onOpenA
           {/* Center Massive SUKUNSH Text Logo with trailing dot (Left-aligned) */}
           <div className="name-reveal w-full flex justify-start items-center mb-6 select-none">
             <h1
-              className="text-[58px] sm:text-[5.5rem] md:text-[112px] lg:text-[128px] xl:text-[142px] leading-[0.86] font-normal text-white select-none uppercase drop-shadow-[0_14px_35px_rgba(0,0,0,0.45)] origin-left"
+              className="text-[66px] sm:text-[6.2rem] md:text-[124px] lg:text-[144px] xl:text-[160px] leading-[0.82] font-normal text-white select-none uppercase drop-shadow-[0_14px_35px_rgba(0,0,0,0.45)] origin-left"
               style={logoFontStyle}
             >
               SUKUNSH.
@@ -170,14 +170,14 @@ export default function Hero({ onWatchShowreel, profile, onOpenProjects, onOpenA
           </div>
 
           {/* Dynamic Tagline with grey rounded capsule backdrop on rolling roles */}
-          <div className="blur-in text-xs xs:text-sm sm:text-base md:text-[21px] text-neutral-100 drop-shadow-sm font-sans tracking-wide leading-relaxed font-semibold mb-8 select-none min-h-[44px] flex items-center justify-start flex-wrap gap-y-2">
-            <span className="transition-all duration-300">{prefix}</span>
+          <div className="blur-in text-xs xs:text-sm sm:text-base md:text-[21px] text-neutral-100 drop-shadow-sm font-sans tracking-wide leading-relaxed font-light mb-8 select-none min-h-[44px] flex items-center justify-start flex-wrap gap-y-2">
+            <span className="transition-all duration-300 font-light">{prefix}</span>
             <span className={`px-4.5 py-1.5 bg-white/90 text-neutral-950 backdrop-blur-xs rounded-full text-xs xs:text-sm sm:text-base inline-block mx-1.5 font-serif font-semibold italic tracking-wide select-none shadow-xs border border-white/30 transition-all duration-300 transform ${
               isAnimating ? "opacity-100 translate-y-0 filter blur-0 scale-100" : "opacity-0 translate-y-2 filter blur-sm scale-95"
             }`}>
               {roles[roleIndex]}
             </span>
-            <span>Creating Cinematic Digital Worlds.</span>
+            <span className="font-light">Creating Cinematic Digital Worlds.</span>
           </div>
 
           {/* Solid Center Buttons (Left-aligned) */}

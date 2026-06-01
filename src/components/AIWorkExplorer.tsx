@@ -198,11 +198,16 @@ export default function AIWorkExplorer({ isOpen, onClose, films }: AIWorkExplore
                           }}
                           className="group relative aspect-[4/5] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 cursor-pointer"
                         >
-                          <img
-                            src={film.thumbnail}
-                            alt={film.title}
+                          <video
+                            src={film.videoUrl}
+                            poster={film.thumbnail}
+                            muted
+                            loop
+                            autoPlay
+                            playsInline
+                            preload="auto"
+                            aria-label={film.title}
                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                            referrerPolicy="no-referrer"
                           />
                           <div className="absolute inset-0 bg-linear-to-t from-black via-black/35 to-transparent" />
                           <div className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-black">

@@ -132,7 +132,7 @@ export default function Navbar({
         <div className="hidden md:flex items-center gap-1.5 pointer-events-auto">
           {NAV_ITEMS.map((item) => {
             const itemKey = item.href.replace("#", "");
-            const isActive = activeSection === itemKey;
+            const isActive = activeSection === itemKey || (item.href === "#showreel" && activeSection === "ai-work");
             return (
               <a
                 key={item.label}
@@ -203,7 +203,7 @@ export default function Navbar({
               </span>
               {NAV_ITEMS.map((item) => {
                 const itemKey = item.href.replace("#", "");
-                const isActive = activeSection === itemKey;
+                const isActive = activeSection === itemKey || (item.href === "#showreel" && activeSection === "ai-work");
                 return (
                   <a
                     key={item.label}
