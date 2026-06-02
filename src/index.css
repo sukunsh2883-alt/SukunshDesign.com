@@ -1,8 +1,55 @@
 @import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Clash Display Local";
+  src: url("/fonts/ClashDisplay-Extralight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display Local";
+  src: url("/fonts/ClashDisplay-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display Local";
+  src: url("/fonts/ClashDisplay-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display Local";
+  src: url("/fonts/ClashDisplay-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display Local";
+  src: url("/fonts/ClashDisplay-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display Local";
+  src: url("/fonts/ClashDisplay-Bold.otf") format("opentype");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: "Francois One Local";
@@ -61,11 +108,11 @@
   --color-stroke: hsl(var(--stroke));
   --color-accent: hsl(var(--accent));
   
-  --font-sans: "Inter", sans-serif;
-  --font-serif: "Inter", sans-serif;
+  --font-sans: "Clash Display Local", sans-serif;
+  --font-serif: "Clash Display Local", sans-serif;
   --font-display: "Gasoek One", sans-serif;
   --font-sixcaps: "Gasoek One", sans-serif;
-  --font-boldonse: "Inter", sans-serif;
+  --font-boldonse: "Clash Display Local", sans-serif;
   --font-gasoek: "Gasoek One", sans-serif;
   --font-racing: "Racing Sans One", sans-serif;
   --font-francois: "Francois One Local", "Arial Narrow", Impact, sans-serif;
@@ -92,7 +139,7 @@
 body {
   background-color: #ffffff;
   color: #18181b;
-  font-family: "Inter", sans-serif;
+  font-family: "Clash Display Local", sans-serif;
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
@@ -110,7 +157,7 @@ video,
 
 /* Custom font styles settings */
 .font-boldonse {
-  font-family: "Inter", sans-serif !important;
+  font-family: "Clash Display Local", sans-serif !important;
 }
 .font-gasoek {
   font-family: "Gasoek One", sans-serif !important;
