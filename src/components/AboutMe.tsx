@@ -1,6 +1,3 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { motion } from "motion/react";
-
 interface AboutMeProps {
   profile: {
     fullName: string;
@@ -17,60 +14,46 @@ interface AboutMeProps {
   onOpenProjects: () => void;
 }
 
-export default function AboutMe({ profile, onOpenResume, onOpenAIWork, onOpenProjects }: AboutMeProps) {
+export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
   const aboutImg = profile.aboutImage || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop";
 
   return (
-    <section id="about-me" className="bg-[#fbfbf8] px-4 py-20 text-neutral-950 md:px-6">
-      <div className="mx-auto grid max-w-7xl gap-10 border-b border-neutral-200 pb-14 lg:grid-cols-[0.86fr_1.14fr]">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.42 }}
-          className="overflow-hidden border border-neutral-250 bg-neutral-100"
-        >
-          <img
-            src={aboutImg}
-            alt={profile.fullName}
-            className="h-full min-h-[460px] w-full object-cover grayscale"
-            referrerPolicy="no-referrer"
-          />
-        </motion.div>
-
-        <div>
-          <p className="mb-3 text-sm font-medium text-[#FF6A00]">about</p>
-          <h2 className="max-w-3xl text-[42px] font-medium leading-none tracking-[-0.04em] md:text-7xl">
-            emotional, bold, story-driven visuals.
-          </h2>
-
-          <div className="mt-10 grid gap-7 border-y border-neutral-200 py-8 md:grid-cols-2">
-            <p className="text-base leading-8 text-neutral-600">
-              I&apos;m a Delhi-based visual artist, rooted in Bihar&apos;s rich cultural heritage, with a background in Fine Art and Design.
-            </p>
-            <p className="text-base leading-8 text-neutral-600">
-              My work lives between art, design, and cinema creating visuals that feel emotional, bold, and story driven.
-            </p>
+    <section id="about-me" className="bg-[#080808] px-3 py-5 text-white md:px-4 md:py-12">
+      <div className="mx-auto max-w-5xl border-b border-white/10 pb-8 md:pb-14">
+        <div className="mx-4 grid items-start gap-5 md:mx-8 md:grid-cols-[0.45fr_0.55fr] md:gap-10">
+          <div className="h-[125px] w-[82px] bg-[#d9d9d9] md:h-[300px] md:w-[220px]">
+            <img
+              src={aboutImg}
+              alt={profile.fullName}
+              className="h-full w-full object-cover grayscale opacity-0"
+              referrerPolicy="no-referrer"
+            />
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-2">
-            {["UX/UI", "AI films", "motion", "brand visuals", "storyboards"].map((item) => (
-              <span key={item} className="border border-neutral-250 px-3 py-2 text-sm text-neutral-600">
-                {item}
-              </span>
-            ))}
-          </div>
+          <div className="grid gap-4 md:grid-cols-[0.8fr_1fr]">
+            <div>
+              <p className="mb-1 text-[8px] font-medium text-white/55 md:text-xs">About:</p>
+              <h2 className="max-w-[220px] text-[16px] font-semibold leading-[1.05] tracking-[-0.035em] md:max-w-md md:text-4xl">
+                emotional, bold, story driven visuals.
+              </h2>
+              <div className="mt-5 flex gap-5 text-[9px] font-medium md:text-sm">
+                <a href={profile.behance || "#"} target="_blank" rel="noreferrer" className="hover:text-[#FF6A00]">
+                  Behance
+                </a>
+                <button onClick={onOpenResume} className="hover:text-[#FF6A00]">
+                  Resume
+                </button>
+              </div>
+            </div>
 
-          <div className="mt-10 flex flex-wrap gap-3">
-            <button onClick={onOpenProjects} className="inline-flex items-center gap-2 border border-neutral-950 bg-neutral-950 px-5 py-3 text-sm font-medium text-white hover:bg-[#FF6A00] hover:border-[#FF6A00]">
-              work <ArrowRight className="h-4 w-4" />
-            </button>
-            <button onClick={onOpenResume} className="inline-flex items-center gap-2 border border-neutral-250 px-5 py-3 text-sm font-medium text-neutral-800 hover:border-neutral-950">
-              resume <ArrowUpRight className="h-4 w-4" />
-            </button>
-            <button onClick={onOpenAIWork} className="inline-flex items-center gap-2 border border-neutral-250 px-5 py-3 text-sm font-medium text-neutral-800 hover:border-neutral-950">
-              AI archive <ArrowUpRight className="h-4 w-4" />
-            </button>
+            <div className="grid grid-cols-2 gap-4 text-[7px] leading-relaxed text-white/55 md:text-xs">
+              <p>
+                I&apos;m a Delhi-based visual artist, rooted in Bihar&apos;s rich cultural heritage, with a background in Fine Art and Design.
+              </p>
+              <p>
+                My work lives between art, design, and cinema creating visuals that feel emotional, bold, and story driven.
+              </p>
+            </div>
           </div>
         </div>
       </div>
