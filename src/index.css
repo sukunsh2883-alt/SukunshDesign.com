@@ -144,6 +144,13 @@ body {
   scroll-behavior: smooth;
 }
 
+h1,
+h2,
+h3,
+h4 {
+  text-transform: none !important;
+}
+
 /* Minimal curve on visual surfaces: images, videos, project cards, and media screens. */
 img,
 video,

@@ -80,7 +80,7 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
               Selected Work
             </span>
             <h2 className="text-4xl md:text-5xl lg:text-7xl font-sans font-black tracking-[0.18em] md:tracking-[0.24em] text-neutral-900 uppercase">
-              PROJECTS
+              Projects
             </h2>
             <p className="mt-4 text-sm md:text-base text-neutral-600 leading-relaxed max-w-xl">
               A focused set of identity systems, publication layouts, AI visual campaigns, motion studies, and brand experiments.

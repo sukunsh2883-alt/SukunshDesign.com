@@ -79,7 +79,7 @@ export default function AIFilms({ films, onSelectFilm, onOpenExplorer }: AIFilms
         <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12 md:mb-16 text-center">
           <p className="text-[#FF6A00] font-mono text-xs uppercase tracking-[0.3em] mb-3">CINEMATIC CAROUSEL</p>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-sans font-black tracking-[0.25em] text-neutral-900 uppercase">
-            AI FILMS
+            AI Films
           </h2>
           <p className="text-neutral-500 font-sans text-xs md:text-sm tracking-[0.05em] mt-3 max-w-lg mx-auto">
             Click side cards to roll left or right, hover to reveal custom controls, or select the active center film to watch immediately.

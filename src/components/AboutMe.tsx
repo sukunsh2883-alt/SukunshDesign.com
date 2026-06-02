@@ -48,7 +48,7 @@ export default function AboutMe({ profile, onOpenResume, onOpenProjects }: About
         <div className="grid grid-cols-1 md:grid-cols-12 border-b border-neutral-250 py-8 md:py-12 items-end gap-8 md:gap-0">
           <div className="col-span-1 md:col-span-6 pr-4">
             <h1 className="text-[18vw] sm:text-[14vw] md:text-[9vw] font-normal tracking-tight text-neutral-950 font-sans leading-[0.82] uppercase">
-              ABOUT ME
+              About Me
             </h1>
           </div>
 

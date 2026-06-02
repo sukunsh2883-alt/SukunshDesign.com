@@ -42,7 +42,7 @@ export default function Resume({ onResumeClick }: ResumeProps) {
           {/* Main Huge Aesthetic Brand Title - Astera style */}
           <div className="col-span-1 md:col-span-6 pr-4">
             <h1 className="text-[12vw] md:text-[8vw] font-normal tracking-tight text-neutral-950 font-sans leading-none uppercase">
-              CREDENTIALS
+              Credentials
             </h1>
           </div>
 
