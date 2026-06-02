@@ -11,17 +11,17 @@ interface ProjectsExplorerProps {
 }
 
 const FILTERS = [
-  { id: "all", label: "ALL" },
-  { id: "illustration", label: "ILLUSTRATION" },
-  { id: "motion design", label: "MOTION DESIGN" },
-  { id: "ui ux", label: "UI UX" },
-  { id: "infographic design", label: "INFOGRAPHIC DESIGN" },
-  { id: "animation", label: "ANIMATION" },
-  { id: "branding", label: "BRANDING" },
-  { id: "logo design", label: "LOGO DESIGN" },
-  { id: "game design", label: "GAME DESIGN" },
-  { id: "packaging design", label: "PACKAGING DESIGN" },
-  { id: "other design works", label: "OTHER DESIGN WORKS" }
+  { id: "all", label: "all" },
+  { id: "illustration", label: "illustration" },
+  { id: "motion design", label: "motion design" },
+  { id: "ui ux", label: "ui ux" },
+  { id: "infographic design", label: "infographic design" },
+  { id: "animation", label: "animation" },
+  { id: "branding", label: "branding" },
+  { id: "logo design", label: "logo design" },
+  { id: "game design", label: "game design" },
+  { id: "packaging design", label: "packaging design" },
+  { id: "other design works", label: "other design works" }
 ];
 
 export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectProject }: ProjectsExplorerProps) {
@@ -116,9 +116,9 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                     <button
                       key={filter.id}
                       onClick={() => setSelectedFilter(filter.id)}
-                      className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-[11px] font-sans font-bold tracking-wider transition-all cursor-pointer select-none uppercase border ${
+                      className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-[11px] font-sans font-medium tracking-normal transition-all cursor-pointer select-none border ${
                         isActive
-                          ? "bg-black border-black text-white shadow-sm"
+                          ? "bg-black border-black text-white shadow-sm font-semibold"
                           : "bg-white border-neutral-200 text-neutral-500 hover:text-black hover:border-neutral-400"
                       }`}
                     >

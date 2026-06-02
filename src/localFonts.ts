@@ -39,11 +39,11 @@ export const getLogoFontStyle = (fontFamily?: string) => {
   if (selected.includes("Sukunsh Wordmark")) {
     return {
       ...base,
-      fontWeight: 800,
+      fontWeight: 700,
       fontStyle: "italic",
-      letterSpacing: "-0.06em",
+      letterSpacing: "-0.052em",
       textTransform: "none",
-      transform: "skewX(-5deg)",
+      transform: "skewX(-4deg)",
     };
   }
 
