@@ -1,5 +1,9 @@
 export const LOGO_FONT_OPTIONS = [
   {
+    label: "Sukunsh Italic Wordmark",
+    value: "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
+  },
+  {
     label: "Francois One",
     value: "\"Francois One Local\", \"Arial Narrow\", Impact, sans-serif",
   },
@@ -21,7 +25,7 @@ export const LOGO_FONT_OPTIONS = [
   },
 ];
 
-export const DEFAULT_LOGO_FONT = LOGO_FONT_OPTIONS[4].value;
+export const DEFAULT_LOGO_FONT = LOGO_FONT_OPTIONS[0].value;
 
 export const getLogoFontStyle = (fontFamily?: string) => {
   const selected = fontFamily || DEFAULT_LOGO_FONT;
@@ -31,6 +35,17 @@ export const getLogoFontStyle = (fontFamily?: string) => {
     fontFeatureSettings: "\"kern\" 1, \"liga\" 1, \"calt\" 1",
     textRendering: "geometricPrecision",
   };
+
+  if (selected.includes("Sukunsh Wordmark")) {
+    return {
+      ...base,
+      fontWeight: 800,
+      fontStyle: "italic",
+      letterSpacing: "-0.06em",
+      textTransform: "none",
+      transform: "skewX(-5deg)",
+    };
+  }
 
   if (selected.includes("AXIS")) {
     return { ...base, letterSpacing: "-0.018em" };

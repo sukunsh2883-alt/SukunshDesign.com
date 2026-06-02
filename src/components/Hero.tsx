@@ -162,10 +162,10 @@ export default function Hero({ onWatchShowreel, profile, onOpenProjects, onOpenA
           {/* Center Massive SUKUNSH Text Logo with trailing dot (Left-aligned) */}
           <div className="name-reveal w-full flex justify-start items-center mb-6 select-none">
             <h1
-              className="text-[66px] sm:text-[6.2rem] md:text-[124px] lg:text-[144px] xl:text-[160px] leading-[0.82] font-normal text-white select-none uppercase drop-shadow-[0_14px_35px_rgba(0,0,0,0.45)] origin-left"
+              className="text-[72px] sm:text-[6.7rem] md:text-[132px] lg:text-[150px] xl:text-[168px] leading-[0.82] font-normal text-white select-none drop-shadow-[0_14px_35px_rgba(0,0,0,0.45)] origin-left"
               style={logoFontStyle}
             >
-              SUKUNSH.
+              Sukunsh.
             </h1>
           </div>
 

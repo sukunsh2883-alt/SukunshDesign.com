@@ -119,12 +119,12 @@ export default function Navbar({
           }`}
         >
           <span
-            className={`text-2xl font-normal uppercase leading-none transition-colors sm:text-[30px] origin-left ${
+            className={`text-2xl font-normal leading-none transition-colors sm:text-[30px] origin-left ${
             isDark ? "text-white" : "text-neutral-900"
           }`}
             style={logoFontStyle}
           >
-            SUKUNSH.
+            Sukunsh.
           </span>
         </button>
 

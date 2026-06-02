@@ -1701,10 +1701,10 @@ export default function AdminPanel({
                     ))}
                   </select>
                   <div
-                    className="mt-2 border border-neutral-200 bg-neutral-50 px-3 py-3 text-3xl uppercase text-neutral-950"
+                    className="mt-2 border border-neutral-200 bg-neutral-50 px-3 py-3 text-3xl text-neutral-950"
                     style={getLogoFontStyle(logoFontFamily)}
                   >
-                    SUKUNSH.
+                    Sukunsh.
                   </div>
                 </div>
 
