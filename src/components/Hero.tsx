@@ -8,7 +8,7 @@ interface HeroProps {
 }
 
 export default function Hero() {
-  const heroImageUrl = "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1780406091/qq_fakbfs.png";
+  const heroImageUrl = "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1780333002/Untitled-2_copy_urce7l.png";
 
   return (
     <section id="home" className="relative min-h-screen overflow-hidden bg-[#050505] px-6 pt-14 text-white md:px-8">
@@ -37,7 +37,10 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.1 }}
           src={heroImageUrl}
           alt="Sukunsh artwork"
-          className="relative z-20 mt-12 h-[72vh] max-h-[780px] w-auto object-contain md:mt-16"
+          onError={(event) => {
+            event.currentTarget.src = "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1780333002/Untitled-2_copy_urce7l.png";
+          }}
+          className="relative z-20 mt-12 h-[78vh] max-h-[820px] w-auto object-contain md:mt-16"
           referrerPolicy="no-referrer"
         />
       </div>
