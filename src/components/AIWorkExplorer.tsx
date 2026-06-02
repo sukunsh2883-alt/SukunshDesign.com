@@ -111,8 +111,8 @@ export default function AIWorkExplorer({ isOpen, onClose, films }: AIWorkExplore
 
           {/* Epic Hero Title Heading */}
           <div className="mb-10 text-left">
-            <h1 className={`text-5xl md:text-8xl font-sans font-extrabold tracking-tight select-none transition-colors duration-500 ${
-              activePlayingId ? "text-white" : "text-neutral-900"
+            <h1 className={`text-5xl md:text-8xl font-sans font-semibold tracking-tight select-none transition-colors duration-500 ${
+              activePlayingId ? "text-white" : "text-neutral-800"
             }`}>
               AI Archive
             </h1>

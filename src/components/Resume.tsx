@@ -41,7 +41,7 @@ export default function Resume({ onResumeClick }: ResumeProps) {
         <div className="grid grid-cols-1 md:grid-cols-12 border-b border-neutral-250 py-8 md:py-12 items-baseline gap-6 md:gap-0">
           {/* Main Huge Aesthetic Brand Title - Astera style */}
           <div className="col-span-1 md:col-span-6 pr-4">
-            <h1 className="text-[12vw] md:text-[8vw] font-normal tracking-tight text-neutral-950 font-sans leading-none uppercase">
+            <h1 className="text-[12vw] md:text-[8vw] font-normal tracking-tight text-neutral-800 font-sans leading-none">
               Credentials
             </h1>
           </div>
@@ -167,7 +167,7 @@ export default function Resume({ onResumeClick }: ResumeProps) {
 
             {/* CTA Option Block */}
             <div className="space-y-6 pt-6 border-t border-neutral-200">
-              <h2 className="text-xl md:text-2xl font-normal leading-snug text-neutral-950 tracking-tight max-w-md font-sans">
+              <h2 className="text-xl md:text-2xl font-normal leading-snug text-neutral-800 tracking-tight max-w-md font-sans">
                 Access the complete curated interactive index or digital dossier.
               </h2>
               

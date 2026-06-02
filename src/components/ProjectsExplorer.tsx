@@ -100,7 +100,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
 
           {/* Section Heading Title */}
           <div className="mb-8 md:mb-12">
-            <h1 className="text-5xl md:text-8xl font-sans font-bold tracking-tight text-neutral-900 select-none">
+            <h1 className="text-5xl md:text-8xl font-sans font-semibold tracking-tight text-neutral-800 select-none">
               Selected Work
             </h1>
           </div>

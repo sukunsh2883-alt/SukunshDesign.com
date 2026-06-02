@@ -93,7 +93,7 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
               <Sparkles className="h-3.5 w-3.5 text-[#FF6A00]" />
               AI Films + Motion Archive
             </div>
-            <h2 className="font-sans text-4xl font-black uppercase leading-[0.95] tracking-tight text-neutral-950 md:text-6xl lg:text-7xl">
+            <h2 className="font-sans text-4xl font-semibold leading-[0.95] tracking-tight text-neutral-800 md:text-6xl lg:text-7xl">
               Motion Reels
             </h2>
             <p className="mt-5 max-w-xl text-sm leading-relaxed text-neutral-500 md:text-base">

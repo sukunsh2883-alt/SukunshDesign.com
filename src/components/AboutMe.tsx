@@ -47,7 +47,7 @@ export default function AboutMe({ profile, onOpenResume, onOpenProjects }: About
 
         <div className="grid grid-cols-1 md:grid-cols-12 border-b border-neutral-250 py-8 md:py-12 items-end gap-8 md:gap-0">
           <div className="col-span-1 md:col-span-6 pr-4">
-            <h1 className="text-[18vw] sm:text-[14vw] md:text-[9vw] font-normal tracking-tight text-neutral-950 font-sans leading-[0.82] uppercase">
+            <h1 className="text-[18vw] sm:text-[14vw] md:text-[9vw] font-normal tracking-tight text-neutral-800 font-sans leading-[0.82]">
               About Me
             </h1>
           </div>
@@ -104,7 +104,7 @@ export default function AboutMe({ profile, onOpenResume, onOpenProjects }: About
                 <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                   About Me
                 </p>
-                <h2 className="max-w-xl text-3xl md:text-5xl font-sans font-black leading-[1.02] tracking-tight text-neutral-950">
+                <h2 className="max-w-xl text-3xl md:text-5xl font-sans font-semibold leading-[1.02] tracking-tight text-neutral-800">
                   Emotional, bold, story-driven visuals.
                 </h2>
               </div>

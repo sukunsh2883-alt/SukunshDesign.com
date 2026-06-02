@@ -79,7 +79,7 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
             <span className="text-[10px] uppercase font-sans tracking-[0.3em] text-[#FF6A00] font-semibold block mb-3">
               Selected Work
             </span>
-            <h2 className="text-4xl md:text-5xl lg:text-7xl font-sans font-black tracking-tight text-neutral-900">
+            <h2 className="text-4xl md:text-5xl lg:text-7xl font-sans font-semibold tracking-tight text-neutral-800">
               Projects
             </h2>
             <p className="mt-4 text-sm md:text-base text-neutral-600 leading-relaxed max-w-xl">

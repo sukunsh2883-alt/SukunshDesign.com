@@ -40,7 +40,7 @@ export default function Footer({ profile }: FooterProps) {
             </span>
           </div>
 
-          <h2 className="max-w-4xl font-sans text-4xl font-black uppercase leading-[0.95] tracking-tight text-neutral-950 sm:text-5xl md:text-7xl">
+          <h2 className="max-w-4xl font-sans text-4xl font-semibold leading-[0.95] tracking-tight text-neutral-800 sm:text-5xl md:text-7xl">
             Let&apos;s make the idea move.
           </h2>
           <p className="mt-6 max-w-2xl text-sm leading-relaxed text-neutral-500 md:text-base">
