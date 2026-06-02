@@ -10,10 +10,12 @@ interface AIWorkExplorerProps {
   videos: VideoCard[];
   explorations: ExplorationItem[];
   onSelectFilm: (film: AIFilm) => void;
+  onSelectVideo: (video: VideoCard) => void;
 }
 
 const TABS = [
   { id: "film", label: "AI FILM" },
+  { id: "reel", label: "AI REEL" },
   { id: "image", label: "IMAGE" }
 ];
 
@@ -23,7 +25,7 @@ interface ArchiveImageItem {
   imageUrl: string;
 }
 
-export default function AIWorkExplorer({ isOpen, onClose, films }: AIWorkExplorerProps) {
+export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelectVideo }: AIWorkExplorerProps) {
   const [selectedTab, setSelectedTab] = useState("film");
   const [searchQuery, setSearchQuery] = useState("");
   const [activePlayingId, setActivePlayingId] = useState<string | null>(null);
@@ -80,6 +82,21 @@ export default function AIWorkExplorer({ isOpen, onClose, films }: AIWorkExplore
       );
     });
   }, [searchQuery, films]);
+
+  const filteredVideos = useMemo(() => {
+    return videos.filter((video) => {
+      const query = searchQuery.toLowerCase().trim();
+      const isAIReel = video.isAI || video.type.toLowerCase().includes("ai");
+      return (
+        isAIReel &&
+        (!query ||
+          video.title.toLowerCase().includes(query) ||
+          video.type.toLowerCase().includes(query) ||
+          video.year.toLowerCase().includes(query) ||
+          video.duration.toLowerCase().includes(query))
+      );
+    });
+  }, [searchQuery, videos]);
 
   if (!isOpen) return null;
 
@@ -158,7 +175,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films }: AIWorkExplore
               }`} />
               <input
                 type="text"
-                placeholder={`Search ${selectedTab === "film" ? "AI films" : "images"}...`}
+                placeholder={`Search ${selectedTab === "film" ? "AI films" : selectedTab === "reel" ? "AI reels" : "images"}...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`w-full border rounded-full pl-11 pr-12 py-2.5 text-xs font-sans transition-all outline-none ${
@@ -235,6 +252,60 @@ export default function AIWorkExplorer({ isOpen, onClose, films }: AIWorkExplore
                     <Film className="w-10 h-10 text-neutral-300 mx-auto mb-4" />
                     <h3 className="text-sm font-sans font-bold uppercase tracking-wider text-neutral-500">
                       No matching films found
+                    </h3>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* AI REEL TAB */}
+            {selectedTab === "reel" && (
+              <div className="w-full">
+                {filteredVideos.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                    {filteredVideos.map((video) => (
+                      <button
+                        key={video.id}
+                        type="button"
+                        onClick={() => onSelectVideo(video)}
+                        className="group relative aspect-[9/16] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 text-left cursor-pointer"
+                      >
+                        <video
+                          src={video.videoUrl}
+                          poster={video.thumbnail}
+                          muted
+                          loop
+                          autoPlay
+                          playsInline
+                          preload="auto"
+                          aria-label={video.title}
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        />
+                        <div className="absolute inset-0 bg-linear-to-t from-black via-black/25 to-transparent" />
+                        <div className="absolute left-4 top-4 rounded-full bg-[#FF6A00] px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-white">
+                          AI Reel
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="rounded-full bg-white p-4 text-black opacity-0 scale-90 transition-all group-hover:opacity-100 group-hover:scale-100">
+                            <Play className="h-5 w-5 translate-x-0.5 fill-black" />
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 p-5">
+                          <h2 className="font-sans text-lg font-semibold leading-tight text-white">
+                            {video.title}
+                          </h2>
+                          <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-neutral-300">
+                            {video.duration} / {video.type}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-24 text-center border border-neutral-100 bg-neutral-50/50 rounded-3xl">
+                    <Film className="w-10 h-10 text-neutral-300 mx-auto mb-4" />
+                    <h3 className="text-sm font-sans font-bold uppercase tracking-wider text-neutral-500">
+                      No matching reels found
                     </h3>
                   </div>
                 )}

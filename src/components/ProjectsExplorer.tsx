@@ -171,13 +171,13 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                     </div>
                   </div>
 
-                  {/* Heading OUT of card in bold with small text type */}
+                  {/* Heading OUT of card with clean editorial weight */}
                   <div className="mt-4 flex items-baseline flex-wrap gap-2 text-left select-none">
-                    <span className="font-extrabold text-[#111111] text-sm sm:text-base tracking-tight hover:text-black">
+                    <span className="font-medium text-neutral-800 text-sm sm:text-base tracking-normal hover:text-neutral-950">
                       {project.title}
                     </span>
                     <span className="text-neutral-300 font-light select-none">/</span>
-                    <span className="text-neutral-500 text-xs sm:text-sm font-sans font-medium">
+                    <span className="text-neutral-500 text-xs sm:text-sm font-sans font-normal">
                       {project.type}
                     </span>
                   </div>

@@ -472,6 +472,16 @@ export default function App() {
                       description: film.description
                     });
                   }}
+                  onSelectVideo={(video) => {
+                    setLightbox({
+                      isOpen: true,
+                      mediaType: "video",
+                      src: video.videoUrl,
+                      title: video.title,
+                      category: video.type,
+                      description: `${video.duration} motion reel / ${video.year}`
+                    });
+                  }}
                 />
               )}
             </AnimatePresence>
