@@ -1,4 +1,4 @@
-import { ArrowUpRight, Compass, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import { ExplorationItem } from "../portfolioData";
 
@@ -9,55 +9,46 @@ interface ExplorationsProps {
 
 export default function Explorations({ onSelectImage, explorations }: ExplorationsProps) {
   return (
-    <section id="explorations" className="relative overflow-hidden bg-white px-4 py-20 text-neutral-900 sm:px-6 md:py-28">
-      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-200 to-transparent" />
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+    <section id="explorations" className="bg-[#fbfbf8] px-4 py-20 text-neutral-950 md:px-6">
+      <div className="mx-auto max-w-7xl border-b border-neutral-200 pb-14">
+        <div className="mb-10 grid gap-5 md:grid-cols-[0.8fr_1.2fr] md:items-end">
           <div>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-[12px] font-medium text-neutral-500">
-              <Compass className="h-3.5 w-3.5 text-[#FF6A00]" />
-              visual experiments
-            </div>
-            <h2 className="max-w-3xl text-[42px] font-semibold leading-[0.98] tracking-[-0.04em] text-neutral-900 sm:text-6xl lg:text-7xl">
-              moodboards, prompts, and art direction.
+            <p className="mb-3 text-sm font-medium text-[#FF6A00]">experiments</p>
+            <h2 className="text-[42px] font-medium leading-none tracking-[-0.04em] md:text-7xl">
+              studies
             </h2>
           </div>
-          <p className="max-w-2xl text-base leading-8 text-neutral-600 lg:ml-auto">
-            Experimental image studies used to explore atmosphere, cinematic mood, AI prompts, visual texture, and future art direction.
+          <p className="max-w-xl text-base leading-7 text-neutral-600 md:ml-auto">
+            Prompt, mood, image, and cinematic direction.
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid border-l border-t border-neutral-200 md:grid-cols-3">
           {explorations.map((item, index) => (
             <motion.button
               key={item.id}
               type="button"
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.28), ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.18) }}
               onClick={() => onSelectImage({ imageUrl: item.imageUrl, title: item.title })}
-              className="group overflow-hidden rounded-[32px] border border-neutral-100 bg-[#f7f8f6] text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(15,15,15,0.09)]"
+              className="group border-b border-r border-neutral-200 bg-[#fbfbf8] text-left"
             >
-              <div className="relative aspect-[1.18] overflow-hidden bg-neutral-950">
+              <div className="aspect-[1.15] overflow-hidden bg-neutral-100">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/5 to-transparent" />
-                <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-neutral-950">
-                  <Sparkles className="h-3.5 w-3.5 text-[#FF6A00]" />
-                  study {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white text-neutral-950 transition-transform group-hover:rotate-12">
-                  <ArrowUpRight className="h-4 w-4" />
-                </span>
               </div>
-              <div className="p-5">
-                <h3 className="text-xl font-semibold tracking-[-0.02em] text-neutral-900">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-neutral-500">Prompt-led visual research and cinematic composition study.</p>
+              <div className="flex items-center justify-between p-4">
+                <div>
+                  <p className="text-sm text-neutral-500">{String(index + 1).padStart(2, "0")}</p>
+                  <h3 className="mt-2 text-xl font-medium tracking-[-0.02em]">{item.title}</h3>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-[#FF6A00]" />
               </div>
             </motion.button>
           ))}

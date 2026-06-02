@@ -137,7 +137,7 @@
 }
 
 body {
-  background-color: #f7f8f6;
+  background-color: #fbfbf8;
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
   overflow-x: hidden;
@@ -161,7 +161,7 @@ h4 {
   text-transform: none !important;
 }
 
-/* Minimal curve on visual surfaces: images, videos, project cards, and media screens. */
+/* Flat public portfolio surfaces. */
 img,
 video,
 :is(div, article, figure)[class*="overflow-hidden"]:has(img),
@@ -169,7 +169,24 @@ video,
 :is(div, article, figure)[class*="aspect-"][class*="overflow-hidden"],
 :is(div, article, figure)[class*="bg-neutral-950"][class*="overflow-hidden"],
 :is(div, article, figure)[class*="bg-black"][class*="overflow-hidden"] {
-  border-radius: 12px !important;
+  border-radius: 0 !important;
+}
+
+header,
+header *,
+#home,
+#home *,
+#projects,
+#projects *,
+#showreel,
+#showreel *,
+#about-me,
+#about-me *,
+#explorations,
+#explorations *,
+#contact,
+#contact * {
+  box-shadow: none !important;
 }
 
 /* Custom font styles settings */
