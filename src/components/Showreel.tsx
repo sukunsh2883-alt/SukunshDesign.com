@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { AIFilm, VideoCard } from "../portfolioData";
 
 interface ShowreelProps {
@@ -13,9 +13,9 @@ interface ShowreelProps {
 export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, onOpenExplorer }: ShowreelProps) {
   const rowRef = useRef<HTMLDivElement | null>(null);
   const items = [
-    ...videos.map((video) => ({ id: video.id, title: video.title, kind: "video" as const, source: video })),
-    ...films.slice(0, 3).map((film) => ({ id: film.id, title: film.title, kind: "film" as const, source: film })),
-  ].slice(0, 5);
+    ...videos.map((video) => ({ id: video.id, title: video.title, kind: "video" as const, source: video, image: video.thumbnail, meta: `${video.duration} / ${video.type}` })),
+    ...films.map((film) => ({ id: film.id, title: film.title, kind: "film" as const, source: film, image: film.thumbnail, meta: `${film.year} / ${film.category}` })),
+  ].slice(0, 8);
 
   const openItem = (item: (typeof items)[number]) => {
     if (item.kind === "video") onSelectVideo(item.source);
@@ -27,41 +27,46 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
   };
 
   return (
-    <section id="showreel" className="bg-[#080808] px-3 py-5 text-white md:px-4 md:py-12">
-      <div className="mx-auto max-w-5xl border-b border-white/10 pb-8 md:pb-14">
-        <h2 className="mb-5 px-4 text-[21px] font-semibold tracking-[-0.04em] md:px-8 md:text-5xl">
-          AI films
-        </h2>
-
-        <div className="flex items-center gap-2 md:gap-4">
-          <button onClick={() => scroll(-260)} className="px-1 text-white hover:text-[#FF6A00]" aria-label="Scroll left">
-            <ChevronLeft className="h-5 w-5 md:h-7 md:w-7" />
-          </button>
-
-          <div ref={rowRef} className="flex flex-1 items-end gap-1.5 overflow-x-auto scrollbar-none md:gap-3" style={{ scrollbarWidth: "none" }}>
-            {items.map((item, index) => {
-              const isCenter = index === 2;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => openItem(item)}
-                  className={`${isCenter ? "h-[92px] w-[58px] md:h-[260px] md:w-[150px]" : "h-[74px] w-[47px] md:h-[210px] md:w-[122px]"} shrink-0 bg-[#d9d9d9] transition-colors hover:bg-[#FF6A00]`}
-                  aria-label={item.title}
+    <section id="showreel" className="bg-[#050505] px-6 py-16 text-white md:px-8 md:py-24">
+      <div className="mx-auto max-w-[1520px]">
+        <div ref={rowRef} className="flex gap-4 overflow-x-auto pb-6 scrollbar-none" style={{ scrollbarWidth: "none" }}>
+          {items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => openItem(item)}
+              className="group w-[175px] shrink-0 text-left md:w-[320px]"
+            >
+              <div className="aspect-[0.82] overflow-hidden bg-[#d9d9d9]">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="h-full w-full object-cover grayscale-[0.15] transition-transform duration-500 group-hover:scale-[1.04]"
+                  referrerPolicy="no-referrer"
                 />
-              );
-            })}
-          </div>
-
-          <button onClick={() => scroll(260)} className="px-1 text-white hover:text-[#FF6A00]" aria-label="Scroll right">
-            <ChevronRight className="h-5 w-5 md:h-7 md:w-7" />
-          </button>
+              </div>
+              <h3 className="mt-4 text-center text-[10px] font-semibold uppercase tracking-[-0.04em] text-white md:text-sm">
+                {item.title}
+              </h3>
+              <p className="mt-1 text-center text-[7px] font-medium uppercase text-white/55 md:text-[10px]">
+                {item.meta}
+              </p>
+            </button>
+          ))}
         </div>
 
-        <div className="mt-3 text-center">
-          <button onClick={onOpenExplorer} className="text-[9px] text-white/70 hover:text-white md:text-xs">
+        <div className="mt-4 flex items-center justify-between">
+          <button onClick={onOpenExplorer} className="text-xs text-white/55 hover:text-white">
             See More
           </button>
+          <div className="flex gap-3">
+            <button onClick={() => scroll(-360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white hover:border-white" aria-label="Scroll left">
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <button onClick={() => scroll(360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white hover:border-white" aria-label="Scroll right">
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
     </section>

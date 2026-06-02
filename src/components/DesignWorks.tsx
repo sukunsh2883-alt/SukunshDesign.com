@@ -6,65 +6,46 @@ interface DesignWorksProps {
   onOpenExplorer: () => void;
 }
 
-export default function DesignWorks({ projects, onSelectProject, onOpenExplorer }: DesignWorksProps) {
-  const actionProject = projects.find((project) => project.title.toLowerCase().includes("action")) || projects[0];
-  const typographyProject =
-    projects.find((project) => project.title.toLowerCase().includes("typographic")) ||
-    projects.find((project) => project.type.toLowerCase().includes("typography")) ||
-    projects[1];
+export default function DesignWorks({ projects, onSelectProject }: DesignWorksProps) {
+  const displayedProjects = projects.slice(0, 4);
 
   return (
-    <section id="projects" className="bg-[#080808] px-3 py-5 text-white md:px-4 md:py-12">
-      <div className="mx-auto max-w-5xl border-b border-white/10 pb-8 md:pb-14">
-        <div className="mb-5 flex items-center justify-between px-4 md:px-8">
-          <h2 className="text-[22px] font-semibold tracking-[-0.04em] md:text-5xl">
-            Selected Projet
+    <section id="projects" className="bg-[#fbfbf2] px-6 py-16 text-[#18005a] md:px-8 md:py-24">
+      <div className="mx-auto max-w-[1520px]">
+        <div className="mb-14">
+          <h2 className="text-3xl font-semibold uppercase tracking-[-0.04em] md:text-5xl">
+            Selected Work
           </h2>
-          <button
-            type="button"
-            onClick={onOpenExplorer}
-            className="text-[9px] font-medium text-white/70 hover:text-white md:text-xs"
-          >
-            See More
-          </button>
+          <p className="mt-2 text-base text-neutral-500 md:text-xl">
+            Across Brand Design, Packaging Design & Visual Systems
+          </p>
         </div>
 
-        <div className="mx-4 grid border border-black md:mx-8 md:grid-cols-2">
-          <button
-            type="button"
-            onClick={() => onSelectProject(actionProject)}
-            className="min-h-[74px] bg-[#ffc94b] p-4 text-left text-white transition-opacity hover:opacity-90 md:min-h-[190px] md:p-8"
-          >
-            <h3 className="max-w-[210px] text-[20px] font-semibold leading-[1.02] tracking-[-0.04em] md:text-5xl">
-              Action Photography
-            </h3>
-            <p className="mt-3 text-[7px] text-white/80 md:text-xs">Action Photography / Fine Art</p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSelectProject(typographyProject)}
-            className="min-h-[74px] border-t border-black bg-[#f25a00] p-4 text-left text-white transition-opacity hover:opacity-90 md:min-h-[190px] md:border-l md:border-t-0 md:p-8"
-          >
-            <h3 className="max-w-[260px] text-[20px] font-semibold leading-[1.02] tracking-[-0.04em] md:text-5xl">
-              Typography Picture Book
-            </h3>
-            <p className="mt-3 text-[7px] text-white/80 md:text-xs">Book / Typography</p>
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenExplorer}
-            className="col-span-full flex min-h-[150px] flex-col items-center justify-center bg-[#91aa5b] p-6 text-white transition-opacity hover:opacity-90 md:min-h-[360px]"
-          >
-            <span className="text-[30px] font-semibold leading-none tracking-[-0.045em] md:text-7xl">
-              Portfolio 2026
-            </span>
-            <span className="mt-4 h-px w-16 bg-white/70 md:w-28" />
-            <span className="mt-10 self-start text-[7px] text-white/80 md:ml-2 md:text-xs">
-              Action Photography / Fine Art
-            </span>
-          </button>
+        <div className="grid gap-8 md:grid-cols-2">
+          {displayedProjects.map((project) => (
+            <button
+              key={project.id}
+              type="button"
+              onClick={() => onSelectProject(project)}
+              className="group text-left"
+            >
+              <div className="aspect-[1.42] overflow-hidden bg-neutral-200">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3 text-neutral-900">
+                <h3 className="text-lg font-medium tracking-[-0.03em] md:text-2xl">{project.title}</h3>
+                <div className="flex shrink-0 gap-2">
+                  <span className="rounded-full border border-neutral-300 px-3 py-1 text-sm text-neutral-700">{project.year}</span>
+                  <span className="hidden rounded-full border border-neutral-300 px-3 py-1 text-sm text-neutral-700 md:block">{project.type}</span>
+                </div>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     </section>
