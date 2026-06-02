@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Play, Sparkles } from "lucide-react";
+import { motion } from "motion/react";
 import { DEFAULT_LOGO_FONT, getLogoFontStyle } from "../localFonts";
 
 interface HeroProps {
@@ -9,210 +10,157 @@ interface HeroProps {
   onOpenAIWork?: () => void;
 }
 
-
-
 export default function Hero({ onWatchShowreel, profile, onOpenProjects, onOpenAIWork }: HeroProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  const roles = [
-    "Visual Designer",
-    "AI Creative",
-    "Motion Designer",
-    "Storyboard Artist",
-    "FilmMaker"
-  ];
+  const roles = useMemo(
+    () => profile?.roles || ["Visual Designer", "AI Creative Designer", "Motion Designer"],
+    [profile?.roles]
+  );
   const [roleIndex, setRoleIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAnimating(false);
-      setTimeout(() => {
-        setRoleIndex((prev) => (prev + 1) % roles.length);
-        setIsAnimating(true);
-      }, 350);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, []);
-
-  const prefix = roles[roleIndex].toLowerCase().startsWith("ai") ? "An" : "A";
   const heroImageUrl = "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1780333002/Untitled-2_copy_urce7l.png";
   const logoFontFamily = profile?.logoFontFamily || DEFAULT_LOGO_FONT;
   const logoFontStyle = getLogoFontStyle(logoFontFamily);
 
-  // GSAP Entrance Animations for cinematic feel
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Name reveal animation
-      gsap.fromTo(
-        ".name-reveal",
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1.4, ease: "power3.out", delay: 0.2 }
-      );
+    const interval = window.setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % roles.length);
+    }, 2400);
 
-      // Blur in staggering elements
-      gsap.fromTo(
-        ".blur-in",
-        { opacity: 0, y: 25, filter: "blur(10px)" },
-        {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 1.2,
-          stagger: 0.15,
-          ease: "power3.out",
-          delay: 0.6,
-        }
-      );
+    return () => window.clearInterval(interval);
+  }, [roles.length]);
 
-      // Scroll indicator fade in
-      gsap.fromTo(
-        ".scroll-indicator-fade",
-        { opacity: 0, y: 10 },
-        { opacity: 0.6, y: 0, duration: 1.2, delay: 1.5, ease: "power2.out" }
-      );
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5; // range: -0.5 to 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5; // range: -0.5 to 0.5
-    setMousePos({ x, y });
-  };
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setMousePos({ x: 0, y: 0 });
-  };
-
-  const handleScrollToWork = () => {
-    const el = document.getElementById("ai-work");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const handleScrollToProjects = () => {
-    const el = document.getElementById("projects");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+  const scrollToProjects = () => {
+    const element = document.getElementById("projects");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
     <section
       id="home"
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-hidden bg-neutral-950 text-white select-none"
+      className="relative isolate min-h-screen overflow-hidden bg-[#f7f8f6] px-4 pt-28 text-neutral-900 sm:px-6 md:pt-32"
     >
-      {/* Matte black texture base */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 22% 20%, rgba(255,255,255,0.08), transparent 28%), radial-gradient(circle at 80% 30%, rgba(10,132,255,0.12), transparent 30%), linear-gradient(135deg, rgba(255,255,255,0.055) 0 1px, transparent 1px), linear-gradient(45deg, #050505 0%, #111111 48%, #050505 100%)",
-          backgroundSize: "auto, auto, 9px 9px, auto",
-        }}
-      />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_16%,rgba(255,106,0,0.14),transparent_26%),radial-gradient(circle_at_82%_18%,rgba(16,185,129,0.12),transparent_22%),linear-gradient(135deg,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[length:auto,auto,34px_34px]" />
+      <div className="absolute left-1/2 top-28 -z-10 h-[420px] w-[70vw] -translate-x-1/2 rounded-full bg-white/70 blur-3xl" />
 
-      {/* Background Image with elegant parallax hover effect */}
-      <div 
-        className="absolute inset-0 z-[1] pointer-events-none transition-transform duration-700 ease-out bg-no-repeat bg-cover bg-[position:42%_center] sm:bg-[position:54%_center] lg:bg-[position:64%_center]"
-        style={{
-          backgroundImage: `url("${heroImageUrl}")`,
-          opacity: 1,
-          transform: isHovered 
-            ? `scale(1.05) translate(${mousePos.x * 12}px, ${mousePos.y * 12}px)` 
-            : "scale(1) translate(0, 0)",
-        }}
-      />
-
-      {/* Gentle left vignette to guarantee high legibility for the left-aligned text, while leaving the majority of the artwork 100% uncovered */}
-      <div className="absolute inset-y-0 left-0 w-full sm:w-[65%] md:w-[55%] lg:w-[48%] z-[2] bg-gradient-to-r from-black/95 via-black/80 to-transparent pointer-events-none" />
-
-      {/* Bottom Blur Fade Overlays for seamless blending */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-48 z-[3] pointer-events-none"
-        style={{
-          backgroundImage: "linear-gradient(to top, #050505 0%, rgba(5,5,5,0.75) 42%, rgba(5,5,5,0) 100%)",
-        }}
-      />
-
-      {/* Hero Content - Beautifully Left-aligned & restricted to maintain artwork visibility (z-10 for interactivity) */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-12 md:px-16 lg:px-20 xl:px-24 text-left flex flex-col items-start justify-center mt-12">
-        <div className="max-w-[34rem] lg:max-w-[42vw] xl:max-w-[38rem]">
-          {/* "Hi, I'm" above the logo */}
-          <p className="name-reveal text-sm sm:text-base font-sans font-semibold tracking-[0.25em] text-neutral-400 mb-2 uppercase select-none">
-            Hi, I&apos;m
-          </p>
-
-          {/* Center Massive SUKUNSH Text Logo with trailing dot (Left-aligned) */}
-          <div className="name-reveal w-full flex justify-start items-center mb-6 select-none">
-            <h1
-              className="text-[72px] sm:text-[6.7rem] md:text-[132px] lg:text-[150px] xl:text-[168px] leading-[0.82] font-normal text-white select-none drop-shadow-[0_14px_35px_rgba(0,0,0,0.45)] origin-left"
-              style={logoFontStyle}
-            >
-              Sukunsh.
-            </h1>
-          </div>
-
-          {/* Dynamic Tagline with grey rounded capsule backdrop on rolling roles */}
-          <div className="blur-in text-xs xs:text-sm sm:text-base md:text-[21px] text-neutral-100 drop-shadow-sm font-sans tracking-wide leading-relaxed font-light mb-8 select-none min-h-[44px] flex items-center justify-start flex-wrap gap-y-2">
-            <span className="transition-all duration-300 font-light">{prefix}</span>
-            <span className={`px-4.5 py-1.5 bg-white/22 text-white backdrop-blur-md rounded-full text-xs xs:text-sm sm:text-base inline-block mx-1.5 font-serif font-semibold italic tracking-wide select-none shadow-xs border border-white/20 transition-all duration-300 transform ${
-              isAnimating ? "opacity-100 translate-y-0 filter blur-0 scale-100" : "opacity-0 translate-y-2 filter blur-sm scale-95"
-            }`}>
-              {roles[roleIndex]}
-            </span>
-            <span className="font-light">Creating Cinematic Digital Worlds.</span>
-          </div>
-
-          {/* Solid Center Buttons (Left-aligned) */}
-          <div className="blur-in flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 justify-start w-full select-none mt-2">
-            <button
-              onClick={onOpenProjects || handleScrollToProjects}
-              className="px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-white hover:bg-neutral-100 text-neutral-950 font-sans font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95 z-20 cursor-pointer shadow-md shadow-black/30 whitespace-nowrap max-w-max"
-            >
-              VIEW PROJECTS
-            </button>
-
-            <button
-              onClick={onOpenAIWork || handleScrollToWork}
-              className="text-neutral-400 hover:text-white font-sans font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95 z-20 cursor-pointer whitespace-nowrap text-left max-w-max"
-            >
-              AI ARCHIVE
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll Down Indicator */}
-      <div className="scroll-indicator-fade absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-10">
-        <span className="text-[9px] tracking-[0.3em] text-neutral-500 uppercase font-sans font-medium">
-          Scroll
-        </span>
-        <button
-          onClick={handleScrollToProjects}
-          className="relative w-6 h-10 rounded-full border border-white/20 flex items-start justify-center p-1 cursor-pointer hover:border-white/40 transition-colors"
-          style={{ background: "rgba(255,255,255,0.04)" }}
-          aria-label="Scroll to work"
+      <div className="mx-auto grid min-h-[calc(100vh-8rem)] max-w-7xl items-center gap-10 pb-14 lg:grid-cols-[1.02fr_0.98fr]">
+        <motion.div
+          initial={{ opacity: 0, y: 28, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10"
         >
-          <div className="w-1 h-2 rounded-full bg-[#FF6A00] animate-scroll-down" />
-        </button>
+          <div className="mb-8 flex flex-wrap items-center gap-3">
+            <span className="rounded-full border border-neutral-200 bg-white/80 px-4 py-2 text-[12px] font-medium text-neutral-600 shadow-[0_10px_30px_rgba(15,15,15,0.05)]">
+              Delhi based visual artist
+            </span>
+            <span className="rounded-full border border-[#FF6A00]/20 bg-[#FF6A00]/10 px-4 py-2 text-[12px] font-semibold text-[#C44D00]">
+              available for UX/UI roles
+            </span>
+          </div>
+
+          <p className="mb-2 text-sm font-medium tracking-[0.28em] text-neutral-400">
+            hi, i&apos;m
+          </p>
+          <h1 className="mb-8 text-[72px] leading-[0.82] text-neutral-950 sm:text-[108px] md:text-[128px] lg:text-[140px]" style={logoFontStyle}>
+            Sukunsh.
+          </h1>
+
+          <div className="max-w-3xl">
+            <h2 className="text-[42px] font-semibold leading-[0.98] tracking-[-0.04em] text-neutral-900 sm:text-6xl lg:text-[78px]">
+              designing interfaces, visual systems, and cinematic digital stories.
+            </h2>
+            <p className="mt-7 max-w-2xl text-base leading-8 text-neutral-600 md:text-lg">
+              I blend Fine Art, UX/UI design, brand systems, motion, and AI-assisted production to create digital work that feels clear, emotional, and memorable.
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={onOpenProjects || scrollToProjects}
+              className="group inline-flex items-center justify-center gap-3 rounded-full bg-neutral-950 px-6 py-4 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#FF6A00] active:translate-y-0"
+            >
+              <span>view projects</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+            <button
+              onClick={onWatchShowreel}
+              className="group inline-flex items-center justify-center gap-3 rounded-full border border-neutral-200 bg-white/80 px-6 py-4 text-sm font-semibold text-neutral-800 transition-all hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-white active:translate-y-0"
+            >
+              <Play className="h-4 w-4 fill-[#FF6A00] text-[#FF6A00]" />
+              <span>watch reels</span>
+            </button>
+            <button
+              onClick={onOpenAIWork}
+              className="inline-flex items-center justify-center gap-2 rounded-full px-2 py-4 text-sm font-semibold text-neutral-500 transition-colors hover:text-neutral-950"
+            >
+              <span>AI archive</span>
+              <ArrowUpRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-10 grid max-w-2xl grid-cols-3 gap-2 rounded-[28px] border border-white bg-white/70 p-2 shadow-[0_24px_90px_rgba(15,15,15,0.08)] backdrop-blur-xl">
+            {[
+              ["3+", "core media"],
+              ["2026", "portfolio"],
+              ["M.Des", "IIT Bombay"],
+            ].map(([value, label]) => (
+              <div key={label} className="rounded-[22px] border border-neutral-100 bg-white px-4 py-4">
+                <p className="text-2xl font-semibold tracking-tight text-neutral-900">{value}</p>
+                <p className="mt-1 text-[11px] font-medium text-neutral-400">{label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 36, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="relative min-h-[520px] lg:min-h-[680px]"
+        >
+          <div className="absolute left-1/2 top-1/2 h-[78%] w-[74%] -translate-x-1/2 -translate-y-1/2 rounded-[46px] bg-[#FF6A00] opacity-90" />
+          <div className="absolute inset-x-4 bottom-6 top-0 overflow-hidden rounded-[46px] border border-white/80 bg-neutral-950 shadow-[0_35px_120px_rgba(15,15,15,0.18)]">
+            <img
+              src={heroImageUrl}
+              alt="Sukunsh artwork"
+              className="h-full w-full object-cover object-center"
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute bottom-5 left-5 right-5 rounded-[28px] border border-white/15 bg-black/35 p-5 text-white backdrop-blur-xl">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-medium tracking-[0.2em] text-white/55">current focus</p>
+                  <motion.p
+                    key={roles[roleIndex]}
+                    initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.45 }}
+                    className="mt-2 text-2xl font-semibold tracking-tight"
+                  >
+                    {roles[roleIndex]}
+                  </motion.p>
+                </div>
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-neutral-950">
+                  <Sparkles className="h-5 w-5 text-[#FF6A00]" />
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="absolute -left-1 bottom-24 hidden max-w-[230px] rounded-[26px] border border-white/80 bg-white/85 p-5 text-sm leading-6 text-neutral-600 shadow-[0_22px_70px_rgba(15,15,15,0.1)] backdrop-blur-xl md:block">
+            rooted in Bihar&apos;s cultural heritage, shaped by Fine Art, Design, and cinema.
+          </div>
+        </motion.div>
       </div>
+
+      <button
+        onClick={scrollToProjects}
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-neutral-200 bg-white/70 px-4 py-2 text-xs font-medium text-neutral-500 backdrop-blur-xl transition-colors hover:text-neutral-950 md:flex"
+      >
+        <ArrowDown className="h-3.5 w-3.5" />
+        <span>scroll</span>
+      </button>
     </section>
   );
 }

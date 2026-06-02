@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Layers, MousePointer2 } from "lucide-react";
 import { motion } from "motion/react";
 import { DesignProject } from "../portfolioData";
 
@@ -9,175 +8,134 @@ interface DesignWorksProps {
   onOpenExplorer: () => void;
 }
 
+const cardLayouts = [
+  "lg:col-span-7",
+  "lg:col-span-5",
+  "lg:col-span-4",
+  "lg:col-span-4",
+  "lg:col-span-4",
+  "lg:col-span-6",
+];
+
 export default function DesignWorks({ projects, onSelectProject, onOpenExplorer }: DesignWorksProps) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [viewport, setViewport] = useState<"sm" | "md" | "lg">("lg");
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setViewport("lg");
-      } else if (window.innerWidth >= 768) {
-        setViewport("md");
-      } else {
-        setViewport("sm");
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const displayedProjects = projects.slice(0, 6);
 
-  // Dynamic grid column/row tracks with a custom spring ratio
-  let gridTemplateColumns = "1fr";
-  let gridTemplateRows = "1fr";
-
-  if (viewport === "lg") {
-    if (hoveredIndex === null) {
-      gridTemplateColumns = "1fr 1fr 1fr";
-      gridTemplateRows = "1fr 1fr";
-    } else {
-      const lgCol = hoveredIndex % 3;
-      const lgRow = Math.floor(hoveredIndex / 3);
-      gridTemplateColumns = [0, 1, 2].map(c => c === lgCol ? "1.5fr" : "0.75fr").join(" ");
-      gridTemplateRows = [0, 1].map(r => r === lgRow ? "1.33fr" : "0.67fr").join(" ");
-    }
-  } else if (viewport === "md") {
-    if (hoveredIndex === null) {
-      gridTemplateColumns = "1fr 1fr";
-      gridTemplateRows = "1fr 1fr 1fr";
-    } else {
-      const mdCol = hoveredIndex % 2;
-      const mdRow = Math.floor(hoveredIndex / 2);
-      gridTemplateColumns = [0, 1].map(c => c === mdCol ? "1.45fr" : "0.55fr").join(" ");
-      gridTemplateRows = [0, 1, 2].map(r => r === mdRow ? "1.25fr" : "0.875fr").join(" ");
-    }
-  } else {
-    if (hoveredIndex === null) {
-      gridTemplateColumns = "1fr";
-      gridTemplateRows = "repeat(6, 1fr)";
-    } else {
-      gridTemplateColumns = "1fr";
-      gridTemplateRows = Array(6).fill(null).map((_, r) => r === hoveredIndex ? "1.5fr" : "0.9fr").join(" ");
-    }
-  }
-
   return (
-    <section id="projects" className="py-16 md:py-24 bg-white relative">
-      
-      {/* Background Ambient Accents (Light Mode adapted) */}
-      <div className="absolute top-1/4 right-[5%] w-[400px] h-[400px] rounded-full bg-[#FF6A00]/2 blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-[5%] w-[400px] h-[400px] rounded-full bg-neutral-100 blur-[150px] pointer-events-none" />
+    <section id="projects" className="relative overflow-hidden bg-[#f7f8f6] px-4 py-20 text-neutral-900 sm:px-6 md:py-28">
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-200 to-transparent" />
+      <div className="absolute right-[-12rem] top-20 h-[34rem] w-[34rem] rounded-full bg-[#FF6A00]/10 blur-3xl" />
+      <div className="absolute bottom-10 left-[-12rem] h-[34rem] w-[34rem] rounded-full bg-emerald-400/10 blur-3xl" />
 
-      <div className="w-full relative z-10">
-        
-        {/* Section Header */}
-        <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12 md:mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div className="max-w-2xl">
-            <span className="text-[10px] uppercase font-sans tracking-[0.3em] text-[#FF6A00] font-semibold block mb-3">
-              Selected Work
-            </span>
-            <h2 className="text-4xl md:text-5xl lg:text-7xl font-sans font-semibold tracking-tight text-neutral-800">
-              Projects
+      <div className="relative z-10 mx-auto max-w-7xl">
+        <div className="mb-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/80 px-3 py-1.5 text-[12px] font-medium text-neutral-500">
+              <Layers className="h-3.5 w-3.5 text-[#FF6A00]" />
+              selected UX/UI and visual work
+            </div>
+            <h2 className="max-w-3xl text-[42px] font-semibold leading-[0.98] tracking-[-0.04em] text-neutral-900 sm:text-6xl lg:text-7xl">
+              case studies with visual craft.
             </h2>
-            <p className="mt-4 text-sm md:text-base text-neutral-600 leading-relaxed max-w-xl">
-              A focused set of identity systems, publication layouts, AI visual campaigns, motion studies, and brand experiments.
+          </div>
+
+          <div className="max-w-2xl lg:ml-auto">
+            <p className="text-base leading-8 text-neutral-600">
+              A focused set of identity systems, publication layouts, infographics, AI visuals, motion studies, and product-style creative systems. Each project is presented like a hiring portfolio: context, role, tools, and visual outcome.
             </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={onOpenExplorer}
-            className="inline-flex w-max items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-6 py-3 text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-800 transition-all hover:border-neutral-950 hover:bg-neutral-950 hover:text-white active:scale-95"
-          >
-            <span>Open Project Explorer</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {/* Board Layout (Cinematic, equal-sized grids, zero spacing) */}
-        <div className="w-full overflow-hidden select-none mx-auto max-w-[1881px] md:max-w-[1254px] lg:max-w-[1881px]">
-          <div 
-            className="grid gap-[1px] w-full"
-            style={{
-              gridTemplateColumns,
-              gridTemplateRows,
-              transition: "grid-template-columns 0.65s cubic-bezier(0.34, 1.85, 0.4, 0.95), grid-template-rows 0.65s cubic-bezier(0.34, 1.85, 0.4, 0.95)",
-              aspectRatio: viewport === "lg" ? "1881 / 824" : viewport === "md" ? "1254 / 1236" : "auto"
-            }}
-          >
-            {displayedProjects.map((project, index) => {
-              const itemIsHovered = hoveredIndex === index;
-              return (
-                <a
-                  href={project.link || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  key={project.id}
-                  className="group relative bg-[#0a0a0a] rounded-xl overflow-hidden cursor-pointer w-full h-full transition-all duration-300 block"
-                  style={{
-                    aspectRatio: viewport === "sm" ? "627 / 412" : "auto",
-                    zIndex: itemIsHovered ? 10 : 1
-                  }}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onSelectProject(project);
-                  }}
-                >
-                  
-                  {/* Halftone Retro Pattern Overlay */}
-                  <div className="absolute inset-0 halftone-overlay opacity-[0.03] mix-blend-overlay pointer-events-none z-[1]" />
-
-                  {/* Cover Image */}
-                  <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-105"
-                      referrerPolicy="no-referrer"
-                    />
-                    {/* Dark overlay that transitions to be slightly stronger on hover */}
-                    <div className="absolute inset-0 bg-black/15 group-hover:bg-black/55 transition-colors duration-300" />
-                  </div>
-
-                  {/* Bottom Title Card (Fades in exclusively on hover) */}
-                  <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 bg-gradient-to-t from-black/95 via-black/50 to-transparent pt-24 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 select-none">
-                    <span className="text-[10px] uppercase font-mono tracking-[0.2em] text-[#FF6A00] font-extrabold mb-2.5 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-pulse" />
-                      View on Behance
-                    </span>
-                    <h3 className="text-xl sm:text-2xl font-serif italic text-white tracking-wide flex items-center justify-between gap-4">
-                      <span>{project.title}</span>
-                      <div className="p-2 rounded-full bg-[#FF6A00]/10 border border-[#FF6A00]/25 text-[#FF6A00] group-hover:bg-[#FF6A00] group-hover:text-white transition-all duration-300">
-                        <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      </div>
-                    </h3>
-                  </div>
-
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Full archive option */}
-        {projects.length > 6 && (
-          <div className="flex justify-center mt-12 relative z-10">
             <button
               type="button"
               onClick={onOpenExplorer}
-              className="group flex items-center gap-2.5 rounded-full border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 active:scale-95 text-neutral-800 px-7 py-3 text-xs uppercase tracking-widest font-mono font-bold transition-all duration-300 cursor-pointer shadow-xs hover:text-black"
+              className="group mt-6 inline-flex items-center gap-3 rounded-full bg-neutral-950 px-5 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#FF6A00] active:translate-y-0"
             >
-              <span>Browse Full Project Archive</span>
-              <ArrowUpRight className="w-4 h-4 text-[#FF6A00] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <span>open project archive</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-12">
+          {displayedProjects.map((project, index) => {
+            const isFeature = index === 0;
+
+            return (
+              <motion.article
+                key={project.id}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.55, delay: Math.min(index * 0.05, 0.25), ease: [0.16, 1, 0.3, 1] }}
+                className={`${cardLayouts[index] || "lg:col-span-4"} group overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_20px_70px_rgba(15,15,15,0.06)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_100px_rgba(15,15,15,0.1)]`}
+              >
+                <button
+                  type="button"
+                  onClick={() => onSelectProject(project)}
+                  className="block h-full w-full cursor-pointer text-left"
+                >
+                  <div className={`relative overflow-hidden bg-neutral-950 ${isFeature ? "aspect-[1.55]" : "aspect-[1.25]"}`}>
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="h-full w-full object-cover transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-[1.04]"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent opacity-80" />
+                    <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                      <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-neutral-900">
+                        {project.year}
+                      </span>
+                      <span className="rounded-full border border-white/25 bg-black/30 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-md">
+                        {project.type}
+                      </span>
+                    </div>
+                    <span className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-950 transition-transform duration-300 group-hover:rotate-12">
+                      <ArrowUpRight className="h-4 w-4" />
+                    </span>
+                  </div>
+
+                  <div className="space-y-5 p-5 md:p-6">
+                    <div>
+                      <h3 className="text-2xl font-semibold tracking-[-0.03em] text-neutral-900 md:text-3xl">
+                        {project.title}
+                      </h3>
+                      <p className="mt-3 line-clamp-2 text-sm leading-6 text-neutral-500">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {project.tools.slice(0, 3).map((tool) => (
+                        <span key={tool} className="rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-[11px] font-medium text-neutral-500">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-neutral-100 pt-4 text-sm">
+                      <span className="inline-flex items-center gap-2 font-medium text-neutral-500">
+                        <MousePointer2 className="h-3.5 w-3.5 text-[#FF6A00]" />
+                        view project
+                      </span>
+                      <span className="font-medium text-neutral-350">{String(index + 1).padStart(2, "0")}</span>
+                    </div>
+                  </div>
+                </button>
+              </motion.article>
+            );
+          })}
+        </div>
+
+        {projects.length > 6 && (
+          <div className="mt-10 flex justify-center">
+            <button
+              type="button"
+              onClick={onOpenExplorer}
+              className="group inline-flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-6 py-3.5 text-sm font-semibold text-neutral-700 transition-all hover:border-neutral-950 hover:text-neutral-950"
+            >
+              <span>browse all {projects.length} projects</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
         )}
-
       </div>
     </section>
   );

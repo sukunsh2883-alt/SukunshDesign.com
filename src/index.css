@@ -137,11 +137,21 @@
 }
 
 body {
-  background-color: #ffffff;
+  background-color: #f7f8f6;
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  text-rendering: geometricPrecision;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: rgba(255, 106, 0, 0.18);
+  color: #18181b;
 }
 
 h1,

@@ -309,7 +309,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white text-neutral-900 overflow-x-hidden transition-colors duration-300">
+    <div className="relative min-h-screen bg-[#f7f8f6] text-neutral-900 overflow-x-hidden transition-colors duration-300">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
