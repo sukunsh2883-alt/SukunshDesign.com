@@ -9,7 +9,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onWatchShowreel, onOpenProjects, onOpenAIWork }: HeroProps) {
-  const heroImageUrl = "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1780333002/Untitled-2_copy_urce7l.png";
+  const heroImageUrl = "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1780406091/qq_fakbfs.png";
 
   return (
     <section id="home" className="bg-[#080808] px-3 pt-11 text-white md:px-4">
