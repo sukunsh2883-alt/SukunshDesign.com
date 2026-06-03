@@ -17,8 +17,7 @@ interface AboutMeProps {
 export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
   return (
     <section id="about-me" className="bg-[#050505] px-6 py-16 text-white md:px-8 md:py-24">
-      <div className="mx-auto grid max-w-[1520px] gap-8 border-t border-white/15 pt-12 md:grid-cols-[0.35fr_0.65fr]">
-        <div className="aspect-[0.8] max-w-[260px] bg-[#d9d9d9]" />
+      <div className="mx-auto max-w-[1520px] border-t border-white/15 pt-12">
         <div className="grid gap-8 md:grid-cols-[0.45fr_0.55fr]">
           <div>
             <p className="mb-2 text-xs text-white/55">About:</p>

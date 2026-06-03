@@ -6,7 +6,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import DesignWorks from "./components/DesignWorks";
-import Explorations from "./components/Explorations";
+import GravityPlayground from "./components/GravityPlayground";
 import Footer from "./components/Footer";
 import Lightbox from "./components/Lightbox";
 import AdminPanel from "./components/AdminPanel";
@@ -391,20 +391,8 @@ export default function App() {
                 onOpenProjects={() => openPortal("projects")}
               />
 
-              {/* Parallax elements photo gallery */}
-              <Explorations
-                explorations={explorationsState}
-                onSelectImage={(item) =>
-                  setLightbox({
-                    isOpen: true,
-                    mediaType: "image",
-                    src: item.imageUrl,
-                    title: item.title,
-                    category: "Exploration study",
-                    description: "Unreleased art studies and prompt experimentations."
-                  })
-                }
-              />
+              {/* Interactive gravity artwork above footer */}
+              <GravityPlayground />
 
             </main>
 
