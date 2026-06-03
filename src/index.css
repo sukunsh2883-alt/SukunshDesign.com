@@ -141,12 +141,29 @@ body {
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
   scroll-behavior: smooth;
   text-rendering: geometricPrecision;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 ::selection {
