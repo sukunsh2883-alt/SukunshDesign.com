@@ -57,8 +57,8 @@ export default function GravityPlayground() {
         id: file,
         src: `/SVG for bottom gravity/${file}`,
         x: 3 + ((index * 8.2) % 94),
-        lift: 4 + ((index * 15) % 82),
-        width: isOrganic ? 74 + ((index * 13) % 62) : 42 + ((index * 11) % 62),
+        lift: 0 + ((index * 13) % 72),
+        width: isOrganic ? 70 + ((index * 13) % 58) : 40 + ((index * 11) % 58),
         rotate: -14 + ((index * 11) % 28),
       };
     });
@@ -161,11 +161,11 @@ export default function GravityPlayground() {
   };
 
   return (
-    <section id="gravity-playground" className="relative z-10 overflow-visible bg-[#050505] pt-0 text-white">
+    <section id="gravity-playground" className="relative z-10 -mb-8 overflow-visible bg-[#050505] pt-0 text-white md:-mb-10">
       <div className="mx-auto max-w-[1680px] px-4 md:px-8">
         <div
           ref={stageRef}
-          className="relative h-[230px] cursor-grab overflow-visible active:cursor-grabbing md:h-[300px]"
+          className="relative h-[170px] cursor-grab overflow-visible active:cursor-grabbing md:h-[220px]"
           aria-label="Interactive falling artwork assets"
         >
           <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
@@ -181,7 +181,7 @@ export default function GravityPlayground() {
               onPointerMove={onPointerMove}
               onPointerUp={dropAsset}
               onPointerCancel={dropAsset}
-              className="absolute bottom-0 touch-none select-none bg-transparent p-0 outline-none"
+              className="absolute -bottom-1 touch-none select-none bg-transparent p-0 outline-none md:-bottom-2"
               style={{
                 left: `${asset.x}%`,
                 marginBottom: `${asset.lift}px`,
