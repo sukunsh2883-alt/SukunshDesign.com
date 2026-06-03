@@ -22,8 +22,8 @@ export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
   return (
     <section id="about-me" className="bg-[#050505] px-6 py-14 text-white md:px-8 md:py-20">
       <div className="mx-auto max-w-[1520px] border-t border-white/15 pt-12">
-        <div className="grid gap-10 md:grid-cols-[0.42fr_0.58fr] md:items-end">
-          <figure className="relative aspect-[0.82] w-full max-w-[420px] overflow-hidden bg-white/5 md:max-w-none">
+        <div className="grid gap-10 md:grid-cols-[280px_1fr] md:items-end lg:grid-cols-[320px_1fr]">
+          <figure className="relative aspect-[0.8] w-full max-w-[260px] overflow-hidden bg-white/5 md:max-w-[320px]">
             <img
               src={portrait}
               alt={profile.fullName}
@@ -39,7 +39,7 @@ export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
           <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-end">
             <div>
               <p className="mb-3 text-xs text-white/45">About</p>
-              <h2 className="max-w-md text-4xl font-semibold leading-[0.96] tracking-[-0.055em] text-white md:text-6xl">
+              <h2 className="max-w-md text-3xl font-semibold leading-[0.98] tracking-[-0.05em] text-white md:text-5xl">
                 Emotional, bold, story-driven visuals.
               </h2>
               <div className="mt-8 flex gap-7 text-sm text-white/75">
@@ -48,7 +48,7 @@ export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
               </div>
             </div>
 
-            <div className="max-w-xl space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/62 md:text-lg">
+            <div className="max-w-xl space-y-5 text-sm leading-relaxed tracking-[-0.02em] text-white/62 md:text-base">
               <p>
                 I&apos;m a Delhi-based visual artist, rooted in Bihar&apos;s rich cultural heritage, with a background in Fine Art and Design.
               </p>

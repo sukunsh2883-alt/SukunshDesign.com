@@ -161,15 +161,14 @@ export default function GravityPlayground() {
   };
 
   return (
-    <section id="gravity-playground" className="relative overflow-visible bg-[#050505] pt-2 text-white">
+    <section id="gravity-playground" className="relative z-10 overflow-visible bg-[#050505] pt-2 text-white">
       <div className="mx-auto max-w-[1680px] px-4 md:px-8">
         <div
           ref={stageRef}
-          className="relative h-[430px] cursor-grab overflow-visible border-t border-white/15 active:cursor-grabbing md:h-[540px]"
+          className="relative h-[340px] cursor-grab overflow-visible border-t border-white/15 active:cursor-grabbing md:h-[430px]"
           aria-label="Interactive falling artwork assets"
         >
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-[#8277e7] md:h-36" />
-          <div className="absolute inset-x-0 bottom-28 h-px bg-white/15 md:bottom-36" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-white/15" />
 
           {gravityAssets.map((asset, index) => (
             <button
@@ -182,7 +181,7 @@ export default function GravityPlayground() {
               onPointerMove={onPointerMove}
               onPointerUp={dropAsset}
               onPointerCancel={dropAsset}
-              className="absolute bottom-28 touch-none select-none bg-transparent p-0 outline-none md:bottom-36"
+              className="absolute bottom-0 touch-none select-none bg-transparent p-0 outline-none"
               style={{
                 left: `${asset.x}%`,
                 marginBottom: `${asset.lift}px`,

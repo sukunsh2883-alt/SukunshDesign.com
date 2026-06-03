@@ -4,7 +4,7 @@ interface FooterProps {
 
 export default function Footer({ profile }: FooterProps) {
   return (
-    <footer id="contact" className="bg-[#8277e7] px-6 py-14 text-[#18005a] md:px-12 md:py-20">
+    <footer id="contact" className="relative bg-[#8277e7] px-6 py-14 text-[#18005a] md:px-12 md:py-20">
       <div className="mx-auto max-w-[1520px]">
         <div className="mb-20 grid gap-10 md:grid-cols-[1.4fr_0.45fr_0.45fr]">
           <h2 className="max-w-3xl text-4xl font-semibold uppercase leading-none tracking-[-0.055em] md:text-6xl">
