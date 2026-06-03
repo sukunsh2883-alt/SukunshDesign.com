@@ -14,39 +14,54 @@ export default function GravityPlayground() {
   } | null>(null);
 
   const gravityAssets = useMemo(() => {
-    const assetNumbers = Array.from({ length: 159 }, (_, index) => index + 12).filter((number) => number !== 59);
-    const organicAssets = [
-      "flower_1",
-      "flower_2",
-      "flower_3",
-      "flower_5",
-      "flower_6",
-      "flower_7",
-      "flower_8",
-      "flower_9",
-      "leaf_1",
-      "leaf_1_1",
-      "leaf_2",
+    const assetFiles = [
+      "Asset 140.svg",
+      "Asset 143.svg",
+      "Asset 144.svg",
+      "Asset 146.svg",
+      "Asset 147.svg",
+      "Asset 148.svg",
+      "Asset 149.svg",
+      "Asset 150.svg",
+      "Asset 151.svg",
+      "Asset 152.svg",
+      "Asset 153.svg",
+      "Asset 154.svg",
+      "Asset 155.svg",
+      "Asset 156.svg",
+      "Asset 157.svg",
+      "Asset 158.svg",
+      "Asset 159.svg",
+      "Asset 160.svg",
+      "Asset 161.svg",
+      "Asset 162.svg",
+      "Asset 163.svg",
+      "Asset 164.svg",
+      "Asset 165.svg",
+      "Asset 166.svg",
+      "Asset 167.svg",
+      "Asset 168.svg",
+      "Asset 169.svg",
+      "Asset 170.svg",
+      "flower_2.svg",
+      "flower_3.svg",
+      "flower_9.svg",
+      "leaf_1.svg",
+      "leaf_1_1.svg",
+      "leaf_2.svg",
     ];
 
-    return [
-      ...assetNumbers.map((number, index) => ({
-        id: `asset-${number}`,
-        src: `/SVG for bottom gravity/SVG/Asset ${number}.svg`,
-        x: 2 + ((index * 6.4) % 96),
-        lift: 8 + ((index * 17) % 82),
-        width: 44 + ((index * 13) % 70),
-        rotate: -16 + ((index * 11) % 32),
-      })),
-      ...organicAssets.map((name, index) => ({
-        id: name,
-        src: `/SVG for bottom gravity/SVG/${name}.svg`,
-        x: 5 + ((index * 8.7) % 90),
-        lift: 28 + ((index * 23) % 90),
-        width: 88 + ((index * 17) % 92),
-        rotate: -18 + ((index * 9) % 36),
-      })),
-    ];
+    return assetFiles.map((file, index) => {
+      const isOrganic = file.includes("flower") || file.includes("leaf");
+      return {
+        id: file,
+        src: `/SVG for bottom gravity/${file}`,
+        x: 3 + ((index * 8.2) % 94),
+        lift: 18 + ((index * 21) % 122),
+        width: isOrganic ? 118 + ((index * 19) % 86) : 68 + ((index * 17) % 92),
+        rotate: -18 + ((index * 13) % 36),
+      };
+    });
   }, []);
 
   useEffect(() => {
@@ -129,15 +144,14 @@ export default function GravityPlayground() {
     }
 
     const currentX = Number(gsap.getProperty(state.element, "x")) || 0;
-    const currentY = Number(gsap.getProperty(state.element, "y")) || 0;
-    const floorY = Math.min(0, currentY);
+    const fallDistance = Math.abs(Number(gsap.getProperty(state.element, "y")) || 0);
 
     gsap.to(state.element, {
       x: currentX * 0.82,
-      y: floorY,
+      y: 0,
       scale: 1,
       rotate: -10 + Math.random() * 20,
-      duration: 0.9,
+      duration: Math.min(1.4, 0.75 + fallDistance / 420),
       ease: "bounce.out",
       zIndex: 120,
       overwrite: true,
@@ -147,11 +161,11 @@ export default function GravityPlayground() {
   };
 
   return (
-    <section id="gravity-playground" className="relative overflow-hidden bg-[#050505] pt-14 text-white md:pt-20">
+    <section id="gravity-playground" className="relative overflow-visible bg-[#050505] pt-2 text-white">
       <div className="mx-auto max-w-[1680px] px-4 md:px-8">
         <div
           ref={stageRef}
-          className="relative h-[430px] cursor-grab overflow-hidden active:cursor-grabbing md:h-[540px]"
+          className="relative h-[430px] cursor-grab overflow-visible border-t border-white/15 active:cursor-grabbing md:h-[540px]"
           aria-label="Interactive falling artwork assets"
         >
           <div className="absolute inset-x-0 bottom-0 h-28 bg-[#8277e7] md:h-36" />
