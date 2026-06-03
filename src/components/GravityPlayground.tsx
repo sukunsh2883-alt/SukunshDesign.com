@@ -57,9 +57,9 @@ export default function GravityPlayground() {
         id: file,
         src: `/SVG for bottom gravity/${file}`,
         x: 3 + ((index * 8.2) % 94),
-        lift: 18 + ((index * 21) % 122),
-        width: isOrganic ? 118 + ((index * 19) % 86) : 68 + ((index * 17) % 92),
-        rotate: -18 + ((index * 13) % 36),
+        lift: 4 + ((index * 15) % 82),
+        width: isOrganic ? 74 + ((index * 13) % 62) : 42 + ((index * 11) % 62),
+        rotate: -14 + ((index * 11) % 28),
       };
     });
   }, []);
@@ -161,14 +161,14 @@ export default function GravityPlayground() {
   };
 
   return (
-    <section id="gravity-playground" className="relative z-10 overflow-visible bg-[#050505] pt-2 text-white">
+    <section id="gravity-playground" className="relative z-10 overflow-visible bg-[#050505] pt-0 text-white">
       <div className="mx-auto max-w-[1680px] px-4 md:px-8">
         <div
           ref={stageRef}
-          className="relative h-[340px] cursor-grab overflow-visible border-t border-white/15 active:cursor-grabbing md:h-[430px]"
+          className="relative h-[230px] cursor-grab overflow-visible active:cursor-grabbing md:h-[300px]"
           aria-label="Interactive falling artwork assets"
         >
-          <div className="absolute inset-x-0 bottom-0 h-px bg-white/15" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
 
           {gravityAssets.map((asset, index) => (
             <button
