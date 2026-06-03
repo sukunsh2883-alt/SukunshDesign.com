@@ -39,7 +39,18 @@ export default function App() {
   const [profileState, setProfileState] = useState<any>(() => {
     try {
       const saved = localStorage.getItem("portfolio_profile");
-      return saved ? JSON.parse(saved) : profile;
+      if (!saved) return profile;
+
+      const savedProfile = JSON.parse(saved);
+      const legacyPortrait = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop";
+
+      return {
+        ...profile,
+        ...savedProfile,
+        aboutImage: !savedProfile.aboutImage || savedProfile.aboutImage === legacyPortrait
+          ? profile.aboutImage
+          : savedProfile.aboutImage,
+      };
     } catch (e) {
       return profile;
     }
