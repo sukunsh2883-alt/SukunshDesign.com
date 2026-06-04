@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { PointerEvent, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -9,57 +9,68 @@ interface HeroProps {
   onOpenAIWork?: () => void;
 }
 
-const FLOATING_TAGS = ["Brand", "Motion", "AI Films", "Visual Systems"];
-
 const FLOWERS = [
-  { src: "/artwork/flower1.svg", className: "left-[2%] bottom-[16%] w-[9%]" },
-  { src: "/artwork/flower2.svg", className: "left-[10%] bottom-[8%] w-[7%]" },
-  { src: "/artwork/flower7.svg", className: "right-[3%] bottom-[20%] w-[8%]" },
-  { src: "/artwork/white flower1.svg", className: "left-[19%] bottom-[3%] w-[10%]" },
-  { src: "/artwork/white flower2.svg", className: "right-[21%] bottom-[5%] w-[6%]" },
-  { src: "/artwork/white flower4.svg", className: "right-[12%] bottom-[11%] w-[7%]" },
+  { src: "/artwork/flower1.svg", className: "left-[7%] bottom-[11%] w-[8%]" },
+  { src: "/artwork/flower2.svg", className: "left-[16%] bottom-[4%] w-[6%]" },
+  { src: "/artwork/flower7.svg", className: "right-[4%] bottom-[16%] w-[7%]" },
+  { src: "/artwork/white flower1.svg", className: "left-[24%] bottom-[3%] w-[8%]" },
+  { src: "/artwork/white flower2.svg", className: "right-[25%] bottom-[4%] w-[5%]" },
+  { src: "/artwork/white flower4.svg", className: "right-[13%] bottom-[7%] w-[6%]" },
 ];
 
-export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProps) {
+const HOTSPOTS = [
+  { id: "pen", label: "Move pen", className: "left-[15%] top-[18%] h-[54%] w-[18%]", x: 18, y: 16, rotate: 9 },
+  { id: "tablet", label: "Move tablet", className: "left-[46%] top-[12%] h-[27%] w-[34%]", x: -14, y: 10, rotate: -4 },
+  { id: "camera", label: "Move camera", className: "left-[39%] top-[43%] h-[20%] w-[18%]", x: 11, y: -12, rotate: 5 },
+  { id: "pens", label: "Move blue pink pens", className: "right-[16%] top-[15%] h-[24%] w-[10%]", x: 10, y: 18, rotate: 7 },
+];
+
+export default function Hero(_: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const textRef = useRef<HTMLDivElement | null>(null);
+  const wordmarkRef = useRef<HTMLHeadingElement | null>(null);
   const artRef = useRef<HTMLDivElement | null>(null);
   const characterRef = useRef<HTMLImageElement | null>(null);
-  const penRef = useRef<HTMLDivElement | null>(null);
-  const lensRef = useRef<HTMLDivElement | null>(null);
-  const headRef = useRef<HTMLDivElement | null>(null);
+  const floorRef = useRef<HTMLDivElement | null>(null);
+  const hotspotsRef = useRef<HTMLButtonElement[]>([]);
+  const dragState = useRef<{
+    element: HTMLButtonElement;
+    pointerId: number;
+    startX: number;
+    startY: number;
+    baseX: number;
+    baseY: number;
+  } | null>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const section = sectionRef.current;
-    const text = textRef.current;
+    const wordmark = wordmarkRef.current;
     const art = artRef.current;
     const character = characterRef.current;
-    const pen = penRef.current;
-    const lens = lensRef.current;
-    const head = headRef.current;
-    if (!section || !text || !art || !character || !pen || !lens || !head) return;
+    const floor = floorRef.current;
+    if (!section || !wordmark || !art || !character || !floor) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const flowers = gsap.utils.toArray<HTMLElement>(".hero-flower");
-    const tags = gsap.utils.toArray<HTMLElement>(".hero-tag");
-    const leaves = gsap.utils.toArray<HTMLElement>(".hero-plant");
+    const leaves = gsap.utils.toArray<HTMLElement>(".hero-leaf-motion");
+    const hotspots = hotspotsRef.current.filter(Boolean);
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ANIMATION = {
-      introDuration: 1.45, // edit intro speed here
-      idleRange: 10, // edit floating movement range here
-      cursorRange: 18, // edit mouse reaction strength here
-      staggerDelay: 0.08, // edit flower/tag delay here
+      introSpeed: 1.35, // edit intro speed here
+      breathRange: 7, // edit character breathing movement here
+      leafRange: 4, // edit leaf wave range here
+      mouseRange: 12, // edit whole-art cursor movement here
+      hotspotReturnSpeed: 0.85, // edit snap-back speed here
     };
 
     if (reduceMotion) {
-      gsap.set([text, art, character, pen, lens, head, ...flowers, ...tags, ...leaves], {
+      gsap.set([wordmark, art, character, floor, ...flowers, ...leaves, ...hotspots], {
         opacity: 1,
         x: 0,
         y: 0,
-        rotate: 0,
         scale: 1,
+        rotate: 0,
       });
       return;
     }
@@ -68,66 +79,58 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       intro
-        .fromTo(text, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.9 })
+        .fromTo(wordmark, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8 })
         .fromTo(
           character,
-          { opacity: 0, y: 34, scale: 0.98 },
-          { opacity: 1, y: 0, scale: 1, duration: ANIMATION.introDuration },
-          "-=0.45",
+          { opacity: 0, y: 46, scale: 0.98 },
+          { opacity: 1, y: 0, scale: 1, duration: ANIMATION.introSpeed },
+          "-=0.35",
         )
         .fromTo(
-          leaves,
-          { opacity: 0, y: 36, scaleY: 0.45, transformOrigin: "50% 100%" },
-          { opacity: 1, y: 0, scaleY: 1, duration: 0.9, stagger: ANIMATION.staggerDelay },
+          floor,
+          { opacity: 0, scaleX: 0.76 },
+          { opacity: 1, scaleX: 1, duration: 0.8 },
           "-=0.7",
         )
         .fromTo(
-          flowers,
-          { opacity: 0, y: 18, scale: 0.2, rotate: -16 },
-          { opacity: 1, y: 0, scale: 1, rotate: 0, duration: 0.65, stagger: ANIMATION.staggerDelay },
-          "-=0.45",
+          leaves,
+          { opacity: 0, y: 24, scaleY: 0.6, transformOrigin: "50% 100%" },
+          { opacity: 1, y: 0, scaleY: 1, duration: 0.75, stagger: 0.06 },
+          "-=0.6",
         )
         .fromTo(
-          tags,
-          { opacity: 0, y: 14, scale: 0.94 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.55, stagger: 0.06 },
-          "-=0.35",
-        )
-        .fromTo(pen, { opacity: 0, y: 24, rotate: -8 }, { opacity: 1, y: 0, rotate: 0, duration: 0.7 }, "-=0.55");
+          flowers,
+          { opacity: 0, y: 18, scale: 0.25, rotate: -12 },
+          { opacity: 1, y: 0, scale: 1, rotate: 0, duration: 0.6, stagger: 0.05 },
+          "-=0.45",
+        );
 
       gsap.to(character, {
-        y: -8,
-        scale: 1.012,
-        duration: 3.6,
+        y: -ANIMATION.breathRange,
+        scale: 1.008,
+        duration: 3.8,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
       });
 
-      gsap.to(pen, {
-        y: -6,
-        rotate: 2.4,
-        duration: 2.7,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-
-      gsap.to(lens, {
-        opacity: 0.35,
-        scale: 1.12,
-        duration: 2.4,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
+      leaves.forEach((leaf, index) => {
+        gsap.to(leaf, {
+          x: index % 2 ? ANIMATION.leafRange : -ANIMATION.leafRange,
+          rotate: index % 2 ? 1.6 : -1.6,
+          duration: 4.6 + index * 0.3,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
       });
 
       flowers.forEach((flower, index) => {
         gsap.to(flower, {
-          y: gsap.utils.random(-ANIMATION.idleRange, ANIMATION.idleRange),
-          x: gsap.utils.random(-7, 7),
-          rotate: gsap.utils.random(-6, 6),
-          duration: gsap.utils.random(3.8, 6.2),
+          y: gsap.utils.random(-8, 7),
+          x: gsap.utils.random(-5, 5),
+          rotate: gsap.utils.random(-5, 5),
+          duration: gsap.utils.random(4, 6.4),
           delay: index * 0.12,
           ease: "sine.inOut",
           repeat: -1,
@@ -135,51 +138,20 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         });
       });
 
-      leaves.forEach((leaf, index) => {
-        gsap.to(leaf, {
-          rotate: index % 2 ? 2.5 : -2.5,
-          x: index % 2 ? 6 : -6,
-          duration: 4 + index * 0.4,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      });
-
-      gsap.to(tags, {
-        y: -12,
-        duration: 3.8,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-        stagger: 0.2,
-      });
-
-      gsap.to(character, {
-        y: -58,
+      gsap.to(art, {
+        y: -44,
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top top",
           end: "bottom top",
-          scrub: 1.1,
+          scrub: 1.15,
         },
       });
 
-      gsap.to(leaves, {
-        y: -24,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.8,
-        },
-      });
-
-      gsap.to(tags, {
-        opacity: 0,
-        y: -34,
+      gsap.to(wordmark, {
+        opacity: 0.15,
+        y: -36,
         ease: "none",
         scrollTrigger: {
           trigger: section,
@@ -188,155 +160,156 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           scrub: 1,
         },
       });
-
-      gsap.to(text, {
-        opacity: 0,
-        y: -44,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "45% top",
-          end: "bottom top",
-          scrub: 1,
-        },
-      });
     }, section);
 
     const handlePointerMove = (event: PointerEvent) => {
+      if (dragState.current) return;
+
       const rect = section.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width - 0.5;
       const y = (event.clientY - rect.top) / rect.height - 0.5;
 
-      gsap.to(pen, {
-        x: x * ANIMATION.cursorRange,
-        y: y * ANIMATION.cursorRange,
-        rotate: x * 8,
-        duration: 0.7,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-
-      gsap.to(head, {
-        rotate: x * 2.2,
-        x: x * 5,
-        y: y * 3,
-        duration: 0.9,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-
-      gsap.to(tags, {
-        x: (index: number) => x * (10 + index * 4),
-        y: (index: number) => y * (8 + index * 2),
+      gsap.to(art, {
+        x: x * ANIMATION.mouseRange,
+        y: y * (ANIMATION.mouseRange * 0.55),
         duration: 1,
         ease: "power3.out",
         overwrite: "auto",
       });
 
-      flowers.forEach((flower, index) => {
-        const direction = index % 2 ? 1 : -1;
-        gsap.to(flower, {
-          x: direction * x * -18,
-          rotate: direction * x * -9,
-          duration: 0.8,
-          ease: "power3.out",
-          overwrite: "auto",
-        });
+      gsap.to(hotspots, {
+        x: (index: number) => x * HOTSPOTS[index].x * 0.35,
+        y: (index: number) => y * HOTSPOTS[index].y * 0.35,
+        rotate: (index: number) => x * HOTSPOTS[index].rotate * 0.35,
+        duration: 0.85,
+        ease: "power3.out",
+        overwrite: "auto",
       });
     };
 
     const handlePointerLeave = () => {
-      gsap.to([pen, head, ...tags, ...flowers], {
+      if (dragState.current) return;
+
+      gsap.to([art, ...hotspots], {
         x: 0,
         y: 0,
         rotate: 0,
-        duration: 1,
+        duration: 0.95,
         ease: "power3.out",
         overwrite: "auto",
       });
     };
 
-    const handleEnter = () => {
-      gsap.to(art, { scale: 1.018, duration: 0.65, ease: "power3.out" });
-      gsap.to(flowers, { y: -14, scale: 1.08, duration: 0.55, ease: "back.out(2)", stagger: 0.035 });
-      gsap.fromTo(lens, { opacity: 0.15, scale: 0.7 }, { opacity: 0.85, scale: 1.45, duration: 0.38, ease: "power2.out" });
-      gsap.to(pen, { rotate: 7, duration: 0.45, ease: "power3.out" });
+    const handleHoverIn = () => {
+      gsap.to(art, { scale: 1.012, duration: 0.55, ease: "power3.out" });
+      gsap.to(flowers, { y: -10, scale: 1.04, duration: 0.45, ease: "back.out(2)", stagger: 0.035 });
     };
 
-    const handleLeave = () => {
-      gsap.to(art, { scale: 1, duration: 0.65, ease: "power3.out" });
-      gsap.to(lens, { opacity: 0.25, scale: 1, duration: 0.45, ease: "power2.out" });
-      handlePointerLeave();
+    const handleHoverOut = () => {
+      gsap.to(art, { scale: 1, duration: 0.55, ease: "power3.out" });
     };
 
-    section.addEventListener("pointermove", handlePointerMove);
+    section.addEventListener("pointermove", handlePointerMove as EventListener);
     section.addEventListener("pointerleave", handlePointerLeave);
-    art.addEventListener("pointerenter", handleEnter);
-    art.addEventListener("pointerleave", handleLeave);
+    art.addEventListener("pointerenter", handleHoverIn);
+    art.addEventListener("pointerleave", handleHoverOut);
 
     return () => {
-      section.removeEventListener("pointermove", handlePointerMove);
+      section.removeEventListener("pointermove", handlePointerMove as EventListener);
       section.removeEventListener("pointerleave", handlePointerLeave);
-      art.removeEventListener("pointerenter", handleEnter);
-      art.removeEventListener("pointerleave", handleLeave);
+      art.removeEventListener("pointerenter", handleHoverIn);
+      art.removeEventListener("pointerleave", handleHoverOut);
       ctx.revert();
     };
   }, []);
+
+  const onHotspotDown = (event: PointerEvent<HTMLButtonElement>, index: number) => {
+    const element = hotspotsRef.current[index];
+    if (!element) return;
+
+    element.setPointerCapture(event.pointerId);
+    gsap.killTweensOf(element);
+    dragState.current = {
+      element,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      baseX: Number(gsap.getProperty(element, "x")) || 0,
+      baseY: Number(gsap.getProperty(element, "y")) || 0,
+    };
+
+    gsap.to(element, {
+      scale: 1.08,
+      rotate: HOTSPOTS[index].rotate,
+      duration: 0.18,
+      ease: "power2.out",
+    });
+  };
+
+  const onHotspotMove = (event: PointerEvent<HTMLButtonElement>) => {
+    const state = dragState.current;
+    if (!state || state.pointerId !== event.pointerId) return;
+
+    gsap.set(state.element, {
+      x: state.baseX + event.clientX - state.startX,
+      y: state.baseY + event.clientY - state.startY,
+    });
+  };
+
+  const returnHotspot = (event: PointerEvent<HTMLButtonElement>) => {
+    const state = dragState.current;
+    if (!state || state.pointerId !== event.pointerId) return;
+
+    try {
+      state.element.releasePointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture may already be released.
+    }
+
+    gsap.to(state.element, {
+      x: 0,
+      y: 0,
+      rotate: 0,
+      scale: 1,
+      duration: 0.85, // edit snap-back speed here too
+      ease: "elastic.out(1, 0.62)",
+      overwrite: true,
+    });
+
+    dragState.current = null;
+  };
 
   return (
     <section
       ref={sectionRef}
       id="home"
-      className="relative min-h-screen overflow-hidden bg-[#050505] px-6 pt-24 text-white md:px-10 lg:pt-28"
+      className="relative min-h-screen overflow-hidden bg-[#050505] px-5 pt-16 text-white md:px-8"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_34%,rgba(255,106,0,0.12),transparent_32%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_28%)]" />
+      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1520px] items-end justify-center">
+        <p className="absolute left-[5%] top-[12%] z-30 text-sm font-light tracking-[-0.02em] text-white/75 md:text-lg">
+          Delhi Based Multidiscipline Designer
+        </p>
 
-      <div className="relative mx-auto grid min-h-[calc(100vh-6rem)] max-w-[1520px] items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-        <div ref={textRef} className="relative z-20 max-w-2xl">
-          <p className="mb-5 text-sm font-medium tracking-[-0.02em] text-white/48">Visual Designer / Filmmaker</p>
-          <h1 className="text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-7xl lg:text-8xl">
-            Designing stories that move.
-          </h1>
-          <p className="mt-7 max-w-xl text-base leading-relaxed tracking-[-0.02em] text-white/64 md:text-lg">
-            I&apos;m a visual designer and filmmaker creating brand identities, motion design, cinematic visuals, and AI-powered ad concepts.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <button
-              type="button"
-              onClick={onOpenProjects}
-              className="bg-white px-6 py-3 text-sm font-semibold tracking-[-0.02em] text-black transition-colors hover:bg-[#f25a00] hover:text-white"
-            >
-              View My Work
-            </button>
-            <a
-              href={`mailto:${profile?.email || "sukunsh2883@gmail.com"}`}
-              className="border border-white/25 px-6 py-3 text-sm font-semibold tracking-[-0.02em] text-white transition-colors hover:border-[#f25a00] hover:text-[#f25a00]"
-            >
-              Let&apos;s Collaborate
-            </a>
-          </div>
-        </div>
+        <h1
+          ref={wordmarkRef}
+          className="pointer-events-none absolute left-1/2 top-[22%] z-10 -translate-x-1/2 whitespace-nowrap text-[27vw] font-semibold leading-none tracking-[-0.105em] text-white md:top-[18%] md:text-[16vw]"
+        >
+          SUKUNSH
+        </h1>
 
         <div
           ref={artRef}
-          className="relative z-10 mx-auto aspect-[791/612] w-full max-w-[720px] origin-center lg:max-w-[820px]"
-          aria-label="Interactive designer illustration"
+          className="relative z-20 mb-[-1px] aspect-[791/612] w-[min(112vw,980px)] origin-bottom select-none md:w-[min(82vw,1030px)]"
+          aria-label="Interactive designer artwork"
         >
-          <div className="hero-plant absolute bottom-[2%] left-[10%] h-[22%] w-[22%] rounded-full bg-[#7b7a4b]/20 blur-2xl" />
-          <div className="hero-plant absolute bottom-[3%] right-[5%] h-[30%] w-[30%] rounded-full bg-[#8277e7]/12 blur-2xl" />
+          <div
+            ref={floorRef}
+            className="absolute bottom-[1.4%] left-0 right-0 z-10 h-[7%] bg-[#4a4a4a]"
+            aria-hidden="true"
+          />
 
-          {FLOATING_TAGS.map((tag, index) => (
-            <span
-              key={tag}
-              className="hero-tag absolute z-30 border border-white/14 bg-white/[0.055] px-3 py-1.5 text-[10px] font-medium tracking-[-0.01em] text-white/70 backdrop-blur-sm"
-              style={{
-                left: `${index % 2 === 0 ? 7 + index * 3 : 72 - index * 5}%`,
-                top: `${12 + index * 14}%`,
-              }}
-            >
-              {tag}
-            </span>
-          ))}
+          <div className="hero-leaf-motion pointer-events-none absolute bottom-[6%] left-[12%] z-30 h-[22%] w-[18%]" />
+          <div className="hero-leaf-motion pointer-events-none absolute bottom-[6%] right-[8%] z-30 h-[30%] w-[22%]" />
 
           {FLOWERS.map((flower) => (
             <img
@@ -345,13 +318,9 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               alt=""
               aria-hidden="true"
               draggable={false}
-              className={`hero-flower pointer-events-none absolute z-30 object-contain ${flower.className}`}
+              className={`hero-flower pointer-events-none absolute z-40 object-contain ${flower.className}`}
             />
           ))}
-
-          <div ref={penRef} className="pointer-events-none absolute left-[18%] top-[18%] z-40 h-[52%] w-[18%]" />
-          <div ref={headRef} className="pointer-events-none absolute left-[43%] top-[6%] z-40 h-[18%] w-[15%]" />
-          <div ref={lensRef} className="pointer-events-none absolute left-[43%] top-[45%] z-50 h-[9%] w-[9%] rounded-full bg-[#f25a00]/45 blur-md" />
 
           <img
             ref={characterRef}
@@ -360,6 +329,22 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             className="relative z-20 h-full w-full select-none object-contain"
             draggable={false}
           />
+
+          {HOTSPOTS.map((hotspot, index) => (
+            <button
+              key={hotspot.id}
+              ref={(node) => {
+                if (node) hotspotsRef.current[index] = node;
+              }}
+              type="button"
+              aria-label={hotspot.label}
+              onPointerDown={(event) => onHotspotDown(event, index)}
+              onPointerMove={onHotspotMove}
+              onPointerUp={returnHotspot}
+              onPointerCancel={returnHotspot}
+              className={`absolute z-50 touch-none cursor-grab bg-white/0 outline-none active:cursor-grabbing ${hotspot.className}`}
+            />
+          ))}
         </div>
       </div>
     </section>
