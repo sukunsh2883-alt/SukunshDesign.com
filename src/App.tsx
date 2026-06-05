@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import gsap from "gsap";
+import Lenis from "lenis";
 
 // Subcomponents
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import DesignWorks from "./components/DesignWorks";
-import GravityPlayground from "./components/GravityPlayground";
 import Footer from "./components/Footer";
 import Lightbox from "./components/Lightbox";
 import AdminPanel from "./components/AdminPanel";
@@ -164,65 +165,26 @@ export default function App() {
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
-    if (reduceMotion || !finePointer) return;
+    if (reduceMotion) return;
 
-    let current = window.scrollY;
-    let target = window.scrollY;
-    let rafId = 0;
+    const lenis = new Lenis({
+      duration: 1.25,
+      smoothWheel: true,
+      wheelMultiplier: 0.85,
+      touchMultiplier: 1.1,
+      lerp: 0.08,
+    });
 
-    const maxScroll = () =>
-      Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-
-    const animateScroll = () => {
-      current += (target - current) * 0.12;
-
-      if (Math.abs(target - current) < 0.35) {
-        current = target;
-        window.scrollTo(0, current);
-        rafId = 0;
-        return;
-      }
-
-      window.scrollTo(0, current);
-      rafId = requestAnimationFrame(animateScroll);
+    const update = (time: number) => {
+      lenis.raf(time * 1000);
     };
 
-    const syncNativeScroll = () => {
-      if (!rafId) {
-        current = window.scrollY;
-        target = window.scrollY;
-      }
-    };
-
-    const handleWheel = (event: WheelEvent) => {
-      if (event.ctrlKey || event.metaKey || event.shiftKey) return;
-
-      const targetElement = event.target as HTMLElement | null;
-      if (
-        targetElement?.closest(
-          "input, textarea, select, button, [role='dialog'], [data-native-scroll]",
-        )
-      ) {
-        return;
-      }
-
-      event.preventDefault();
-      target = Math.min(maxScroll(), Math.max(0, target + event.deltaY));
-
-      if (!rafId) {
-        current = window.scrollY;
-        rafId = requestAnimationFrame(animateScroll);
-      }
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("scroll", syncNativeScroll, { passive: true });
+    gsap.ticker.add(update);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("scroll", syncNativeScroll);
+      gsap.ticker.remove(update);
+      lenis.destroy();
     };
   }, []);
 
@@ -465,9 +427,6 @@ export default function App() {
                 onOpenAIWork={() => openPortal("ai-work")}
                 onOpenProjects={() => openPortal("projects")}
               />
-
-              {/* Interactive gravity artwork above footer */}
-              <GravityPlayground />
 
             </main>
 

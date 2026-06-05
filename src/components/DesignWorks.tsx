@@ -1,3 +1,6 @@
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DesignProject } from "../portfolioData";
 
 interface DesignWorksProps {
@@ -7,12 +10,35 @@ interface DesignWorksProps {
 }
 
 export default function DesignWorks({ projects, onSelectProject }: DesignWorksProps) {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const displayedProjects = projects.slice(0, 4);
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.from(".work-reveal", {
+        y: 40,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 80%",
+        },
+      });
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="projects" className="bg-[#fbfbf2] px-6 py-16 text-[#18005a] md:px-8 md:py-24">
+    <section ref={sectionRef} id="projects" className="bg-[#fbfbf2] px-6 py-16 text-[#18005a] md:px-8 md:py-24">
       <div className="mx-auto max-w-[1520px]">
-        <div className="mb-14">
+        <div className="work-reveal mb-14">
           <h2 className="text-3xl font-semibold uppercase tracking-[-0.04em] md:text-5xl">
             Selected Work
           </h2>
@@ -27,7 +53,7 @@ export default function DesignWorks({ projects, onSelectProject }: DesignWorksPr
               key={project.id}
               type="button"
               onClick={() => onSelectProject(project)}
-              className="group text-left"
+              className="work-reveal group text-left"
             >
               <div className="aspect-[1.42] overflow-hidden bg-neutral-200">
                 <img

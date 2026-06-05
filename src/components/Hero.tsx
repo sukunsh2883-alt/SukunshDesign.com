@@ -74,6 +74,8 @@ export default function Hero(_: HeroProps) {
       const flowers = flowerSelectors.flatMap((selector) => scopedSelector(selector));
       const leaves = leafSelectors.flatMap((selector) => scopedSelector(selector));
       const dragItems = draggableSelectors.flatMap((selector) => scopedSelector(selector));
+      const tagRects = scopedSelector("#Layer_147 rect") as unknown as SVGGraphicsElement[];
+      const tagTexts = scopedSelector("#Layer_148 text") as unknown as SVGGraphicsElement[];
       const svgElement = stage.querySelector("svg");
       const heroText = scopedSelector("#Sukunsh")[0];
       const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
@@ -146,6 +148,7 @@ export default function Hero(_: HeroProps) {
         gsap.set(artworkLayers, { transformOrigin: "center bottom" });
         gsap.set(flowers, { transformOrigin: "center bottom" });
         gsap.set(leaves, { transformOrigin: "center bottom" });
+        gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
         gsap.set(dragItems, { transformOrigin: "center center" });
 
         if (head) gsap.set(head, { transformOrigin: "center bottom" });
@@ -245,6 +248,15 @@ export default function Hero(_: HeroProps) {
           }
 
           gsap.ticker.add(tickerFn);
+
+          gsap.to([...tagRects, ...tagTexts], {
+            y: -5,
+            duration: 2.6,
+            repeat: -1,
+            yoyo: true,
+            stagger: 0.25,
+            ease: "sine.inOut",
+          });
         }
 
         const strengthenMotion = () => {
@@ -279,6 +291,60 @@ export default function Hero(_: HeroProps) {
           () => window.removeEventListener("pageshow", resumeHeroAnimations),
           () => document.removeEventListener("visibilitychange", resumeHeroAnimations),
         );
+
+        tagRects.forEach((rect, index) => {
+          const text = tagTexts[index];
+          const enterTag = () => {
+            gsap.to(rect, {
+              y: -4,
+              scale: 1.06,
+              fill: "rgba(255,255,255,0.16)",
+              stroke: "rgba(255,255,255,0.52)",
+              duration: 0.5,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+            if (text) {
+              gsap.to(text, {
+                y: -4,
+                scale: 1.04,
+                duration: 0.5,
+                ease: "power3.out",
+                overwrite: "auto",
+              });
+            }
+          };
+
+          const leaveTag = () => {
+            gsap.to(rect, {
+              y: 0,
+              scale: 1,
+              fill: "rgba(20,20,20,0.52)",
+              stroke: "rgba(255,255,255,0.38)",
+              duration: 0.65,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+            if (text) {
+              gsap.to(text, {
+                y: 0,
+                scale: 1,
+                duration: 0.65,
+                ease: "power3.out",
+                overwrite: "auto",
+              });
+            }
+          };
+
+          (rect as unknown as HTMLElement).style.pointerEvents = "all";
+          (rect as unknown as HTMLElement).style.cursor = "pointer";
+          rect.addEventListener("mouseenter", enterTag);
+          rect.addEventListener("mouseleave", leaveTag);
+          cleanupFns.push(
+            () => rect.removeEventListener("mouseenter", enterTag),
+            () => rect.removeEventListener("mouseleave", leaveTag),
+          );
+        });
 
         flowers.forEach((flower) => {
           const enterFlower = () => {
