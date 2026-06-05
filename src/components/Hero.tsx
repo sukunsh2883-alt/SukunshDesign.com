@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -54,236 +54,51 @@ function beetleMarkup() {
 export default function Hero(_: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const [svgMarkup, setSvgMarkup] = useState("");
 
   useEffect(() => {
     let cancelled = false;
+    let ctx: gsap.Context | null = null;
+    let cleanupHero: (() => void) | null = null;
 
-    fetch(SVG_URL)
-      .then((response) => response.text())
-      .then((svg) => {
-        if (!cancelled) setSvgMarkup(cleanSvg(svg));
-      })
-      .catch(() => {
-        if (!cancelled) setSvgMarkup("");
-      });
+    const setupHero = (svgMarkup: string) => {
+      const section = sectionRef.current;
+      const stage = stageRef.current;
+      if (!section || !stage || cancelled) return;
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!svgMarkup) return;
-
-    gsap.registerPlugin(Draggable, ScrollTrigger);
-
-    const section = sectionRef.current;
-    const stage = stageRef.current;
-    if (!section || !stage) return;
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const scopedSelector = gsap.utils.selector(stage);
-    const flowers = flowerSelectors.flatMap((selector) => scopedSelector(selector));
-    const leaves = leafSelectors.flatMap((selector) => scopedSelector(selector));
-    const dragItems = draggableSelectors.flatMap((selector) => scopedSelector(selector));
-    const svg = stage.querySelector("svg");
-    const heroText = scopedSelector("#Sukunsh")[0];
-    const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
-      (layer) => layer.id !== "Sukunsh" && layer.id !== "Layer_38",
-    );
-    const head = scopedSelector("#head-2")[0] || scopedSelector("#head")[0];
-    const bigPen = scopedSelector("#right_arm_with_pen-2")[0];
-    const shirt = scopedSelector("#shirt-2")[0];
-    const collar = scopedSelector("#coler")[0];
-    const collarTwo = scopedSelector("#coler_2")[0];
-    const allDraggables: Draggable[] = [];
-    let rafId = 0;
-    let beetleFlight: gsap.core.Timeline | null = null;
-    let beetleWings: gsap.core.Timeline | null = null;
-    const cleanupFns: Array<() => void> = [];
-
-    if (!stage.querySelector(".beetle-wrap")) {
+      gsap.registerPlugin(Draggable, ScrollTrigger);
+      stage.innerHTML = svgMarkup;
       stage.insertAdjacentHTML("beforeend", beetleMarkup());
-    }
 
-    const beetle = stage.querySelector<HTMLElement>(".beetle-wrap");
-
-    const motion = {
-      flowerAmp: 1,
-      leafAmp: 1,
-      flowerHover: 1,
-      leafHover: 1,
-      growth: reduceMotion ? 1 : 0,
-    };
-
-    const ctx = gsap.context(() => {
-      gsap.set(stage, { opacity: 1 });
-      gsap.set(svg, { transformOrigin: "center bottom" });
-      gsap.set(heroText, { transformOrigin: "center center" });
-      gsap.set(artworkLayers, { transformOrigin: "center bottom" });
-      gsap.set(flowers, { transformOrigin: "center bottom" });
-      gsap.set(leaves, { transformOrigin: "center bottom" });
-      gsap.set(dragItems, { transformOrigin: "center center" });
-
-      if (head) gsap.set(head, { transformOrigin: "center bottom" });
-      if (bigPen) gsap.set(bigPen, { transformOrigin: "left center" });
-      if (shirt) gsap.set(shirt, { transformOrigin: "center center" });
-      if (collar) gsap.set(collar, { transformOrigin: "center center" });
-      if (collarTwo) gsap.set(collarTwo, { transformOrigin: "center center" });
-
-      if (!reduceMotion) {
-        gsap.from(svg, {
-          opacity: 0,
-          y: 30,
-          scale: 0.985,
-          duration: 1,
-          ease: "power3.out",
-        });
-
-        gsap
-          .timeline({ delay: 0.18 })
-          .set([...leaves, ...flowers], { autoAlpha: 0 }, 0)
-          .to(leaves, { autoAlpha: 1, duration: 0.7, stagger: 0.035, ease: "power2.out" }, 0)
-          .to(flowers, { autoAlpha: 1, duration: 0.65, stagger: 0.045, ease: "power2.out" }, 0.16)
-          .to(motion, { growth: 1, duration: 1.9, ease: "expo.out" }, 0);
-
-        if (artworkLayers.length && heroText) {
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: section,
-                start: "top top",
-                end: "bottom top",
-                scrub: 1.6,
-                invalidateOnRefresh: true,
-              },
-            })
-            .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0)
-            .to(heroText, { y: -120, opacity: 0.45, ease: "none" }, 0);
-        }
-
-        if (head) {
-          gsap.to(head, {
-            rotation: 1.4,
-            x: 0.8,
-            y: -1.4,
-            duration: 4.8,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-        }
-
-        if (bigPen) {
-          gsap.to(bigPen, {
-            rotation: 0.45,
-            x: 0.6,
-            y: -0.4,
-            duration: 5,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-        }
-
-        if (shirt) {
-          gsap.to(shirt, {
-            y: -0.8,
-            scaleY: 1.003,
-            duration: 5.2,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-        }
-
-        if (collar) {
-          gsap.to(collar, {
-            y: -0.45,
-            rotation: 0.35,
-            duration: 4.8,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-        }
-
-        if (collarTwo) {
-          gsap.to(collarTwo, {
-            y: -0.45,
-            rotation: -0.35,
-            duration: 5,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-        }
-      }
-
-      const strengthenMotion = () => {
-        gsap.to(motion, {
-          flowerAmp: 2.35,
-          leafAmp: 2.25,
-          duration: 1.4,
-          ease: "power3.out",
-        });
-      };
-
-      const softenMotion = () => {
-        gsap.to(motion, {
-          flowerAmp: 1,
-          leafAmp: 1,
-          duration: 1.8,
-          ease: "power3.out",
-        });
-      };
-
-      const ensureLoop = () => {
-        motion.growth = 1;
-        gsap.globalTimeline.resume();
-        if (!reduceMotion && !rafId) {
-          rafId = requestAnimationFrame(renderWind);
-        }
-        beetleFlight?.resume();
-      };
-
-      stage.addEventListener("mouseenter", strengthenMotion);
-      stage.addEventListener("mouseleave", softenMotion);
-      window.addEventListener("focus", ensureLoop);
-      window.addEventListener("pageshow", ensureLoop);
-      document.addEventListener("visibilitychange", ensureLoop);
-      window.addEventListener("scroll", ensureLoop, { passive: true });
-      cleanupFns.push(
-        () => stage.removeEventListener("mouseenter", strengthenMotion),
-        () => stage.removeEventListener("mouseleave", softenMotion),
-        () => window.removeEventListener("focus", ensureLoop),
-        () => window.removeEventListener("pageshow", ensureLoop),
-        () => document.removeEventListener("visibilitychange", ensureLoop),
-        () => window.removeEventListener("scroll", ensureLoop),
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const scopedSelector = gsap.utils.selector(stage);
+      const flowers = flowerSelectors.flatMap((selector) => scopedSelector(selector));
+      const leaves = leafSelectors.flatMap((selector) => scopedSelector(selector));
+      const dragItems = draggableSelectors.flatMap((selector) => scopedSelector(selector));
+      const svgElement = stage.querySelector("svg");
+      const heroText = scopedSelector("#Sukunsh")[0];
+      const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
+        (layer) => layer.id !== "Sukunsh" && layer.id !== "Layer_38",
       );
+      const head = scopedSelector("#head-2")[0] || scopedSelector("#head")[0];
+      const bigPen = scopedSelector("#right_arm_with_pen-2")[0];
+      const shirt = scopedSelector("#shirt-2")[0];
+      const collar = scopedSelector("#coler")[0];
+      const collarTwo = scopedSelector("#coler_2")[0];
+      const beetle = stage.querySelector<HTMLElement>(".beetle-wrap");
+      const allDraggables: Draggable[] = [];
+      const cleanupFns: Array<() => void> = [];
+      let beetleFlight: gsap.core.Timeline | null = null;
+      let beetleWings: gsap.core.Timeline | null = null;
 
-      flowers.forEach((flower) => {
-        (flower as HTMLElement).style.pointerEvents = "all";
-        flower.addEventListener("mouseenter", () => {
-          gsap.to(motion, { flowerHover: 1.55, duration: 0.9, ease: "power3.out" });
-        });
-        flower.addEventListener("mouseleave", () => {
-          gsap.to(motion, { flowerHover: 1, duration: 1.2, ease: "power3.out" });
-        });
-      });
+      const motion = {
+        flowerAmp: 1,
+        leafAmp: 1,
+        flowerHover: 1,
+        leafHover: 1,
+        growth: reduceMotion ? 1 : 0,
+      };
 
-      leaves.forEach((leaf) => {
-        (leaf as HTMLElement).style.pointerEvents = "all";
-        leaf.addEventListener("mouseenter", () => {
-          gsap.to(motion, { leafHover: 1.5, duration: 0.9, ease: "power3.out" });
-        });
-        leaf.addEventListener("mouseleave", () => {
-          gsap.to(motion, { leafHover: 1, duration: 1.2, ease: "power3.out" });
-        });
-      });
-
-      const renderWind = () => {
+      const tickerFn = () => {
         const time = performance.now() / 1000;
 
         flowers.forEach((flower, index) => {
@@ -313,224 +128,412 @@ export default function Hero(_: HeroProps) {
             scaleY: growth,
           });
         });
-
-        rafId = requestAnimationFrame(renderWind);
       };
 
-      if (!reduceMotion) {
-        rafId = requestAnimationFrame(renderWind);
-      }
+      const resumeHeroAnimations = () => {
+        motion.growth = 1;
+        gsap.globalTimeline.resume();
+        gsap.ticker.wake();
+        beetleFlight?.resume();
+      };
 
-      dragItems.forEach((item) => {
-        const element = item as unknown as SVGGraphicsElement;
-        (element as unknown as HTMLElement).style.pointerEvents = "all";
-        (element as unknown as HTMLElement).style.cursor = "grab";
+      ctx = gsap.context(() => {
+        gsap.ticker.lagSmoothing(1000, 16);
 
-        const draggable = Draggable.create(element, {
-          type: "x,y",
-          dragResistance: 0.7,
-          edgeResistance: 1,
-          liveSnap: {
-            x: (value) => gsap.utils.clamp(-10, 10, value),
-            y: (value) => gsap.utils.clamp(-8, 8, value),
-          },
-          onPress() {
-            (this.target as HTMLElement).style.cursor = "grabbing";
-            gsap.to(this.target, {
-              scale: 1.01,
+        if (svgElement) gsap.set(svgElement, { transformOrigin: "center bottom" });
+        gsap.set(stage, { opacity: 1 });
+        gsap.set(heroText, { transformOrigin: "center center" });
+        gsap.set(artworkLayers, { transformOrigin: "center bottom" });
+        gsap.set(flowers, { transformOrigin: "center bottom" });
+        gsap.set(leaves, { transformOrigin: "center bottom" });
+        gsap.set(dragItems, { transformOrigin: "center center" });
+
+        if (head) gsap.set(head, { transformOrigin: "center bottom" });
+        if (bigPen) gsap.set(bigPen, { transformOrigin: "left center" });
+        if (shirt) gsap.set(shirt, { transformOrigin: "center center" });
+        if (collar) gsap.set(collar, { transformOrigin: "center center" });
+        if (collarTwo) gsap.set(collarTwo, { transformOrigin: "center center" });
+
+        if (!reduceMotion) {
+          if (svgElement) {
+            gsap.from(svgElement, {
+              opacity: 0,
+              y: 30,
+              scale: 0.985,
+              duration: 1,
+              ease: "power3.out",
+            });
+          }
+
+          gsap
+            .timeline({ delay: 0.18 })
+            .set([...leaves, ...flowers], { autoAlpha: 0 }, 0)
+            .to(leaves, { autoAlpha: 1, duration: 0.7, stagger: 0.035, ease: "power2.out" }, 0)
+            .to(flowers, { autoAlpha: 1, duration: 0.65, stagger: 0.045, ease: "power2.out" }, 0.16)
+            .to(motion, { growth: 1, duration: 1.9, ease: "expo.out" }, 0);
+
+          if (artworkLayers.length && heroText) {
+            gsap
+              .timeline({
+                scrollTrigger: {
+                  trigger: section,
+                  start: "top top",
+                  end: "bottom top",
+                  scrub: 1.6,
+                  invalidateOnRefresh: true,
+                },
+              })
+              .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0)
+              .to(heroText, { y: -120, opacity: 0.45, ease: "none" }, 0);
+          }
+
+          if (head) {
+            gsap.to(head, {
+              rotation: 1.4,
+              x: 0.8,
+              y: -1.4,
+              duration: 4.8,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+
+          if (bigPen) {
+            gsap.to(bigPen, {
+              rotation: 0.45,
+              x: 0.6,
+              y: -0.4,
+              duration: 5,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+
+          if (shirt) {
+            gsap.to(shirt, {
+              y: -0.8,
+              scaleY: 1.003,
+              duration: 5.2,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+
+          if (collar) {
+            gsap.to(collar, {
+              y: -0.45,
+              rotation: 0.35,
+              duration: 4.8,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+
+          if (collarTwo) {
+            gsap.to(collarTwo, {
+              y: -0.45,
+              rotation: -0.35,
+              duration: 5,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+
+          gsap.ticker.add(tickerFn);
+        }
+
+        const strengthenMotion = () => {
+          gsap.to(motion, {
+            flowerAmp: 2.35,
+            leafAmp: 2.25,
+            duration: 1.4,
+            ease: "power3.out",
+          });
+        };
+
+        const softenMotion = () => {
+          gsap.to(motion, {
+            flowerAmp: 1,
+            leafAmp: 1,
+            duration: 1.8,
+            ease: "power3.out",
+          });
+        };
+
+        stage.addEventListener("mouseenter", strengthenMotion);
+        stage.addEventListener("mouseleave", softenMotion);
+        window.addEventListener("scroll", resumeHeroAnimations, { passive: true });
+        window.addEventListener("focus", resumeHeroAnimations);
+        window.addEventListener("pageshow", resumeHeroAnimations);
+        document.addEventListener("visibilitychange", resumeHeroAnimations);
+        cleanupFns.push(
+          () => stage.removeEventListener("mouseenter", strengthenMotion),
+          () => stage.removeEventListener("mouseleave", softenMotion),
+          () => window.removeEventListener("scroll", resumeHeroAnimations),
+          () => window.removeEventListener("focus", resumeHeroAnimations),
+          () => window.removeEventListener("pageshow", resumeHeroAnimations),
+          () => document.removeEventListener("visibilitychange", resumeHeroAnimations),
+        );
+
+        flowers.forEach((flower) => {
+          const enterFlower = () => {
+            gsap.to(motion, { flowerHover: 1.55, duration: 0.9, ease: "power3.out" });
+          };
+          const leaveFlower = () => {
+            gsap.to(motion, { flowerHover: 1, duration: 1.2, ease: "power3.out" });
+          };
+
+          (flower as HTMLElement).style.pointerEvents = "all";
+          flower.addEventListener("mouseenter", enterFlower);
+          flower.addEventListener("mouseleave", leaveFlower);
+          cleanupFns.push(
+            () => flower.removeEventListener("mouseenter", enterFlower),
+            () => flower.removeEventListener("mouseleave", leaveFlower),
+          );
+        });
+
+        leaves.forEach((leaf) => {
+          const enterLeaf = () => {
+            gsap.to(motion, { leafHover: 1.5, duration: 0.9, ease: "power3.out" });
+          };
+          const leaveLeaf = () => {
+            gsap.to(motion, { leafHover: 1, duration: 1.2, ease: "power3.out" });
+          };
+
+          (leaf as HTMLElement).style.pointerEvents = "all";
+          leaf.addEventListener("mouseenter", enterLeaf);
+          leaf.addEventListener("mouseleave", leaveLeaf);
+          cleanupFns.push(
+            () => leaf.removeEventListener("mouseenter", enterLeaf),
+            () => leaf.removeEventListener("mouseleave", leaveLeaf),
+          );
+        });
+
+        dragItems.forEach((item) => {
+          const element = item as unknown as SVGGraphicsElement;
+          (element as unknown as HTMLElement).style.pointerEvents = "all";
+          (element as unknown as HTMLElement).style.cursor = "grab";
+
+          const draggable = Draggable.create(element, {
+            type: "x,y",
+            dragResistance: 0.7,
+            edgeResistance: 1,
+            liveSnap: {
+              x: (value) => gsap.utils.clamp(-10, 10, value),
+              y: (value) => gsap.utils.clamp(-8, 8, value),
+            },
+            onPress() {
+              (this.target as HTMLElement).style.cursor = "grabbing";
+              gsap.to(this.target, {
+                scale: 1.01,
+                duration: 0.25,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
+            },
+            onDrag() {
+              gsap.to(this.target, {
+                rotation: gsap.utils.clamp(-1.8, 1.8, this.x * 0.06),
+                duration: 0.18,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
+            },
+            onRelease() {
+              (this.target as HTMLElement).style.cursor = "grab";
+              gsap.to(this.target, {
+                x: 0,
+                y: 0,
+                rotation: 0,
+                scale: 1,
+                duration: 0.9,
+                ease: "elastic.out(1, 0.55)",
+                overwrite: "auto",
+              });
+            },
+          })[0];
+
+          allDraggables.push(draggable);
+        });
+
+        if (beetle) {
+          const wings = gsap.utils.toArray<SVGElement>(".beetle-wing");
+          gsap.set(beetle, {
+            x: 0,
+            y: 0,
+            rotation: -8,
+            scale: 1,
+            transformOrigin: "center center",
+          });
+          gsap.set("#beetle", { transformOrigin: "center center" });
+          gsap.set([".wing-left", ".wing-right"], { transformOrigin: "center center" });
+          gsap.set(["#beetle_antenna_left", "#beetle_antenna_right"], {
+            transformOrigin: "center bottom",
+          });
+
+          if (!reduceMotion) {
+            gsap.to("#beetle_antenna_left", {
+              rotation: 7,
+              duration: 0.8,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+
+            gsap.to("#beetle_antenna_right", {
+              rotation: -7,
+              duration: 0.85,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+
+            gsap.to("#beetle", {
+              y: -1,
+              duration: 1.4,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+
+          beetleWings = gsap.timeline({ repeat: -1, paused: true });
+          beetleWings
+            .set(wings, { opacity: 1 })
+            .to(".wing-left", { scaleX: 0.35, rotation: -22, duration: 0.06, ease: "power1.inOut" }, 0)
+            .to(".wing-right", { scaleX: 0.35, rotation: 22, duration: 0.06, ease: "power1.inOut" }, 0)
+            .to(".wing-left", { scaleX: 1, rotation: 0, duration: 0.06, ease: "power1.inOut" }, 0.06)
+            .to(".wing-right", { scaleX: 1, rotation: 0, duration: 0.06, ease: "power1.inOut" }, 0.06);
+
+          const beetleHome = { x: 0, y: 0, rotation: -8, scale: 1 };
+          const setBeetleHome = (x: number, y: number, rotation: number, scale: number) => {
+            beetleHome.x = x;
+            beetleHome.y = y;
+            beetleHome.rotation = rotation;
+            beetleHome.scale = scale;
+          };
+
+          const startFly = () => {
+            beetleWings?.play();
+            gsap.to(wings, { opacity: 1, duration: 0.15, ease: "power2.out" });
+          };
+
+          const stopFly = () => {
+            beetleWings?.pause();
+            gsap.to(wings, { opacity: 0, duration: 0.25, ease: "power2.out" });
+            gsap.to([".wing-left", ".wing-right"], {
+              scaleX: 1,
+              rotation: 0,
               duration: 0.25,
               ease: "power2.out",
-              overwrite: "auto",
             });
-          },
-          onDrag() {
-            gsap.to(this.target, {
-              rotation: gsap.utils.clamp(-1.8, 1.8, this.x * 0.06),
-              duration: 0.18,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-          },
-          onRelease() {
-            (this.target as HTMLElement).style.cursor = "grab";
-            gsap.to(this.target, {
-              x: 0,
-              y: 0,
-              rotation: 0,
-              scale: 1,
-              duration: 0.9,
-              ease: "elastic.out(1, 0.55)",
-              overwrite: "auto",
-            });
-          },
-        })[0];
+          };
 
-        allDraggables.push(draggable);
+          const returnBeetleHome = () => {
+            startFly();
+            gsap.to(beetle, {
+              x: beetleHome.x,
+              y: beetleHome.y,
+              rotation: beetleHome.rotation,
+              scale: beetleHome.scale,
+              duration: 0.9,
+              ease: "power3.out",
+              onComplete: () => {
+                stopFly();
+                beetleFlight?.resume();
+              },
+            });
+          };
+
+          if (!reduceMotion) {
+            beetleFlight = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
+            beetleFlight
+              .call(() => {
+                stopFly();
+                setBeetleHome(0, 0, -8, 1);
+              })
+              .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 1.2, ease: "sine.inOut" })
+              .call(startFly)
+              .to(beetle, { x: 120, y: -95, rotation: 16, scale: 1.08, duration: 1.25, ease: "power2.inOut" })
+              .to(beetle, { x: 250, y: -42, rotation: -10, scale: 1.03, duration: 1.1, ease: "power2.inOut" })
+              .call(() => setBeetleHome(318, 18, 5, 0.96))
+              .to(beetle, { x: 318, y: 18, rotation: 5, scale: 0.96, duration: 0.75, ease: "power3.out" })
+              .call(stopFly)
+              .to(beetle, { y: 15, duration: 1.3, ease: "sine.inOut" })
+              .call(startFly)
+              .to(beetle, { x: 210, y: -118, rotation: -18, scale: 1.08, duration: 1.2, ease: "power2.inOut" })
+              .to(beetle, { x: -65, y: -58, rotation: 14, scale: 1.02, duration: 1.45, ease: "power2.inOut" })
+              .call(() => setBeetleHome(-128, 28, -7, 0.96))
+              .to(beetle, { x: -128, y: 28, rotation: -7, scale: 0.96, duration: 0.8, ease: "power3.out" })
+              .call(stopFly)
+              .to(beetle, { y: 25, duration: 1.3, ease: "sine.inOut" })
+              .call(startFly)
+              .to(beetle, { x: -20, y: -82, rotation: 16, scale: 1.06, duration: 1.2, ease: "power2.inOut" })
+              .call(() => setBeetleHome(0, 0, -8, 1))
+              .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 0.9, ease: "power3.out" })
+              .call(stopFly);
+          }
+
+          const beetleDraggable = Draggable.create(beetle, {
+            type: "x,y",
+            bounds: stage,
+            allowNativeTouchScrolling: false,
+            onPress() {
+              beetleFlight?.pause();
+              startFly();
+              (this.target as HTMLElement).style.cursor = "grabbing";
+              gsap.to(this.target, {
+                scale: 1.14,
+                duration: 0.25,
+                ease: "power2.out",
+              });
+            },
+            onDrag() {
+              gsap.to(this.target, {
+                rotation: gsap.utils.clamp(-25, 25, this.x * 0.05),
+                duration: 0.12,
+                ease: "power2.out",
+              });
+            },
+            onRelease() {
+              (this.target as HTMLElement).style.cursor = "grab";
+              returnBeetleHome();
+            },
+          })[0];
+
+          allDraggables.push(beetleDraggable);
+        }
+
+        cleanupHero = () => {
+          gsap.ticker.remove(tickerFn);
+          cleanupFns.forEach((cleanup) => cleanup());
+          allDraggables.forEach((draggable) => draggable.kill());
+          beetleFlight?.kill();
+          beetleWings?.kill();
+        };
+      }, stage);
+    };
+
+    fetch(SVG_URL)
+      .then((response) => response.text())
+      .then((svg) => setupHero(cleanSvg(svg)))
+      .catch(() => {
+        const stage = stageRef.current;
+        if (stage && !cancelled) stage.innerHTML = "";
       });
 
-      if (beetle) {
-        const wings = gsap.utils.toArray<SVGElement>(".beetle-wing");
-        gsap.set(beetle, {
-          x: 0,
-          y: 0,
-          rotation: -8,
-          scale: 1,
-          transformOrigin: "center center",
-        });
-        gsap.set("#beetle", { transformOrigin: "center center" });
-        gsap.set([".wing-left", ".wing-right"], { transformOrigin: "center center" });
-        gsap.set(["#beetle_antenna_left", "#beetle_antenna_right"], {
-          transformOrigin: "center bottom",
-        });
-
-        if (!reduceMotion) {
-          gsap.to("#beetle_antenna_left", {
-            rotation: 7,
-            duration: 0.8,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-
-          gsap.to("#beetle_antenna_right", {
-            rotation: -7,
-            duration: 0.85,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-
-          gsap.to("#beetle", {
-            y: -1,
-            duration: 1.4,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          });
-        }
-
-        beetleWings = gsap.timeline({ repeat: -1, paused: true });
-        beetleWings
-          .set(wings, { opacity: 1 })
-          .to(".wing-left", { scaleX: 0.35, rotation: -22, duration: 0.06, ease: "power1.inOut" }, 0)
-          .to(".wing-right", { scaleX: 0.35, rotation: 22, duration: 0.06, ease: "power1.inOut" }, 0)
-          .to(".wing-left", { scaleX: 1, rotation: 0, duration: 0.06, ease: "power1.inOut" }, 0.06)
-          .to(".wing-right", { scaleX: 1, rotation: 0, duration: 0.06, ease: "power1.inOut" }, 0.06);
-
-        const beetleHome = { x: 0, y: 0, rotation: -8, scale: 1 };
-        const setBeetleHome = (x: number, y: number, rotation: number, scale: number) => {
-          beetleHome.x = x;
-          beetleHome.y = y;
-          beetleHome.rotation = rotation;
-          beetleHome.scale = scale;
-        };
-
-        const startFly = () => {
-          beetleWings?.play();
-          gsap.to(wings, { opacity: 1, duration: 0.15, ease: "power2.out" });
-        };
-
-        const stopFly = () => {
-          beetleWings?.pause();
-          gsap.to(wings, { opacity: 0, duration: 0.25, ease: "power2.out" });
-          gsap.to([".wing-left", ".wing-right"], {
-            scaleX: 1,
-            rotation: 0,
-            duration: 0.25,
-            ease: "power2.out",
-          });
-        };
-
-        const returnBeetleHome = () => {
-          startFly();
-          gsap.to(beetle, {
-            x: beetleHome.x,
-            y: beetleHome.y,
-            rotation: beetleHome.rotation,
-            scale: beetleHome.scale,
-            duration: 0.9,
-            ease: "power3.out",
-            onComplete: () => {
-              stopFly();
-              beetleFlight?.resume();
-            },
-          });
-        };
-
-        if (!reduceMotion) {
-          beetleFlight = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
-          beetleFlight
-            .call(() => {
-              stopFly();
-              setBeetleHome(0, 0, -8, 1);
-            })
-            .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 1.2, ease: "sine.inOut" })
-            .call(startFly)
-            .to(beetle, { x: 120, y: -95, rotation: 16, scale: 1.08, duration: 1.25, ease: "power2.inOut" })
-            .to(beetle, { x: 250, y: -42, rotation: -10, scale: 1.03, duration: 1.1, ease: "power2.inOut" })
-            .call(() => setBeetleHome(318, 18, 5, 0.96))
-            .to(beetle, { x: 318, y: 18, rotation: 5, scale: 0.96, duration: 0.75, ease: "power3.out" })
-            .call(stopFly)
-            .to(beetle, { y: 15, duration: 1.3, ease: "sine.inOut" })
-            .call(startFly)
-            .to(beetle, { x: 210, y: -118, rotation: -18, scale: 1.08, duration: 1.2, ease: "power2.inOut" })
-            .to(beetle, { x: -65, y: -58, rotation: 14, scale: 1.02, duration: 1.45, ease: "power2.inOut" })
-            .call(() => setBeetleHome(-128, 28, -7, 0.96))
-            .to(beetle, { x: -128, y: 28, rotation: -7, scale: 0.96, duration: 0.8, ease: "power3.out" })
-            .call(stopFly)
-            .to(beetle, { y: 25, duration: 1.3, ease: "sine.inOut" })
-            .call(startFly)
-            .to(beetle, { x: -20, y: -82, rotation: 16, scale: 1.06, duration: 1.2, ease: "power2.inOut" })
-            .call(() => setBeetleHome(0, 0, -8, 1))
-            .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 0.9, ease: "power3.out" })
-            .call(stopFly);
-        }
-
-        const beetleDraggable = Draggable.create(beetle, {
-          type: "x,y",
-          bounds: stage,
-          allowNativeTouchScrolling: false,
-          onPress() {
-            beetleFlight?.pause();
-            startFly();
-            (this.target as HTMLElement).style.cursor = "grabbing";
-            gsap.to(this.target, {
-              scale: 1.14,
-              duration: 0.25,
-              ease: "power2.out",
-            });
-          },
-          onDrag() {
-            gsap.to(this.target, {
-              rotation: gsap.utils.clamp(-25, 25, this.x * 0.05),
-              duration: 0.12,
-              ease: "power2.out",
-            });
-          },
-          onRelease() {
-            (this.target as HTMLElement).style.cursor = "grab";
-            returnBeetleHome();
-          },
-        })[0];
-
-        allDraggables.push(beetleDraggable);
-      }
-
-      return () => {
-        cleanupFns.forEach((cleanup) => cleanup());
-      };
-    }, stage);
-
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = 0;
-      allDraggables.forEach((draggable) => draggable.kill());
-      beetleFlight?.kill();
-      beetleWings?.kill();
-      stage.querySelector(".beetle-wrap")?.remove();
-      ctx.revert();
+      cancelled = true;
+      cleanupHero?.();
+      ctx?.revert();
+      if (stageRef.current) stageRef.current.innerHTML = "";
     };
-  }, [svgMarkup]);
+  }, []);
 
   return (
     <section
@@ -541,7 +544,6 @@ export default function Hero(_: HeroProps) {
       <div
         ref={stageRef}
         className="svg-stage relative mb-[-8vh] aspect-[1358.17/730.78] w-[min(142vw,1760px)] origin-bottom overflow-visible md:mb-[-12vh] md:w-[min(112vw,1840px)]"
-        dangerouslySetInnerHTML={svgMarkup ? { __html: svgMarkup } : undefined}
       />
     </section>
   );
