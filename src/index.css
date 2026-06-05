@@ -138,7 +138,12 @@
 
 html,
 body {
+  background: #0f0f0e;
+  margin: 0;
+  min-height: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
 }
 
 body {
@@ -146,6 +151,7 @@ body {
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
   overscroll-behavior-y: none;
+  position: relative;
   scroll-behavior: smooth;
   text-rendering: geometricPrecision;
 }
@@ -180,6 +186,14 @@ h2,
 h3,
 h4 {
   text-transform: none !important;
+}
+
+.main,
+.app,
+.page {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 /* Flat public portfolio surfaces. */
@@ -387,14 +401,19 @@ header *,
 
 /* Inline SVG hero stage and JS-created beetle layer. */
 .hero {
+  background: #050505;
   min-height: 100svh;
   overflow: hidden;
+  position: relative;
   width: 100%;
 }
 
 .svg-stage {
   background: #050505;
+  height: 100svh;
+  overflow: hidden;
   position: relative;
+  width: 100%;
 }
 
 .svg-stage > svg {
@@ -499,8 +518,15 @@ header *,
 }
 
 @media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
   .hero {
     align-items: center;
+    height: auto;
     min-height: 100svh;
     padding-top: 0 !important;
   }
@@ -508,15 +534,17 @@ header *,
   .svg-stage {
     aspect-ratio: auto !important;
     height: 100svh;
-    margin-bottom: -2vh !important;
+    min-height: 100svh;
+    margin-bottom: 0 !important;
     overflow: hidden;
-    width: 100vw !important;
+    width: 100% !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
     max-width: none;
-    width: 215vw !important;
+    transform: translateX(-3vw) translateY(7vh);
+    width: 220vw !important;
   }
 
   .svg-stage #Layer_147 rect {
@@ -552,10 +580,11 @@ header *,
 
 @media (max-width: 480px) {
   .svg-stage {
-    margin-bottom: -1vh !important;
+    margin-bottom: 0 !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
+    transform: translateX(-4vw) translateY(8vh);
     width: 250vw !important;
   }
 
@@ -571,6 +600,7 @@ header *,
 
 @media (max-width: 380px) {
   .svg-stage > svg:not(.beetle-svg) {
+    transform: translateX(-6vw) translateY(9vh);
     width: 270vw !important;
   }
 

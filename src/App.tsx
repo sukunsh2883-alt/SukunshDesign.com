@@ -165,7 +165,9 @@ export default function App() {
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) return;
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const isMobile = window.innerWidth < 768;
+    if (reduceMotion || isTouch || isMobile) return;
 
     const lenis = new Lenis({
       duration: 1.6,
@@ -346,7 +348,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#050505] text-neutral-900 overflow-x-hidden transition-colors duration-300">
+    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
@@ -376,7 +378,7 @@ export default function App() {
             />
 
             {/* Main view container */}
-            <main className="flex-grow">
+            <main className="main flex-grow overflow-x-hidden overflow-y-visible">
               
               {/* Cinematic hero section */}
               <Hero 
