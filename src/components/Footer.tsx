@@ -19,7 +19,7 @@ export default function Footer({ profile }: FooterProps) {
           <p className="text-sm uppercase md:text-base">Delhi, India</p>
         </div>
 
-        <div className="flex items-center justify-between border-t border-[#1b005a]/70 pt-8">
+        <div className="flex items-center justify-between border-t border-[#ffffff]/70 pt-8">
           <p className="text-xs font-semibold uppercase tracking-wide">
             2026 © Sukunsh. All rights reserved
           </p>
