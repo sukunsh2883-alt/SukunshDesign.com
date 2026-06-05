@@ -380,3 +380,57 @@ header *,
 .pause-on-hover:hover .animate-marquee-scroll {
   animation-play-state: paused;
 }
+
+/* Inline SVG hero stage and JS-created beetle layer. */
+.svg-stage {
+  position: relative;
+}
+
+.svg-stage > svg {
+  display: block;
+  height: 100%;
+  overflow: visible;
+  width: 100%;
+}
+
+.beetle-wrap {
+  cursor: grab;
+  height: auto;
+  left: 34%;
+  pointer-events: auto !important;
+  position: absolute;
+  top: 70%;
+  touch-action: none;
+  transform-origin: center center;
+  user-select: none;
+  width: 48px;
+  z-index: 99999;
+}
+
+.beetle-wrap:active {
+  cursor: grabbing;
+}
+
+.beetle-svg {
+  display: block;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+  width: 100%;
+}
+
+.beetle-leg,
+.beetle-antenna {
+  fill: none;
+  stroke: #111111;
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+
+.beetle-wing {
+  fill: rgba(255, 245, 210, 0.2);
+  opacity: 0;
+  stroke: rgba(255, 245, 210, 0.55);
+  stroke-width: 1.5;
+  transform-origin: center center;
+}

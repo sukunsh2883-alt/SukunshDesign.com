@@ -1,6 +1,6 @@
-import { PointerEvent, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Draggable } from "gsap/Draggable";
 
 interface HeroProps {
   onWatchShowreel: () => void;
@@ -9,344 +9,481 @@ interface HeroProps {
   onOpenAIWork?: () => void;
 }
 
-const FLOWERS = [
-  { src: "/artwork/flower1.svg", className: "left-[7%] bottom-[11%] w-[8%]" },
-  { src: "/artwork/flower2.svg", className: "left-[16%] bottom-[4%] w-[6%]" },
-  { src: "/artwork/flower7.svg", className: "right-[4%] bottom-[16%] w-[7%]" },
-  { src: "/artwork/white flower1.svg", className: "left-[24%] bottom-[3%] w-[8%]" },
-  { src: "/artwork/white flower2.svg", className: "right-[25%] bottom-[4%] w-[5%]" },
-  { src: "/artwork/white flower4.svg", className: "right-[13%] bottom-[7%] w-[6%]" },
-];
+const SVG_URL = "/artwork/Asset 197.svg";
 
-const HOTSPOTS = [
-  { id: "pen", label: "Move pen", className: "left-[15%] top-[18%] h-[54%] w-[18%]", x: 18, y: 16, rotate: 9 },
-  { id: "tablet", label: "Move tablet", className: "left-[46%] top-[12%] h-[27%] w-[34%]", x: -14, y: 10, rotate: -4 },
-  { id: "camera", label: "Move camera", className: "left-[39%] top-[43%] h-[20%] w-[18%]", x: 11, y: -12, rotate: 5 },
-  { id: "pens", label: "Move blue pink pens", className: "right-[16%] top-[15%] h-[24%] w-[10%]", x: 10, y: 18, rotate: 7 },
-];
+const flowerSelectors = Array.from({ length: 9 }, (_, index) => `#flower_${index + 1}`);
+const leafSelectors = Array.from({ length: 11 }, (_, index) => `#leaf_${index + 1}`);
+const draggableSelectors = ["#right_arm_with_pen-2", "#pentab-2", "#ipad-2", "#blue_pen-2", "#pink"];
+
+function cleanSvg(svg: string) {
+  return svg
+    .replace(/<\?xml[\s\S]*?\?>/g, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .trim();
+}
+
+function beetleMarkup() {
+  return `
+    <div class="beetle-wrap">
+      <svg class="beetle-svg" viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+        <g id="beetle">
+          <path class="beetle-wing wing-left" d="M64 42 C38 14 14 34 30 62 C44 86 66 70 64 42Z" />
+          <path class="beetle-wing wing-right" d="M76 42 C104 14 128 36 110 64 C96 88 75 70 76 42Z" />
+          <path class="beetle-leg" d="M52 61 C37 67 27 76 18 86" />
+          <path class="beetle-leg" d="M59 69 C48 78 42 88 37 96" />
+          <path class="beetle-leg" d="M88 61 C103 67 113 76 122 86" />
+          <path class="beetle-leg" d="M82 69 C93 78 99 88 104 96" />
+          <path id="beetle_antenna_left" class="beetle-antenna" d="M55 29 C42 10 27 9 18 21" />
+          <path id="beetle_antenna_right" class="beetle-antenna" d="M65 25 C57 6 66 0 80 6" />
+          <ellipse cx="60" cy="39" rx="20" ry="18" fill="#111111" />
+          <ellipse cx="82" cy="51" rx="40" ry="29" fill="#d94b24" />
+          <path d="M82 24 C80 41 80 60 82 78" stroke="#8f2418" stroke-width="3" fill="none" stroke-linecap="round" />
+          <circle cx="70" cy="40" r="5" fill="#101010" />
+          <circle cx="94" cy="40" r="5" fill="#101010" />
+          <circle cx="66" cy="58" r="4.5" fill="#101010" />
+          <circle cx="99" cy="59" r="4.5" fill="#101010" />
+          <circle cx="83" cy="68" r="4" fill="#101010" />
+          <ellipse cx="72" cy="33" rx="17" ry="6" fill="rgba(255,255,255,0.22)" />
+        </g>
+      </svg>
+    </div>
+  `;
+}
 
 export default function Hero(_: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const wordmarkRef = useRef<HTMLHeadingElement | null>(null);
-  const artRef = useRef<HTMLDivElement | null>(null);
-  const characterRef = useRef<HTMLImageElement | null>(null);
-  const floorRef = useRef<HTMLDivElement | null>(null);
-  const hotspotsRef = useRef<HTMLButtonElement[]>([]);
-  const dragState = useRef<{
-    element: HTMLButtonElement;
-    pointerId: number;
-    startX: number;
-    startY: number;
-    baseX: number;
-    baseY: number;
-  } | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const [svgMarkup, setSvgMarkup] = useState("");
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    let cancelled = false;
 
-    const section = sectionRef.current;
-    const wordmark = wordmarkRef.current;
-    const art = artRef.current;
-    const character = characterRef.current;
-    const floor = floorRef.current;
-    if (!section || !wordmark || !art || !character || !floor) return;
-
-    const flowers = gsap.utils.toArray<HTMLElement>(".hero-flower");
-    const leaves = gsap.utils.toArray<HTMLElement>(".hero-leaf-motion");
-    const hotspots = hotspotsRef.current.filter(Boolean);
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const ANIMATION = {
-      introSpeed: 1.35, // edit intro speed here
-      breathRange: 7, // edit character breathing movement here
-      leafRange: 4, // edit leaf wave range here
-      mouseRange: 12, // edit whole-art cursor movement here
-      hotspotReturnSpeed: 0.85, // edit snap-back speed here
-    };
-
-    if (reduceMotion) {
-      gsap.set([wordmark, art, character, floor, ...flowers, ...leaves, ...hotspots], {
-        opacity: 1,
-        x: 0,
-        y: 0,
-        scale: 1,
-        rotate: 0,
+    fetch(SVG_URL)
+      .then((response) => response.text())
+      .then((svg) => {
+        if (!cancelled) setSvgMarkup(cleanSvg(svg));
+      })
+      .catch(() => {
+        if (!cancelled) setSvgMarkup("");
       });
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      intro
-        .fromTo(wordmark, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8 })
-        .fromTo(
-          character,
-          { opacity: 0, y: 46, scale: 0.98 },
-          { opacity: 1, y: 0, scale: 1, duration: ANIMATION.introSpeed },
-          "-=0.35",
-        )
-        .fromTo(
-          floor,
-          { opacity: 0, scaleX: 0.76 },
-          { opacity: 1, scaleX: 1, duration: 0.8 },
-          "-=0.7",
-        )
-        .fromTo(
-          leaves,
-          { opacity: 0, y: 24, scaleY: 0.6, transformOrigin: "50% 100%" },
-          { opacity: 1, y: 0, scaleY: 1, duration: 0.75, stagger: 0.06 },
-          "-=0.6",
-        )
-        .fromTo(
-          flowers,
-          { opacity: 0, y: 18, scale: 0.25, rotate: -12 },
-          { opacity: 1, y: 0, scale: 1, rotate: 0, duration: 0.6, stagger: 0.05 },
-          "-=0.45",
-        );
-
-      gsap.to(character, {
-        y: -ANIMATION.breathRange,
-        scale: 1.008,
-        duration: 3.8,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-
-      leaves.forEach((leaf, index) => {
-        gsap.to(leaf, {
-          x: index % 2 ? ANIMATION.leafRange : -ANIMATION.leafRange,
-          rotate: index % 2 ? 1.6 : -1.6,
-          duration: 4.6 + index * 0.3,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      });
-
-      flowers.forEach((flower, index) => {
-        gsap.to(flower, {
-          y: gsap.utils.random(-8, 7),
-          x: gsap.utils.random(-5, 5),
-          rotate: gsap.utils.random(-5, 5),
-          duration: gsap.utils.random(4, 6.4),
-          delay: index * 0.12,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      });
-
-      gsap.to(art, {
-        y: -44,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.15,
-        },
-      });
-
-      gsap.to(wordmark, {
-        opacity: 0.15,
-        y: -36,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "35% top",
-          end: "bottom top",
-          scrub: 1,
-        },
-      });
-    }, section);
-
-    const handlePointerMove = (event: PointerEvent) => {
-      if (dragState.current) return;
-
-      const rect = section.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-
-      gsap.to(art, {
-        x: x * ANIMATION.mouseRange,
-        y: y * (ANIMATION.mouseRange * 0.55),
-        duration: 1,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-
-      gsap.to(hotspots, {
-        x: (index: number) => x * HOTSPOTS[index].x * 0.35,
-        y: (index: number) => y * HOTSPOTS[index].y * 0.35,
-        rotate: (index: number) => x * HOTSPOTS[index].rotate * 0.35,
-        duration: 0.85,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-    };
-
-    const handlePointerLeave = () => {
-      if (dragState.current) return;
-
-      gsap.to([art, ...hotspots], {
-        x: 0,
-        y: 0,
-        rotate: 0,
-        duration: 0.95,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-    };
-
-    const handleHoverIn = () => {
-      gsap.to(art, { scale: 1.012, duration: 0.55, ease: "power3.out" });
-      gsap.to(flowers, { y: -10, scale: 1.04, duration: 0.45, ease: "back.out(2)", stagger: 0.035 });
-    };
-
-    const handleHoverOut = () => {
-      gsap.to(art, { scale: 1, duration: 0.55, ease: "power3.out" });
-    };
-
-    section.addEventListener("pointermove", handlePointerMove as EventListener);
-    section.addEventListener("pointerleave", handlePointerLeave);
-    art.addEventListener("pointerenter", handleHoverIn);
-    art.addEventListener("pointerleave", handleHoverOut);
 
     return () => {
-      section.removeEventListener("pointermove", handlePointerMove as EventListener);
-      section.removeEventListener("pointerleave", handlePointerLeave);
-      art.removeEventListener("pointerenter", handleHoverIn);
-      art.removeEventListener("pointerleave", handleHoverOut);
-      ctx.revert();
+      cancelled = true;
     };
   }, []);
 
-  const onHotspotDown = (event: PointerEvent<HTMLButtonElement>, index: number) => {
-    const element = hotspotsRef.current[index];
-    if (!element) return;
+  useEffect(() => {
+    if (!svgMarkup) return;
 
-    element.setPointerCapture(event.pointerId);
-    gsap.killTweensOf(element);
-    dragState.current = {
-      element,
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      baseX: Number(gsap.getProperty(element, "x")) || 0,
-      baseY: Number(gsap.getProperty(element, "y")) || 0,
-    };
+    gsap.registerPlugin(Draggable);
 
-    gsap.to(element, {
-      scale: 1.08,
-      rotate: HOTSPOTS[index].rotate,
-      duration: 0.18,
-      ease: "power2.out",
-    });
-  };
+    const section = sectionRef.current;
+    const stage = stageRef.current;
+    if (!section || !stage) return;
 
-  const onHotspotMove = (event: PointerEvent<HTMLButtonElement>) => {
-    const state = dragState.current;
-    if (!state || state.pointerId !== event.pointerId) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const scopedSelector = gsap.utils.selector(stage);
+    const flowers = flowerSelectors.flatMap((selector) => scopedSelector(selector));
+    const leaves = leafSelectors.flatMap((selector) => scopedSelector(selector));
+    const dragItems = draggableSelectors.flatMap((selector) => scopedSelector(selector));
+    const head = scopedSelector("#head-2")[0] || scopedSelector("#head")[0];
+    const bigPen = scopedSelector("#right_arm_with_pen-2")[0];
+    const shirt = scopedSelector("#shirt-2")[0];
+    const collar = scopedSelector("#coler")[0];
+    const collarTwo = scopedSelector("#coler_2")[0];
+    const allDraggables: Draggable[] = [];
+    let ticker: (() => void) | null = null;
+    let beetleFlight: gsap.core.Timeline | null = null;
+    let beetleWings: gsap.core.Timeline | null = null;
 
-    gsap.set(state.element, {
-      x: state.baseX + event.clientX - state.startX,
-      y: state.baseY + event.clientY - state.startY,
-    });
-  };
-
-  const returnHotspot = (event: PointerEvent<HTMLButtonElement>) => {
-    const state = dragState.current;
-    if (!state || state.pointerId !== event.pointerId) return;
-
-    try {
-      state.element.releasePointerCapture(event.pointerId);
-    } catch {
-      // Pointer capture may already be released.
+    if (!stage.querySelector(".beetle-wrap")) {
+      stage.insertAdjacentHTML("beforeend", beetleMarkup());
     }
 
-    gsap.to(state.element, {
-      x: 0,
-      y: 0,
-      rotate: 0,
-      scale: 1,
-      duration: 0.85, // edit snap-back speed here too
-      ease: "elastic.out(1, 0.62)",
-      overwrite: true,
-    });
+    const beetle = stage.querySelector<HTMLElement>(".beetle-wrap");
 
-    dragState.current = null;
-  };
+    const motion = {
+      flowerAmp: 1,
+      leafAmp: 1,
+      flowerHover: 1,
+      leafHover: 1,
+    };
+
+    const ctx = gsap.context(() => {
+      gsap.set(stage, { opacity: 1 });
+      gsap.set(flowers, { transformOrigin: "center bottom" });
+      gsap.set(leaves, { transformOrigin: "center bottom" });
+      gsap.set(dragItems, { transformOrigin: "center center" });
+
+      if (head) gsap.set(head, { transformOrigin: "center bottom" });
+      if (bigPen) gsap.set(bigPen, { transformOrigin: "left center" });
+      if (shirt) gsap.set(shirt, { transformOrigin: "center center" });
+      if (collar) gsap.set(collar, { transformOrigin: "center center" });
+      if (collarTwo) gsap.set(collarTwo, { transformOrigin: "center center" });
+
+      if (!reduceMotion) {
+        gsap.from(stage.querySelector("svg"), {
+          opacity: 0,
+          y: 30,
+          scale: 0.985,
+          duration: 1,
+          ease: "power3.out",
+        });
+
+        if (head) {
+          gsap.to(head, {
+            rotation: 1.4,
+            x: 0.8,
+            y: -1.4,
+            duration: 4.8,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        }
+
+        if (bigPen) {
+          gsap.to(bigPen, {
+            rotation: 0.45,
+            x: 0.6,
+            y: -0.4,
+            duration: 5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        }
+
+        if (shirt) {
+          gsap.to(shirt, {
+            y: -0.8,
+            scaleY: 1.003,
+            duration: 5.2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        }
+
+        if (collar) {
+          gsap.to(collar, {
+            y: -0.45,
+            rotation: 0.35,
+            duration: 4.8,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        }
+
+        if (collarTwo) {
+          gsap.to(collarTwo, {
+            y: -0.45,
+            rotation: -0.35,
+            duration: 5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        }
+      }
+
+      const strengthenMotion = () => {
+        gsap.to(motion, {
+          flowerAmp: 2.35,
+          leafAmp: 2.25,
+          duration: 1.4,
+          ease: "power3.out",
+        });
+      };
+
+      const softenMotion = () => {
+        gsap.to(motion, {
+          flowerAmp: 1,
+          leafAmp: 1,
+          duration: 1.8,
+          ease: "power3.out",
+        });
+      };
+
+      stage.addEventListener("mouseenter", strengthenMotion);
+      stage.addEventListener("mouseleave", softenMotion);
+
+      flowers.forEach((flower) => {
+        (flower as HTMLElement).style.pointerEvents = "all";
+        flower.addEventListener("mouseenter", () => {
+          gsap.to(motion, { flowerHover: 1.55, duration: 0.9, ease: "power3.out" });
+        });
+        flower.addEventListener("mouseleave", () => {
+          gsap.to(motion, { flowerHover: 1, duration: 1.2, ease: "power3.out" });
+        });
+      });
+
+      leaves.forEach((leaf) => {
+        (leaf as HTMLElement).style.pointerEvents = "all";
+        leaf.addEventListener("mouseenter", () => {
+          gsap.to(motion, { leafHover: 1.5, duration: 0.9, ease: "power3.out" });
+        });
+        leaf.addEventListener("mouseleave", () => {
+          gsap.to(motion, { leafHover: 1, duration: 1.2, ease: "power3.out" });
+        });
+      });
+
+      if (!reduceMotion) {
+        ticker = () => {
+          const time = performance.now() / 1000;
+
+          flowers.forEach((flower, index) => {
+            const speed = 0.72 + index * 0.045;
+            const wave = Math.sin(time * speed + index * 0.9);
+            const softWave = Math.cos(time * speed * 0.8 + index);
+            const amp = motion.flowerAmp * motion.flowerHover;
+
+            gsap.set(flower, {
+              x: softWave * 1.4 * amp,
+              y: wave * 3.8 * amp,
+              rotation: wave * 3.6 * amp,
+              scale: 1 + Math.abs(wave) * 0.01 * amp,
+            });
+          });
+
+          leaves.forEach((leaf, index) => {
+            const speed = 0.62 + index * 0.04;
+            const wave = Math.sin(time * speed + index * 0.7);
+            const amp = motion.leafAmp * motion.leafHover;
+
+            gsap.set(leaf, {
+              x: wave * 2.2 * amp,
+              rotation: wave * 5.8 * amp,
+            });
+          });
+        };
+
+        gsap.ticker.add(ticker);
+      }
+
+      dragItems.forEach((item) => {
+        const element = item as unknown as SVGGraphicsElement;
+        (element as unknown as HTMLElement).style.pointerEvents = "all";
+        (element as unknown as HTMLElement).style.cursor = "grab";
+
+        const draggable = Draggable.create(element, {
+          type: "x,y",
+          dragResistance: 0.7,
+          edgeResistance: 1,
+          liveSnap: {
+            x: (value) => gsap.utils.clamp(-10, 10, value),
+            y: (value) => gsap.utils.clamp(-8, 8, value),
+          },
+          onPress() {
+            (this.target as HTMLElement).style.cursor = "grabbing";
+            gsap.to(this.target, {
+              scale: 1.01,
+              duration: 0.25,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          },
+          onDrag() {
+            gsap.to(this.target, {
+              rotation: gsap.utils.clamp(-1.8, 1.8, this.x * 0.06),
+              duration: 0.18,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          },
+          onRelease() {
+            (this.target as HTMLElement).style.cursor = "grab";
+            gsap.to(this.target, {
+              x: 0,
+              y: 0,
+              rotation: 0,
+              scale: 1,
+              duration: 0.9,
+              ease: "elastic.out(1, 0.55)",
+              overwrite: "auto",
+            });
+          },
+        })[0];
+
+        allDraggables.push(draggable);
+      });
+
+      if (beetle) {
+        const wings = gsap.utils.toArray<SVGElement>(".beetle-wing");
+        gsap.set(beetle, {
+          x: 0,
+          y: 0,
+          rotation: -8,
+          scale: 1,
+          transformOrigin: "center center",
+        });
+        gsap.set("#beetle", { transformOrigin: "center center" });
+        gsap.set([".wing-left", ".wing-right"], { transformOrigin: "center center" });
+        gsap.set(["#beetle_antenna_left", "#beetle_antenna_right"], {
+          transformOrigin: "center bottom",
+        });
+
+        if (!reduceMotion) {
+          gsap.to("#beetle_antenna_left", {
+            rotation: 7,
+            duration: 0.8,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+
+          gsap.to("#beetle_antenna_right", {
+            rotation: -7,
+            duration: 0.85,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+
+          gsap.to("#beetle", {
+            y: -1,
+            duration: 1.4,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        }
+
+        beetleWings = gsap.timeline({ repeat: -1, paused: true });
+        beetleWings
+          .set(wings, { opacity: 1 })
+          .to(".wing-left", { scaleX: 0.35, rotation: -22, duration: 0.06, ease: "power1.inOut" }, 0)
+          .to(".wing-right", { scaleX: 0.35, rotation: 22, duration: 0.06, ease: "power1.inOut" }, 0)
+          .to(".wing-left", { scaleX: 1, rotation: 0, duration: 0.06, ease: "power1.inOut" }, 0.06)
+          .to(".wing-right", { scaleX: 1, rotation: 0, duration: 0.06, ease: "power1.inOut" }, 0.06);
+
+        const beetleHome = { x: 0, y: 0, rotation: -8, scale: 1 };
+        const setBeetleHome = (x: number, y: number, rotation: number, scale: number) => {
+          beetleHome.x = x;
+          beetleHome.y = y;
+          beetleHome.rotation = rotation;
+          beetleHome.scale = scale;
+        };
+
+        const startFly = () => {
+          beetleWings?.play();
+          gsap.to(wings, { opacity: 1, duration: 0.15, ease: "power2.out" });
+        };
+
+        const stopFly = () => {
+          beetleWings?.pause();
+          gsap.to(wings, { opacity: 0, duration: 0.25, ease: "power2.out" });
+          gsap.to([".wing-left", ".wing-right"], {
+            scaleX: 1,
+            rotation: 0,
+            duration: 0.25,
+            ease: "power2.out",
+          });
+        };
+
+        const returnBeetleHome = () => {
+          startFly();
+          gsap.to(beetle, {
+            x: beetleHome.x,
+            y: beetleHome.y,
+            rotation: beetleHome.rotation,
+            scale: beetleHome.scale,
+            duration: 0.9,
+            ease: "power3.out",
+            onComplete: () => {
+              stopFly();
+              beetleFlight?.resume();
+            },
+          });
+        };
+
+        if (!reduceMotion) {
+          beetleFlight = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
+          beetleFlight
+            .call(() => {
+              stopFly();
+              setBeetleHome(0, 0, -8, 1);
+            })
+            .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 1.2, ease: "sine.inOut" })
+            .call(startFly)
+            .to(beetle, { x: 120, y: -95, rotation: 16, scale: 1.08, duration: 1.25, ease: "power2.inOut" })
+            .to(beetle, { x: 250, y: -42, rotation: -10, scale: 1.03, duration: 1.1, ease: "power2.inOut" })
+            .call(() => setBeetleHome(318, 18, 5, 0.96))
+            .to(beetle, { x: 318, y: 18, rotation: 5, scale: 0.96, duration: 0.75, ease: "power3.out" })
+            .call(stopFly)
+            .to(beetle, { y: 15, duration: 1.3, ease: "sine.inOut" })
+            .call(startFly)
+            .to(beetle, { x: 210, y: -118, rotation: -18, scale: 1.08, duration: 1.2, ease: "power2.inOut" })
+            .to(beetle, { x: -65, y: -58, rotation: 14, scale: 1.02, duration: 1.45, ease: "power2.inOut" })
+            .call(() => setBeetleHome(-128, 28, -7, 0.96))
+            .to(beetle, { x: -128, y: 28, rotation: -7, scale: 0.96, duration: 0.8, ease: "power3.out" })
+            .call(stopFly)
+            .to(beetle, { y: 25, duration: 1.3, ease: "sine.inOut" })
+            .call(startFly)
+            .to(beetle, { x: -20, y: -82, rotation: 16, scale: 1.06, duration: 1.2, ease: "power2.inOut" })
+            .call(() => setBeetleHome(0, 0, -8, 1))
+            .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 0.9, ease: "power3.out" })
+            .call(stopFly);
+        }
+
+        const beetleDraggable = Draggable.create(beetle, {
+          type: "x,y",
+          bounds: stage,
+          allowNativeTouchScrolling: false,
+          onPress() {
+            beetleFlight?.pause();
+            startFly();
+            (this.target as HTMLElement).style.cursor = "grabbing";
+            gsap.to(this.target, {
+              scale: 1.14,
+              duration: 0.25,
+              ease: "power2.out",
+            });
+          },
+          onDrag() {
+            gsap.to(this.target, {
+              rotation: gsap.utils.clamp(-25, 25, this.x * 0.05),
+              duration: 0.12,
+              ease: "power2.out",
+            });
+          },
+          onRelease() {
+            (this.target as HTMLElement).style.cursor = "grab";
+            returnBeetleHome();
+          },
+        })[0];
+
+        allDraggables.push(beetleDraggable);
+      }
+
+      return () => {
+        stage.removeEventListener("mouseenter", strengthenMotion);
+        stage.removeEventListener("mouseleave", softenMotion);
+      };
+    }, stage);
+
+    return () => {
+      if (ticker) gsap.ticker.remove(ticker);
+      allDraggables.forEach((draggable) => draggable.kill());
+      beetleFlight?.kill();
+      beetleWings?.kill();
+      stage.querySelector(".beetle-wrap")?.remove();
+      ctx.revert();
+    };
+  }, [svgMarkup]);
 
   return (
     <section
       ref={sectionRef}
       id="home"
-      className="relative min-h-screen overflow-hidden bg-[#050505] px-5 pt-16 text-white md:px-8"
+      className="relative flex min-h-screen items-end justify-center overflow-hidden bg-[#0f0f0e] px-3 pt-10 md:px-8"
     >
-      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1520px] items-end justify-center">
-        <p className="absolute left-[5%] top-[12%] z-30 text-sm font-light tracking-[-0.02em] text-white/75 md:text-lg">
-          Delhi Based Multidiscipline Designer
-        </p>
-
-        <h1
-          ref={wordmarkRef}
-          className="pointer-events-none absolute left-1/2 top-[22%] z-10 -translate-x-1/2 whitespace-nowrap text-[27vw] font-semibold leading-none tracking-[-0.105em] text-white md:top-[18%] md:text-[16vw]"
-        >
-          SUKUNSH
-        </h1>
-
-        <div
-          ref={artRef}
-          className="relative z-20 mb-[-1px] aspect-[791/612] w-[min(112vw,980px)] origin-bottom select-none md:w-[min(82vw,1030px)]"
-          aria-label="Interactive designer artwork"
-        >
-          <div
-            ref={floorRef}
-            className="absolute bottom-[1.4%] left-0 right-0 z-10 h-[7%] bg-[#4a4a4a]"
-            aria-hidden="true"
-          />
-
-          <div className="hero-leaf-motion pointer-events-none absolute bottom-[6%] left-[12%] z-30 h-[22%] w-[18%]" />
-          <div className="hero-leaf-motion pointer-events-none absolute bottom-[6%] right-[8%] z-30 h-[30%] w-[22%]" />
-
-          {FLOWERS.map((flower) => (
-            <img
-              key={flower.src}
-              src={flower.src}
-              alt=""
-              aria-hidden="true"
-              draggable={false}
-              className={`hero-flower pointer-events-none absolute z-40 object-contain ${flower.className}`}
-            />
-          ))}
-
-          <img
-            ref={characterRef}
-            src="/artwork/Asset 197.svg"
-            alt="Designer character holding creative tools"
-            className="relative z-20 h-full w-full select-none object-contain"
-            draggable={false}
-          />
-
-          {HOTSPOTS.map((hotspot, index) => (
-            <button
-              key={hotspot.id}
-              ref={(node) => {
-                if (node) hotspotsRef.current[index] = node;
-              }}
-              type="button"
-              aria-label={hotspot.label}
-              onPointerDown={(event) => onHotspotDown(event, index)}
-              onPointerMove={onHotspotMove}
-              onPointerUp={returnHotspot}
-              onPointerCancel={returnHotspot}
-              className={`absolute z-50 touch-none cursor-grab bg-white/0 outline-none active:cursor-grabbing ${hotspot.className}`}
-            />
-          ))}
-        </div>
-      </div>
+      <div
+        ref={stageRef}
+        className="svg-stage relative mb-[-6vh] aspect-[1358.17/730.78] w-[min(122vw,1480px)] origin-bottom overflow-visible md:mb-[-9vh] md:w-[min(96vw,1560px)]"
+        dangerouslySetInnerHTML={svgMarkup ? { __html: svgMarkup } : undefined}
+      />
     </section>
   );
 }
