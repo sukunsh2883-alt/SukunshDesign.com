@@ -405,14 +405,14 @@ header *,
 }
 
 .svg-stage #Layer_147 rect {
-  fill: rgba(255, 255, 255, 0.2) !important;
-  stroke: rgba(255, 255, 255, 0.58);
+  fill: rgba(255, 255, 255, 0.24) !important;
+  stroke: rgba(255, 255, 255, 0.46);
   stroke-width: 0.9px;
 }
 
 .svg-stage #Layer_148 text,
 .svg-stage #Layer_148 tspan {
-  fill: rgba(255, 255, 255, 0.96) !important;
+  fill: rgba(255, 255, 255, 0.92) !important;
   font-weight: 500 !important;
 }
 

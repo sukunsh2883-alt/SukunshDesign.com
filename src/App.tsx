@@ -162,6 +162,70 @@ export default function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    if (reduceMotion || !finePointer) return;
+
+    let current = window.scrollY;
+    let target = window.scrollY;
+    let rafId = 0;
+
+    const maxScroll = () =>
+      Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+
+    const animateScroll = () => {
+      current += (target - current) * 0.12;
+
+      if (Math.abs(target - current) < 0.35) {
+        current = target;
+        window.scrollTo(0, current);
+        rafId = 0;
+        return;
+      }
+
+      window.scrollTo(0, current);
+      rafId = requestAnimationFrame(animateScroll);
+    };
+
+    const syncNativeScroll = () => {
+      if (!rafId) {
+        current = window.scrollY;
+        target = window.scrollY;
+      }
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+
+      const targetElement = event.target as HTMLElement | null;
+      if (
+        targetElement?.closest(
+          "input, textarea, select, button, [role='dialog'], [data-native-scroll]",
+        )
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      target = Math.min(maxScroll(), Math.max(0, target + event.deltaY));
+
+      if (!rafId) {
+        current = window.scrollY;
+        rafId = requestAnimationFrame(animateScroll);
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("scroll", syncNativeScroll, { passive: true });
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("scroll", syncNativeScroll);
+    };
+  }, []);
+
   // Synchronize state down to localStorage so data persists securely across page refreshes
   useEffect(() => {
     try {
