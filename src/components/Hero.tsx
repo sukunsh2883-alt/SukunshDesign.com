@@ -477,11 +477,11 @@ export default function Hero(_: HeroProps) {
     <section
       ref={sectionRef}
       id="home"
-      className="relative flex min-h-screen items-end justify-center overflow-hidden bg-[#0f0f0e] px-3 pt-10 md:px-8"
+      className="relative flex min-h-screen items-end justify-center overflow-hidden bg-[#050505] px-0 pt-10"
     >
       <div
         ref={stageRef}
-        className="svg-stage relative mb-[-6vh] aspect-[1358.17/730.78] w-[min(122vw,1480px)] origin-bottom overflow-visible md:mb-[-9vh] md:w-[min(96vw,1560px)]"
+        className="svg-stage relative mb-[-8vh] aspect-[1358.17/730.78] w-[min(142vw,1760px)] origin-bottom overflow-visible md:mb-[-12vh] md:w-[min(112vw,1840px)]"
         dangerouslySetInnerHTML={svgMarkup ? { __html: svgMarkup } : undefined}
       />
     </section>
