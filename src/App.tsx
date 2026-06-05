@@ -168,11 +168,11 @@ export default function App() {
     if (reduceMotion) return;
 
     const lenis = new Lenis({
-      duration: 1.25,
+      duration: 1.6,
       smoothWheel: true,
-      wheelMultiplier: 0.85,
-      touchMultiplier: 1.1,
-      lerp: 0.08,
+      wheelMultiplier: 0.72,
+      touchMultiplier: 1,
+      lerp: 0.055,
     });
 
     const update = (time: number) => {

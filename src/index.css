@@ -405,16 +405,16 @@ header *,
 }
 
 .svg-stage #Layer_147 rect {
-  fill: rgba(20, 20, 20, 0.52) !important;
+  fill: rgba(12, 12, 12, 0.72) !important;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.42)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.08));
-  stroke: rgba(255, 255, 255, 0.38);
+  stroke: rgba(255, 255, 255, 0.34);
   stroke-width: 1.2px;
 }
 
 .svg-stage #Layer_148 text,
 .svg-stage #Layer_148 tspan {
-  fill: rgba(255, 255, 255, 0.98) !important;
-  font-weight: 700 !important;
+  fill: rgba(255, 255, 255, 0.96) !important;
+  font-weight: 500 !important;
 }
 
 .beetle-wrap {

@@ -166,6 +166,15 @@ export default function Hero(_: HeroProps) {
               duration: 1,
               ease: "power3.out",
             });
+
+            gsap.to(svgElement, {
+              y: -2,
+              scale: 1.006,
+              duration: 5.8,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
           }
 
           gsap
@@ -249,8 +258,8 @@ export default function Hero(_: HeroProps) {
 
           gsap.ticker.add(tickerFn);
 
-          gsap.to([...tagRects, ...tagTexts], {
-            y: -5,
+          gsap.to(tagRects, {
+            scale: 1.018,
             duration: 2.6,
             repeat: -1,
             yoyo: true,
@@ -296,18 +305,16 @@ export default function Hero(_: HeroProps) {
           const text = tagTexts[index];
           const enterTag = () => {
             gsap.to(rect, {
-              y: -4,
-              scale: 1.06,
-              fill: "rgba(255,255,255,0.16)",
-              stroke: "rgba(255,255,255,0.52)",
+              scale: 1.04,
+              fill: "rgba(18,18,18,0.78)",
+              stroke: "rgba(255,255,255,0.48)",
               duration: 0.5,
               ease: "power3.out",
               overwrite: "auto",
             });
             if (text) {
               gsap.to(text, {
-                y: -4,
-                scale: 1.04,
+                fill: "rgba(255,255,255,1)",
                 duration: 0.5,
                 ease: "power3.out",
                 overwrite: "auto",
@@ -317,18 +324,16 @@ export default function Hero(_: HeroProps) {
 
           const leaveTag = () => {
             gsap.to(rect, {
-              y: 0,
               scale: 1,
-              fill: "rgba(20,20,20,0.52)",
-              stroke: "rgba(255,255,255,0.38)",
+              fill: "rgba(12,12,12,0.72)",
+              stroke: "rgba(255,255,255,0.34)",
               duration: 0.65,
               ease: "power3.out",
               overwrite: "auto",
             });
             if (text) {
               gsap.to(text, {
-                y: 0,
-                scale: 1,
+                fill: "rgba(255,255,255,0.96)",
                 duration: 0.65,
                 ease: "power3.out",
                 overwrite: "auto",
