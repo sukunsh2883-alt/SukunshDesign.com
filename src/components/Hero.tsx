@@ -70,6 +70,10 @@ export default function Hero(_: HeroProps) {
       stage.insertAdjacentHTML("beforeend", beetleMarkup());
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const isTouch = window.matchMedia("(pointer: coarse)").matches;
+      const isMobile = window.innerWidth < 768;
+      const dragLimitX = isMobile ? 4 : 10;
+      const dragLimitY = isMobile ? 3 : 8;
       const scopedSelector = gsap.utils.selector(stage);
       const flowers = flowerSelectors.flatMap((selector) => scopedSelector(selector));
       const leaves = leafSelectors.flatMap((selector) => scopedSelector(selector));
@@ -93,8 +97,8 @@ export default function Hero(_: HeroProps) {
       let beetleWings: gsap.core.Timeline | null = null;
 
       const motion = {
-        flowerAmp: 1,
-        leafAmp: 1,
+        flowerAmp: isMobile || isTouch ? 0.75 : 1,
+        leafAmp: isMobile || isTouch ? 0.75 : 1,
         flowerHover: 1,
         leafHover: 1,
         growth: reduceMotion ? 1 : 0,
@@ -283,15 +287,19 @@ export default function Hero(_: HeroProps) {
           });
         };
 
-        stage.addEventListener("mouseenter", strengthenMotion);
-        stage.addEventListener("mouseleave", softenMotion);
+        if (!isTouch) {
+          stage.addEventListener("mouseenter", strengthenMotion);
+          stage.addEventListener("mouseleave", softenMotion);
+          cleanupFns.push(
+            () => stage.removeEventListener("mouseenter", strengthenMotion),
+            () => stage.removeEventListener("mouseleave", softenMotion),
+          );
+        }
         window.addEventListener("scroll", resumeHeroAnimations, { passive: true });
         window.addEventListener("focus", resumeHeroAnimations);
         window.addEventListener("pageshow", resumeHeroAnimations);
         document.addEventListener("visibilitychange", resumeHeroAnimations);
         cleanupFns.push(
-          () => stage.removeEventListener("mouseenter", strengthenMotion),
-          () => stage.removeEventListener("mouseleave", softenMotion),
           () => window.removeEventListener("scroll", resumeHeroAnimations),
           () => window.removeEventListener("focus", resumeHeroAnimations),
           () => window.removeEventListener("pageshow", resumeHeroAnimations),
@@ -338,14 +346,16 @@ export default function Hero(_: HeroProps) {
             }
           };
 
-          (rect as unknown as HTMLElement).style.pointerEvents = "all";
-          (rect as unknown as HTMLElement).style.cursor = "pointer";
-          rect.addEventListener("mouseenter", enterTag);
-          rect.addEventListener("mouseleave", leaveTag);
-          cleanupFns.push(
-            () => rect.removeEventListener("mouseenter", enterTag),
-            () => rect.removeEventListener("mouseleave", leaveTag),
-          );
+          if (!isTouch) {
+            (rect as unknown as HTMLElement).style.pointerEvents = "all";
+            (rect as unknown as HTMLElement).style.cursor = "pointer";
+            rect.addEventListener("mouseenter", enterTag);
+            rect.addEventListener("mouseleave", leaveTag);
+            cleanupFns.push(
+              () => rect.removeEventListener("mouseenter", enterTag),
+              () => rect.removeEventListener("mouseleave", leaveTag),
+            );
+          }
         });
 
         flowers.forEach((flower) => {
@@ -356,13 +366,15 @@ export default function Hero(_: HeroProps) {
             gsap.to(motion, { flowerHover: 1, duration: 1.2, ease: "power3.out" });
           };
 
-          (flower as HTMLElement).style.pointerEvents = "all";
-          flower.addEventListener("mouseenter", enterFlower);
-          flower.addEventListener("mouseleave", leaveFlower);
-          cleanupFns.push(
-            () => flower.removeEventListener("mouseenter", enterFlower),
-            () => flower.removeEventListener("mouseleave", leaveFlower),
-          );
+          if (!isTouch) {
+            (flower as HTMLElement).style.pointerEvents = "all";
+            flower.addEventListener("mouseenter", enterFlower);
+            flower.addEventListener("mouseleave", leaveFlower);
+            cleanupFns.push(
+              () => flower.removeEventListener("mouseenter", enterFlower),
+              () => flower.removeEventListener("mouseleave", leaveFlower),
+            );
+          }
         });
 
         leaves.forEach((leaf) => {
@@ -373,13 +385,15 @@ export default function Hero(_: HeroProps) {
             gsap.to(motion, { leafHover: 1, duration: 1.2, ease: "power3.out" });
           };
 
-          (leaf as HTMLElement).style.pointerEvents = "all";
-          leaf.addEventListener("mouseenter", enterLeaf);
-          leaf.addEventListener("mouseleave", leaveLeaf);
-          cleanupFns.push(
-            () => leaf.removeEventListener("mouseenter", enterLeaf),
-            () => leaf.removeEventListener("mouseleave", leaveLeaf),
-          );
+          if (!isTouch) {
+            (leaf as HTMLElement).style.pointerEvents = "all";
+            leaf.addEventListener("mouseenter", enterLeaf);
+            leaf.addEventListener("mouseleave", leaveLeaf);
+            cleanupFns.push(
+              () => leaf.removeEventListener("mouseenter", enterLeaf),
+              () => leaf.removeEventListener("mouseleave", leaveLeaf),
+            );
+          }
         });
 
         dragItems.forEach((item) => {
@@ -392,8 +406,8 @@ export default function Hero(_: HeroProps) {
             dragResistance: 0.7,
             edgeResistance: 1,
             liveSnap: {
-              x: (value) => gsap.utils.clamp(-10, 10, value),
-              y: (value) => gsap.utils.clamp(-8, 8, value),
+              x: (value) => gsap.utils.clamp(-dragLimitX, dragLimitX, value),
+              y: (value) => gsap.utils.clamp(-dragLimitY, dragLimitY, value),
             },
             onPress() {
               (this.target as HTMLElement).style.cursor = "grabbing";
@@ -607,7 +621,7 @@ export default function Hero(_: HeroProps) {
     <section
       ref={sectionRef}
       id="home"
-      className="relative flex min-h-screen items-end justify-center overflow-hidden bg-[#050505] px-0 pt-10"
+      className="hero relative flex min-h-screen items-end justify-center overflow-hidden bg-[#050505] px-0 pt-10"
     >
       <div
         ref={stageRef}

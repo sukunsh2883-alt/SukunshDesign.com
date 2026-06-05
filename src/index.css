@@ -136,11 +136,15 @@
   --color-neutral-950: #09090b;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   background-color: #050505;
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
-  overflow-x: hidden;
   overscroll-behavior-y: none;
   scroll-behavior: smooth;
   text-rendering: geometricPrecision;
@@ -382,6 +386,12 @@ header *,
 }
 
 /* Inline SVG hero stage and JS-created beetle layer. */
+.hero {
+  min-height: 100svh;
+  overflow: hidden;
+  width: 100%;
+}
+
 .svg-stage {
   background: #050505;
   position: relative;
@@ -457,4 +467,115 @@ header *,
   stroke: rgba(255, 245, 210, 0.55);
   stroke-width: 1.5;
   transform-origin: center center;
+}
+
+@media (max-width: 1024px) {
+  .svg-stage {
+    align-items: center;
+    display: flex;
+    height: 100svh;
+    justify-content: center;
+    margin-bottom: -5vh !important;
+    overflow: hidden;
+    width: 100vw !important;
+  }
+
+  .svg-stage > svg:not(.beetle-svg) {
+    height: auto !important;
+    max-width: none;
+    width: 165vw !important;
+  }
+
+  .svg-stage #Layer_147,
+  .svg-stage #Layer_148 {
+    transform-box: fill-box;
+    transform-origin: center center;
+  }
+
+  .svg-stage #Layer_147 rect,
+  .svg-stage #Layer_148 text {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    align-items: center;
+    min-height: 100svh;
+    padding-top: 0 !important;
+  }
+
+  .svg-stage {
+    aspect-ratio: auto !important;
+    height: 100svh;
+    margin-bottom: -2vh !important;
+    overflow: hidden;
+    width: 100vw !important;
+  }
+
+  .svg-stage > svg:not(.beetle-svg) {
+    height: auto !important;
+    max-width: none;
+    width: 215vw !important;
+  }
+
+  .svg-stage #Layer_147 rect {
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.42));
+    stroke-width: 1px;
+  }
+
+  .svg-stage #Layer_148 text,
+  .svg-stage #Layer_148 tspan {
+    font-size: 10px !important;
+  }
+
+  .beetle-wrap {
+    left: 30%;
+    top: 70%;
+    width: 34px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .navbar nav {
+    height: 56px;
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .svg-stage {
+    margin-bottom: -1vh !important;
+  }
+
+  .svg-stage > svg:not(.beetle-svg) {
+    width: 250vw !important;
+  }
+
+  .svg-stage #Layer_148 text,
+  .svg-stage #Layer_148 tspan {
+    font-size: 9px !important;
+  }
+
+  .beetle-wrap {
+    width: 30px;
+  }
+}
+
+@media (max-width: 380px) {
+  .svg-stage > svg:not(.beetle-svg) {
+    width: 270vw !important;
+  }
+
+  .svg-stage #Layer_147,
+  .svg-stage #Layer_148 {
+    display: none;
+  }
 }
