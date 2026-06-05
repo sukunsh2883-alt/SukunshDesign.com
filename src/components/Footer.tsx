@@ -25,7 +25,7 @@ export default function Footer({ profile }: FooterProps) {
           </p>
           <a
             href={`mailto:${profile.email}`}
-            className="rounded-full bg-[832d1a] px-7 py-4 text-xs font-semibold uppercase text-white transition-colors hover:bg-[#050505]"
+            className="rounded-full bg-[#832d1a] px-7 py-4 text-xs font-semibold uppercase text-white transition-colors hover:bg-[#050505]"
           >
             Let&apos;s Connect
           </a>
