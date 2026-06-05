@@ -225,9 +225,8 @@ export default function Hero(_: HeroProps) {
 
           if (shirt) {
             gsap.to(shirt, {
-              y: -0.8,
-              scaleY: 1.003,
-              duration: 5.2,
+              y: -0.2,
+              duration: 5.5,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
@@ -236,9 +235,8 @@ export default function Hero(_: HeroProps) {
 
           if (collar) {
             gsap.to(collar, {
-              y: -0.45,
-              rotation: 0.35,
-              duration: 4.8,
+              rotation: 0.08,
+              duration: 5.8,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
@@ -247,9 +245,8 @@ export default function Hero(_: HeroProps) {
 
           if (collarTwo) {
             gsap.to(collarTwo, {
-              y: -0.45,
-              rotation: -0.35,
-              duration: 5,
+              rotation: -0.08,
+              duration: 6,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
