@@ -383,6 +383,7 @@ header *,
 
 /* Inline SVG hero stage and JS-created beetle layer. */
 .svg-stage {
+  background: #050505;
   position: relative;
 }
 

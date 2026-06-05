@@ -89,6 +89,8 @@ export default function Hero(_: HeroProps) {
     const dragItems = draggableSelectors.flatMap((selector) => scopedSelector(selector));
     const svg = stage.querySelector("svg");
     const heroText = scopedSelector("#Sukunsh")[0];
+    const tagRects = scopedSelector("#Layer_147 rect") as unknown as SVGGraphicsElement[];
+    const tagTexts = scopedSelector("#Layer_148 text") as unknown as SVGGraphicsElement[];
     const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
       (layer) => layer.id !== "Sukunsh" && layer.id !== "Layer_38",
     );
@@ -99,8 +101,10 @@ export default function Hero(_: HeroProps) {
     const collarTwo = scopedSelector("#coler_2")[0];
     const allDraggables: Draggable[] = [];
     let ticker: (() => void) | null = null;
+    let tickerActive = false;
     let beetleFlight: gsap.core.Timeline | null = null;
     let beetleWings: gsap.core.Timeline | null = null;
+    const cleanupFns: Array<() => void> = [];
 
     if (!stage.querySelector(".beetle-wrap")) {
       stage.insertAdjacentHTML("beforeend", beetleMarkup());
@@ -117,12 +121,14 @@ export default function Hero(_: HeroProps) {
     };
 
     const ctx = gsap.context(() => {
+      gsap.ticker.lagSmoothing(0);
       gsap.set(stage, { opacity: 1 });
       gsap.set(svg, { transformOrigin: "center bottom" });
       gsap.set(heroText, { transformOrigin: "center center" });
       gsap.set(artworkLayers, { transformOrigin: "center bottom" });
       gsap.set(flowers, { transformOrigin: "center bottom" });
       gsap.set(leaves, { transformOrigin: "center bottom" });
+      gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
       gsap.set(dragItems, { transformOrigin: "center center" });
 
       if (head) gsap.set(head, { transformOrigin: "center bottom" });
@@ -238,8 +244,85 @@ export default function Hero(_: HeroProps) {
         });
       };
 
+      const ensureLoop = () => {
+        if (!reduceMotion && ticker && !tickerActive) {
+          gsap.ticker.add(ticker);
+          tickerActive = true;
+        }
+
+        motion.growth = 1;
+        gsap.globalTimeline.resume();
+        gsap.ticker.wake();
+        beetleFlight?.resume();
+        ScrollTrigger.refresh();
+      };
+
       stage.addEventListener("mouseenter", strengthenMotion);
       stage.addEventListener("mouseleave", softenMotion);
+      window.addEventListener("focus", ensureLoop);
+      window.addEventListener("pageshow", ensureLoop);
+      document.addEventListener("visibilitychange", ensureLoop);
+      window.addEventListener("scroll", ensureLoop, { passive: true });
+      cleanupFns.push(
+        () => stage.removeEventListener("mouseenter", strengthenMotion),
+        () => stage.removeEventListener("mouseleave", softenMotion),
+        () => window.removeEventListener("focus", ensureLoop),
+        () => window.removeEventListener("pageshow", ensureLoop),
+        () => document.removeEventListener("visibilitychange", ensureLoop),
+        () => window.removeEventListener("scroll", ensureLoop),
+      );
+
+      tagRects.forEach((rect, index) => {
+        const label = tagTexts[index];
+        const enterTag = () => {
+          gsap.to(rect, {
+            fill: "rgba(255,255,255,0.34)",
+            stroke: "rgba(255,255,255,0.82)",
+            scale: 1.055,
+            duration: 0.45,
+            ease: "power3.out",
+            overwrite: "auto",
+          });
+          if (label) {
+            gsap.to(label, {
+              y: -1.4,
+              scale: 1.035,
+              duration: 0.45,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+          }
+        };
+
+        const leaveTag = () => {
+          gsap.to(rect, {
+            fill: "rgba(255,255,255,0.2)",
+            stroke: "rgba(255,255,255,0.58)",
+            scale: 1,
+            duration: 0.65,
+            ease: "power3.out",
+            overwrite: "auto",
+          });
+          if (label) {
+            gsap.to(label, {
+              y: 0,
+              scale: 1,
+              duration: 0.65,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+          }
+        };
+
+        (rect as unknown as HTMLElement).style.pointerEvents = "all";
+        (rect as unknown as HTMLElement).style.cursor = "pointer";
+        rect.addEventListener("mouseenter", enterTag);
+        rect.addEventListener("mouseleave", leaveTag);
+        cleanupFns.push(
+          () => rect.removeEventListener("mouseenter", enterTag),
+          () => rect.removeEventListener("mouseleave", leaveTag),
+        );
+      });
 
       flowers.forEach((flower) => {
         (flower as HTMLElement).style.pointerEvents = "all";
@@ -295,6 +378,7 @@ export default function Hero(_: HeroProps) {
         };
 
         gsap.ticker.add(ticker);
+        tickerActive = true;
       }
 
       dragItems.forEach((item) => {
@@ -493,13 +577,13 @@ export default function Hero(_: HeroProps) {
       }
 
       return () => {
-        stage.removeEventListener("mouseenter", strengthenMotion);
-        stage.removeEventListener("mouseleave", softenMotion);
+        cleanupFns.forEach((cleanup) => cleanup());
       };
     }, stage);
 
     return () => {
-      if (ticker) gsap.ticker.remove(ticker);
+      if (ticker && tickerActive) gsap.ticker.remove(ticker);
+      tickerActive = false;
       allDraggables.forEach((draggable) => draggable.kill());
       beetleFlight?.kill();
       beetleWings?.kill();
