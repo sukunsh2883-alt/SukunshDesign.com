@@ -9,7 +9,7 @@ interface HeroProps {
   onOpenAIWork?: () => void;
 }
 
-const SVG_URL = "/artwork/Asset 197.svg";
+const SVG_URL = "/artwork/main artwork.svg";
 
 const flowerSelectors = Array.from({ length: 9 }, (_, index) => `#flower_${index + 1}`);
 const leafSelectors = Array.from({ length: 11 }, (_, index) => `#leaf_${index + 1}`);
