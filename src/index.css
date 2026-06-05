@@ -393,6 +393,10 @@ header *,
   width: 100%;
 }
 
+.svg-stage #Layer_38 rect {
+  fill: #050505 !important;
+}
+
 .svg-stage text,
 .svg-stage tspan {
   font-family: "Clash Display Local", sans-serif !important;

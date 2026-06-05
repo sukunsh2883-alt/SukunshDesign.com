@@ -89,6 +89,9 @@ export default function Hero(_: HeroProps) {
     const dragItems = draggableSelectors.flatMap((selector) => scopedSelector(selector));
     const svg = stage.querySelector("svg");
     const heroText = scopedSelector("#Sukunsh")[0];
+    const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
+      (layer) => layer.id !== "Sukunsh" && layer.id !== "Layer_38",
+    );
     const head = scopedSelector("#head-2")[0] || scopedSelector("#head")[0];
     const bigPen = scopedSelector("#right_arm_with_pen-2")[0];
     const shirt = scopedSelector("#shirt-2")[0];
@@ -96,7 +99,6 @@ export default function Hero(_: HeroProps) {
     const collarTwo = scopedSelector("#coler_2")[0];
     const allDraggables: Draggable[] = [];
     let ticker: (() => void) | null = null;
-    let tickerStart: gsap.core.Tween | null = null;
     let beetleFlight: gsap.core.Timeline | null = null;
     let beetleWings: gsap.core.Timeline | null = null;
 
@@ -118,6 +120,7 @@ export default function Hero(_: HeroProps) {
       gsap.set(stage, { opacity: 1 });
       gsap.set(svg, { transformOrigin: "center bottom" });
       gsap.set(heroText, { transformOrigin: "center center" });
+      gsap.set(artworkLayers, { transformOrigin: "center bottom" });
       gsap.set(flowers, { transformOrigin: "center bottom" });
       gsap.set(leaves, { transformOrigin: "center bottom" });
       gsap.set(dragItems, { transformOrigin: "center center" });
@@ -139,48 +142,24 @@ export default function Hero(_: HeroProps) {
 
         gsap
           .timeline({ delay: 0.18 })
-          .fromTo(
-            leaves,
-            { autoAlpha: 0, scaleY: 0.18, y: 18, rotation: -3 },
-            {
-              autoAlpha: 1,
-              scaleY: 1,
-              y: 0,
-              rotation: 0,
-              duration: 1.35,
-              stagger: 0.045,
-              ease: "expo.out",
-            },
-            0,
-          )
-          .fromTo(
-            flowers,
-            { autoAlpha: 0, scale: 0.18, y: 16, rotation: -10 },
-            {
-              autoAlpha: 1,
-              scale: 1,
-              y: 0,
-              rotation: 0,
-              duration: 1.15,
-              stagger: 0.055,
-              ease: "back.out(1.45)",
-            },
-            0.18,
-          )
-          .to(motion, { growth: 1, duration: 1.35, ease: "power3.out" }, 0);
+          .set([...leaves, ...flowers], { autoAlpha: 0 }, 0)
+          .to(leaves, { autoAlpha: 1, duration: 0.7, stagger: 0.035, ease: "power2.out" }, 0)
+          .to(flowers, { autoAlpha: 1, duration: 0.65, stagger: 0.045, ease: "power2.out" }, 0.16)
+          .to(motion, { growth: 1, duration: 1.9, ease: "expo.out" }, 0);
 
-        if (svg && heroText) {
+        if (artworkLayers.length && heroText) {
           gsap
             .timeline({
               scrollTrigger: {
                 trigger: section,
                 start: "top top",
                 end: "bottom top",
-                scrub: 1.25,
+                scrub: 1.6,
+                invalidateOnRefresh: true,
               },
             })
-            .to(svg, { y: -54, scale: 0.986, ease: "none" }, 0)
-            .to(heroText, { y: -118, opacity: 0.42, ease: "none" }, 0);
+            .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0)
+            .to(heroText, { y: -120, opacity: 0.45, ease: "none" }, 0);
         }
 
         if (head) {
@@ -294,9 +273,9 @@ export default function Hero(_: HeroProps) {
             const growth = motion.growth;
 
             gsap.set(flower, {
-              x: softWave * 1.4 * amp,
-              y: wave * 3.8 * amp,
-              rotation: wave * 3.6 * amp,
+              x: softWave * 1.4 * amp * growth,
+              y: wave * 3.8 * amp * growth,
+              rotation: wave * 3.6 * amp * growth,
               scale: growth * (1 + Math.abs(wave) * 0.01 * amp),
             });
           });
@@ -308,16 +287,14 @@ export default function Hero(_: HeroProps) {
             const growth = motion.growth;
 
             gsap.set(leaf, {
-              x: wave * 2.2 * amp,
-              rotation: wave * 5.8 * amp,
+              x: wave * 2.2 * amp * growth,
+              rotation: wave * 5.8 * amp * growth,
               scaleY: growth,
             });
           });
         };
 
-        tickerStart = gsap.delayedCall(1.35, () => {
-          if (ticker) gsap.ticker.add(ticker);
-        });
+        gsap.ticker.add(ticker);
       }
 
       dragItems.forEach((item) => {
@@ -523,7 +500,6 @@ export default function Hero(_: HeroProps) {
 
     return () => {
       if (ticker) gsap.ticker.remove(ticker);
-      tickerStart?.kill();
       allDraggables.forEach((draggable) => draggable.kill());
       beetleFlight?.kill();
       beetleWings?.kill();
