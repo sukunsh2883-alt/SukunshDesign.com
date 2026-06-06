@@ -13,6 +13,7 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
   const sectionRef = useRef<HTMLElement | null>(null);
   const displayedProjects = projects.slice(0, 3);
   const [firstProject, secondProject, featureProject] = displayedProjects;
+  const renderMeta = (project: DesignProject) => `${project.title} / ${project.type}`;
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -38,10 +39,10 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
 
   return (
     <section ref={sectionRef} id="projects" className="bg-[#050505] px-6 py-16 text-[#f7ecd8] md:px-8 md:py-24">
-      <div className="mx-auto max-w-[1520px]">
+      <div className="mx-auto max-w-[1320px]">
         <div className="work-reveal mb-8 flex items-start justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-semibold tracking-[-0.055em] md:text-5xl">
+            <h2 className="text-3xl font-semibold tracking-[-0.052em] md:text-5xl">
               Selected Project
             </h2>
           </div>
@@ -54,19 +55,29 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
           </button>
         </div>
 
-        <div className="work-reveal grid gap-1 md:grid-cols-2">
+        <div className="work-reveal grid gap-5 md:grid-cols-2 md:gap-6">
           {firstProject && (
             <button
               type="button"
               onClick={() => onSelectProject(firstProject)}
-              className="group flex min-h-[150px] flex-col justify-between bg-[#ffc84a] p-6 text-left text-black transition-transform duration-500 hover:scale-[1.01] md:min-h-[190px] md:p-8"
+              className="group text-left"
             >
-              <h3 className="max-w-sm text-3xl font-semibold leading-[1.08] tracking-[-0.055em] md:text-5xl">
-                {firstProject.title}
-              </h3>
-              <p className="mt-8 text-[10px] font-medium text-black/75 md:text-xs">
-                {firstProject.title} / {firstProject.type}
-              </p>
+              <div className="relative aspect-[1.35] w-full overflow-hidden bg-[#151515]">
+                <img
+                  src={firstProject.image}
+                  alt={firstProject.title}
+                  className="h-full w-full object-cover object-center transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 text-[#f7ecd8]">
+                <h3 className="text-lg font-semibold leading-none tracking-[-0.045em] md:text-2xl">
+                  {firstProject.title}
+                </h3>
+                <p className="text-[10px] font-medium text-[#f7ecd8]/55 md:text-xs">
+                  {firstProject.type}
+                </p>
+              </div>
             </button>
           )}
 
@@ -74,14 +85,24 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
             <button
               type="button"
               onClick={() => onSelectProject(secondProject)}
-              className="group flex min-h-[150px] flex-col justify-between bg-[#f25a00] p-6 text-left text-black transition-transform duration-500 hover:scale-[1.01] md:min-h-[190px] md:p-8"
+              className="group text-left"
             >
-              <h3 className="max-w-sm text-3xl font-semibold leading-[1.08] tracking-[-0.055em] md:text-5xl">
-                {secondProject.title}
-              </h3>
-              <p className="mt-8 text-[10px] font-medium text-black/75 md:text-xs">
-                {secondProject.title} / {secondProject.type}
-              </p>
+              <div className="relative aspect-[1.35] w-full overflow-hidden bg-[#151515]">
+                <img
+                  src={secondProject.image}
+                  alt={secondProject.title}
+                  className="h-full w-full object-cover object-center transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 text-[#f7ecd8]">
+                <h3 className="text-lg font-semibold leading-none tracking-[-0.045em] md:text-2xl">
+                  {secondProject.title}
+                </h3>
+                <p className="text-[10px] font-medium text-[#f7ecd8]/55 md:text-xs">
+                  {secondProject.type}
+                </p>
+              </div>
             </button>
           )}
 
@@ -89,16 +110,23 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
             <button
               type="button"
               onClick={() => onSelectProject(featureProject)}
-              className="group flex min-h-[250px] flex-col justify-between bg-[#89a65a] p-6 text-left text-black transition-transform duration-500 hover:scale-[1.005] md:col-span-2 md:min-h-[420px] md:p-8"
+              className="group relative min-h-[300px] overflow-hidden bg-[#151515] text-left md:col-span-2 md:min-h-[430px]"
             >
-              <div className="flex flex-1 items-center justify-center">
-                <h3 className="text-center text-5xl font-semibold tracking-[-0.06em] md:text-7xl">
-                  Portfolio 2026
+              <img
+                src={featureProject.image}
+                alt={featureProject.title}
+                className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.025]"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/5 to-transparent" />
+              <div className="relative flex h-full min-h-[300px] flex-col justify-end p-6 md:min-h-[430px] md:p-8">
+                <h3 className="max-w-2xl text-4xl font-semibold leading-[0.98] tracking-[-0.058em] text-white md:text-7xl">
+                  {featureProject.title}
                 </h3>
+                <p className="mt-4 text-[10px] font-medium text-white/70 md:text-xs">
+                  {renderMeta(featureProject)}
+                </p>
               </div>
-              <p className="text-[10px] font-medium text-black/75 md:text-xs">
-                {featureProject.title} / {featureProject.type}
-              </p>
             </button>
           )}
         </div>
