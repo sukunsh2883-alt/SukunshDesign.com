@@ -14,7 +14,39 @@ const SVG_URL = "/artwork/main artwork.svg";
 
 const flowerSelectors = Array.from({ length: 9 }, (_, index) => `#flower_${index + 1}`);
 const leafSelectors = Array.from({ length: 11 }, (_, index) => `#leaf_${index + 1}`);
-const draggableSelectors = ["#right_arm_with_pen-2", "#pentab-2", "#ipad-2", "#blue_pen-2", "#pink"];
+const characterPartIds = [
+  "blue_pen-2",
+  "pink",
+  "ipad-2",
+  "paper-2",
+  "red_bag-2",
+  "pentab-2",
+  "Layer_136",
+  "Layer_135",
+  "Layer_134",
+  "Layer_133",
+  "Layer_152",
+  "Layer_130",
+  "Layer_129",
+  "right_arm_with_pen-2",
+  "Layer_151",
+  "Layer_228",
+  "Layer_123",
+  "shirt-2",
+  "green_bag",
+  "Layer_119",
+  "Layer_153",
+  "Layer_118",
+  "Layer_117",
+  "camera-2",
+  "Layer_116",
+  "Layer_114",
+  "Layer_113",
+  "Layer_112",
+  "Layer_111",
+  "Layer_109",
+  "Layer_108",
+];
 
 function cleanSvg(svg: string) {
   return svg
@@ -26,7 +58,7 @@ function cleanSvg(svg: string) {
 function beetleMarkup() {
   return `
     <div class="beetle-wrap">
-      <svg class="beetle-svg" viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+      <svg class="beetle-svg" viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <g id="beetle">
           <path class="beetle-wing wing-left" d="M64 42 C38 14 14 34 30 62 C44 86 66 70 64 42Z" />
           <path class="beetle-wing wing-right" d="M76 42 C104 14 128 36 110 64 C96 88 75 70 76 42Z" />
@@ -72,41 +104,59 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const isTouch = window.matchMedia("(pointer: coarse)").matches;
       const isMobile = window.innerWidth < 768;
-      const dragLimitX = isMobile ? 4 : 10;
-      const dragLimitY = isMobile ? 3 : 8;
       const scopedSelector = gsap.utils.selector(stage);
       const flowers = flowerSelectors.flatMap((selector) => scopedSelector(selector));
       const leaves = leafSelectors.flatMap((selector) => scopedSelector(selector));
-      const dragItems = draggableSelectors.flatMap((selector) => scopedSelector(selector));
       const tagRects = scopedSelector("#Layer_147 rect") as unknown as SVGGraphicsElement[];
       const tagTexts = scopedSelector("#Layer_148 text") as unknown as SVGGraphicsElement[];
       const svgElement = stage.querySelector("svg");
       const heroText = scopedSelector("#Sukunsh")[0];
-      const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
-        (layer) => layer.id !== "Sukunsh" && layer.id !== "Layer_38",
-      );
       const selectFirst = (selectors: string[]) =>
         selectors.flatMap((selector) => scopedSelector(selector))[0] as unknown as SVGGraphicsElement | undefined;
-      const neutralHead = selectFirst(["#head_neutral_main", "#HEAD_WITH_SMILE"]);
-      const laughHead = selectFirst(["#head_laugh_asset", "#HEAD"]);
-      const focusedHead = selectFirst(["#head_focused_asset", "#HEAD_WITH_NORMAL_EXPRESION"]);
-      const expressionHeads = [neutralHead, laughHead, focusedHead].filter(Boolean) as SVGGraphicsElement[];
-      const leftPupil = selectFirst(["#left_pupil", "#pupil_left"]);
-      const rightPupil = selectFirst(["#right_pupil", "#pupil_right"]);
-      const pupils = [leftPupil, rightPupil].filter(Boolean) as SVGGraphicsElement[];
-      const head = neutralHead || scopedSelector("#head-2")[0] || scopedSelector("#head")[0];
-      const bigPen = scopedSelector("#right_arm_with_pen-2")[0];
-      const shirt = scopedSelector("#shirt-2")[0];
-      const collar = scopedSelector("#coler")[0];
-      const collarTwo = scopedSelector("#coler_2")[0];
+      const neutralHead = selectFirst(["#HEAD_WITH_SMILE"]);
+      const extraHeads = [
+        selectFirst(["#HEAD"]),
+        selectFirst(["#HEAD_WITH_NORMAL_EXPRESION"]),
+      ].filter(Boolean) as SVGGraphicsElement[];
+      const pupils = [
+        selectFirst(["#pupil_left"]),
+        selectFirst(["#pupil_right"]),
+      ].filter(Boolean) as SVGGraphicsElement[];
+      const characterGroup = (() => {
+        if (!svgElement) return null;
+        const rootGroup = svgElement.querySelector(":scope > g");
+        if (!rootGroup) return null;
+
+        const parts = characterPartIds
+          .map((id) => svgElement.querySelector<SVGGElement>(`#${CSS.escape(id)}`))
+          .filter(Boolean) as SVGGElement[];
+        if (!parts.length) return null;
+
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.setAttribute("id", "character_group");
+        rootGroup.insertBefore(group, parts[0]);
+        parts.forEach((part) => group.appendChild(part));
+        return group as unknown as SVGGraphicsElement;
+      })();
+      const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
+        (layer) =>
+          layer.id !== "Sukunsh" &&
+          layer.id !== "Layer_38" &&
+          layer.id !== "character_group" &&
+          layer.id !== "HEAD" &&
+          layer.id !== "HEAD_WITH_NORMAL_EXPRESION" &&
+          !layer.id.startsWith("flower_") &&
+          !layer.id.startsWith("leaf_") &&
+          layer.id !== "Layer_147" &&
+          layer.id !== "Layer_148",
+      );
       const beetle = stage.querySelector<HTMLElement>(".beetle-wrap");
+      const headFocusTarget = neutralHead || characterGroup || svgElement;
       const allDraggables: Draggable[] = [];
       const cleanupFns: Array<() => void> = [];
+      const timelines: gsap.core.Animation[] = [];
       let beetleFlight: gsap.core.Timeline | null = null;
       let beetleWings: gsap.core.Timeline | null = null;
-      let isHeadHovered = false;
-      let laughTimer = 0;
-      const expressionOffsets = new Map<SVGGraphicsElement, { x: number; y: number }>();
 
       const motion = {
         flowerAmp: isMobile || isTouch ? 0.75 : 1,
@@ -165,21 +215,10 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         gsap.set(flowers, { transformOrigin: "center bottom" });
         gsap.set(leaves, { transformOrigin: "center bottom" });
         gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
-        gsap.set(dragItems, { transformOrigin: "center center" });
-
-        if (head) gsap.set(head, { transformOrigin: "center 78%" });
-        if (expressionHeads.length) {
-          gsap.set(expressionHeads, {
-            pointerEvents: "none",
-            transformBox: "fill-box",
-            transformOrigin: "center 78%",
-          });
-        }
+        gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "center 72%" });
+        gsap.set(neutralHead, { autoAlpha: 1, transformBox: "fill-box", transformOrigin: "center 82%" });
+        gsap.set(extraHeads, { autoAlpha: 0, pointerEvents: "none" });
         gsap.set(pupils, { transformOrigin: "center center" });
-        if (bigPen) gsap.set(bigPen, { transformOrigin: "left center" });
-        if (shirt) gsap.set(shirt, { transformOrigin: "center center" });
-        if (collar) gsap.set(collar, { transformOrigin: "center center" });
-        if (collarTwo) gsap.set(collarTwo, { transformOrigin: "center center" });
 
         const getBox = (element?: SVGGraphicsElement) => {
           try {
@@ -189,75 +228,32 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           }
         };
 
-        const alignExpressionHead = (asset?: SVGGraphicsElement) => {
-          const neutralBox = getBox(neutralHead);
-          const assetBox = getBox(asset);
-          if (!asset || !neutralBox || !assetBox) return;
-
-          gsap.set(asset, {
-            x: neutralBox.x + neutralBox.width / 2 - (assetBox.x + assetBox.width / 2),
-            y: neutralBox.y + neutralBox.height / 2 - (assetBox.y + assetBox.height / 2),
-          });
-          expressionOffsets.set(asset, {
-            x: neutralBox.x + neutralBox.width / 2 - (assetBox.x + assetBox.width / 2),
-            y: neutralBox.y + neutralBox.height / 2 - (assetBox.y + assetBox.height / 2),
-          });
-        };
-
-        alignExpressionHead(laughHead);
-        alignExpressionHead(focusedHead);
-        if (neutralHead) expressionOffsets.set(neutralHead, { x: 0, y: 0 });
-        gsap.set(neutralHead, { autoAlpha: 1, x: 0, y: 0, rotation: 0 });
-        gsap.set([focusedHead, laughHead].filter(Boolean), { autoAlpha: 0, rotation: 0 });
-
-        const showExpression = (mode: "neutral" | "focused" | "laugh") => {
-          const showNeutral = mode === "neutral";
-          const showFocused = mode === "focused";
-          const showLaugh = mode === "laugh";
-
-          gsap.to(neutralHead, {
-            autoAlpha: showNeutral ? 1 : 0,
-            duration: 0.18,
-            ease: "power2.out",
-            overwrite: "auto",
-          });
-          gsap.to(focusedHead, {
-            autoAlpha: showFocused ? 1 : 0,
-            duration: 0.18,
-            ease: "power2.out",
-            overwrite: "auto",
-          });
-          gsap.to(laughHead, {
-            autoAlpha: showLaugh ? 1 : 0,
-            duration: 0.14,
-            ease: "power2.out",
-            overwrite: "auto",
-          });
-        };
-
-        const headQuickSetters = expressionHeads.map((expressionHead) => ({
-          expressionHead,
-          xTo: gsap.quickTo(expressionHead, "x", { duration: 0.42, ease: "power3.out" }),
-          yTo: gsap.quickTo(expressionHead, "y", { duration: 0.42, ease: "power3.out" }),
-          rotateTo: gsap.quickTo(expressionHead, "rotation", { duration: 0.5, ease: "power3.out" }),
-        }));
         const pupilXTo = gsap.quickTo(pupils, "x", { duration: 0.28, ease: "power3.out" });
         const pupilYTo = gsap.quickTo(pupils, "y", { duration: 0.28, ease: "power3.out" });
+        const headRotateTo = neutralHead
+          ? gsap.quickTo(neutralHead, "rotation", { duration: 0.45, ease: "power3.out" })
+          : undefined;
+        const headXTo = neutralHead
+          ? gsap.quickTo(neutralHead, "x", { duration: 0.42, ease: "power3.out" })
+          : undefined;
+        const headYTo = neutralHead
+          ? gsap.quickTo(neutralHead, "y", { duration: 0.42, ease: "power3.out" })
+          : undefined;
 
-        const resetExpressionMotion = () => {
-          alignExpressionHead(laughHead);
-          alignExpressionHead(focusedHead);
-          expressionHeads.forEach((expressionHead) => {
-            const base = expressionOffsets.get(expressionHead) || { x: 0, y: 0 };
-            gsap.to(expressionHead, {
-              x: base.x,
-              y: base.y,
-              rotation: 0,
-              duration: 0.55,
+        const resetHeadFocus = () => {
+          if (svgElement) {
+            gsap.to(svgElement, {
+              scale: 1,
+              x: 0,
+              y: 0,
+              duration: 0.65,
               ease: "power3.out",
               overwrite: "auto",
             });
-          });
+          }
+          headRotateTo?.(0);
+          headXTo?.(0);
+          headYTo?.(0);
           gsap.to(pupils, {
             x: 0,
             y: 0,
@@ -267,77 +263,59 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           });
         };
 
-        const moveExpression = (event: PointerEvent) => {
-          if (!neutralHead) return;
+        const moveHeadFocus = (event: PointerEvent) => {
           const rect = stage.getBoundingClientRect();
           const centerX = rect.left + rect.width * 0.5;
           const centerY = rect.top + rect.height * 0.42;
           const dx = gsap.utils.clamp(-1, 1, (event.clientX - centerX) / (rect.width * 0.38));
           const dy = gsap.utils.clamp(-1, 1, (event.clientY - centerY) / (rect.height * 0.36));
 
-          headQuickSetters.forEach(({ expressionHead, xTo, yTo, rotateTo }) => {
-            const base = expressionOffsets.get(expressionHead) || { x: 0, y: 0 };
-            xTo(base.x + dx * 1.2);
-            yTo(base.y + dy * 0.9);
-            rotateTo(dx * 2.2);
-          });
-          pupilXTo(dx * 1.35);
-          pupilYTo(dy * 0.85);
+          headRotateTo?.(dx * 2);
+          headXTo?.(dx * 0.65);
+          headYTo?.(dy * 0.45);
+          pupilXTo(dx * 0.95);
+          pupilYTo(dy * 0.62);
         };
 
-        const enterExpression = (event: PointerEvent) => {
-          isHeadHovered = true;
-          showExpression("focused");
-          moveExpression(event);
-        };
-
-        const leaveExpression = () => {
-          isHeadHovered = false;
-          window.clearTimeout(laughTimer);
-          showExpression("neutral");
-          resetExpressionMotion();
-        };
-
-        const clickExpression = (event: PointerEvent) => {
-          window.clearTimeout(laughTimer);
-          isHeadHovered = true;
-          showExpression("laugh");
-          moveExpression(event);
-          laughTimer = window.setTimeout(() => {
-            showExpression(isHeadHovered ? "focused" : "neutral");
-          }, 600);
-        };
-
-        if (!isTouch && neutralHead && (focusedHead || laughHead)) {
-          const neutralBox = getBox(neutralHead);
-          const ownerSvg = neutralHead.ownerSVGElement;
-          const expressionHitArea = neutralBox && ownerSvg
+        if (!isTouch && headFocusTarget && svgElement) {
+          const focusBox = getBox(headFocusTarget as SVGGraphicsElement);
+          const ownerSvg = (headFocusTarget as SVGGraphicsElement).ownerSVGElement;
+          const headHitArea = focusBox && ownerSvg
             ? document.createElementNS("http://www.w3.org/2000/svg", "rect")
             : null;
 
-          if (expressionHitArea && neutralBox && ownerSvg) {
-            expressionHitArea.setAttribute("x", String(neutralBox.x - 8));
-            expressionHitArea.setAttribute("y", String(neutralBox.y - 8));
-            expressionHitArea.setAttribute("width", String(neutralBox.width + 16));
-            expressionHitArea.setAttribute("height", String(neutralBox.height + 16));
-            expressionHitArea.setAttribute("fill", "transparent");
-            expressionHitArea.setAttribute("pointer-events", "all");
-            expressionHitArea.setAttribute("aria-hidden", "true");
-            ownerSvg.appendChild(expressionHitArea);
+          if (headHitArea && focusBox && ownerSvg) {
+            headHitArea.setAttribute("x", String(focusBox.x - 18));
+            headHitArea.setAttribute("y", String(focusBox.y - 18));
+            headHitArea.setAttribute("width", String(focusBox.width + 36));
+            headHitArea.setAttribute("height", String(focusBox.height + 36));
+            headHitArea.setAttribute("fill", "transparent");
+            headHitArea.setAttribute("pointer-events", "all");
+            headHitArea.setAttribute("aria-hidden", "true");
+            ownerSvg.appendChild(headHitArea);
 
-            expressionHitArea.addEventListener("pointerenter", enterExpression);
-            expressionHitArea.addEventListener("pointermove", moveExpression);
-            expressionHitArea.addEventListener("pointerleave", leaveExpression);
-            expressionHitArea.addEventListener("click", clickExpression);
+            const enterHeadFocus = (event: PointerEvent) => {
+              gsap.to(svgElement, {
+                scale: 1.055,
+                x: -12,
+                y: 8,
+                duration: 0.5,
+                ease: "power3.out",
+                overwrite: "auto",
+              });
+              moveHeadFocus(event);
+            };
+
+            headHitArea.addEventListener("pointerenter", enterHeadFocus);
+            headHitArea.addEventListener("pointermove", moveHeadFocus);
+            headHitArea.addEventListener("pointerleave", resetHeadFocus);
             cleanupFns.push(
-              () => expressionHitArea.removeEventListener("pointerenter", enterExpression),
-              () => expressionHitArea.removeEventListener("pointermove", moveExpression),
-              () => expressionHitArea.removeEventListener("pointerleave", leaveExpression),
-              () => expressionHitArea.removeEventListener("click", clickExpression),
-              () => expressionHitArea.remove(),
+              () => headHitArea.removeEventListener("pointerenter", enterHeadFocus),
+              () => headHitArea.removeEventListener("pointermove", moveHeadFocus),
+              () => headHitArea.removeEventListener("pointerleave", resetHeadFocus),
+              () => headHitArea.remove(),
             );
           }
-          cleanupFns.push(() => window.clearTimeout(laughTimer));
         }
 
         if (!reduceMotion) {
@@ -349,15 +327,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               duration: 1,
               ease: "power3.out",
             });
-
-            gsap.to(svgElement, {
-              y: -2,
-              scale: 1.006,
-              duration: 5.8,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-            });
           }
 
           gsap
@@ -367,7 +336,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             .to(flowers, { autoAlpha: 1, duration: 0.65, stagger: 0.045, ease: "power2.out" }, 0.16)
             .to(motion, { growth: 1, duration: 1.9, ease: "expo.out" }, 0);
 
-          if (artworkLayers.length && heroText) {
+          if (artworkLayers.length) {
             gsap
               .timeline({
                 scrollTrigger: {
@@ -378,74 +347,31 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
                   invalidateOnRefresh: true,
                 },
               })
-              .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0)
-              .to(heroText, { y: -120, opacity: 0.45, ease: "none" }, 0);
+              .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0);
           }
 
-          if (head && !expressionHeads.length) {
-            gsap.to(head, {
-              rotation: 1.4,
-              x: 0.8,
-              y: -1.4,
-              duration: 4.8,
+          if (characterGroup) {
+            timelines.push(gsap.to(characterGroup, {
+              y: -3,
+              scale: 1.01,
+              duration: 3.2,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
-            });
-          }
-
-          if (bigPen) {
-            gsap.to(bigPen, {
-              rotation: 0.45,
-              x: 0.6,
-              y: -0.4,
-              duration: 5,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-            });
-          }
-
-          if (shirt) {
-            gsap.to(shirt, {
-              y: -0.2,
-              duration: 5.5,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-            });
-          }
-
-          if (collar) {
-            gsap.to(collar, {
-              rotation: 0.08,
-              duration: 5.8,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-            });
-          }
-
-          if (collarTwo) {
-            gsap.to(collarTwo, {
-              rotation: -0.08,
-              duration: 6,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-            });
+              overwrite: "auto",
+            }));
           }
 
           gsap.ticker.add(tickerFn);
 
-          gsap.to(tagRects, {
+          timelines.push(gsap.to(tagRects, {
             scale: 1.018,
             duration: 2.6,
             repeat: -1,
             yoyo: true,
             stagger: 0.25,
             ease: "sine.inOut",
-          });
+          }));
         }
 
         const strengthenMotion = () => {
@@ -575,55 +501,15 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           }
         });
 
-        dragItems.forEach((item) => {
-          const element = item as unknown as SVGGraphicsElement;
-          (element as unknown as HTMLElement).style.pointerEvents = "all";
-          (element as unknown as HTMLElement).style.cursor = "grab";
-
-          const draggable = Draggable.create(element, {
-            type: "x,y",
-            dragResistance: 0.7,
-            edgeResistance: 1,
-            liveSnap: {
-              x: (value) => gsap.utils.clamp(-dragLimitX, dragLimitX, value),
-              y: (value) => gsap.utils.clamp(-dragLimitY, dragLimitY, value),
-            },
-            onPress() {
-              (this.target as HTMLElement).style.cursor = "grabbing";
-              gsap.to(this.target, {
-                scale: 1.01,
-                duration: 0.25,
-                ease: "power2.out",
-                overwrite: "auto",
-              });
-            },
-            onDrag() {
-              gsap.to(this.target, {
-                rotation: gsap.utils.clamp(-1.8, 1.8, this.x * 0.06),
-                duration: 0.18,
-                ease: "power2.out",
-                overwrite: "auto",
-              });
-            },
-            onRelease() {
-              (this.target as HTMLElement).style.cursor = "grab";
-              gsap.to(this.target, {
-                x: 0,
-                y: 0,
-                rotation: 0,
-                scale: 1,
-                duration: 0.9,
-                ease: "elastic.out(1, 0.55)",
-                overwrite: "auto",
-              });
-            },
-          })[0];
-
-          allDraggables.push(draggable);
-        });
-
         if (beetle) {
           const wings = gsap.utils.toArray<SVGElement>(".beetle-wing");
+          const svgBox = svgElement?.viewBox?.baseVal;
+          const headBox = getBox(neutralHead);
+          if (svgBox && headBox) {
+            beetle.style.left = `${((headBox.x + headBox.width * 0.72) / svgBox.width) * 100}%`;
+            beetle.style.top = `${((headBox.y + headBox.height * 0.18) / svgBox.height) * 100}%`;
+          }
+
           gsap.set(beetle, {
             x: 0,
             y: 0,
@@ -654,13 +540,13 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               ease: "sine.inOut",
             });
 
-            gsap.to("#beetle", {
+            timelines.push(gsap.to("#beetle", {
               y: -1,
               duration: 1.4,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
-            });
+            }));
           }
 
           beetleWings = gsap.timeline({ repeat: -1, paused: true });
@@ -672,12 +558,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             .to(".wing-right", { scaleX: 1, rotation: 0, duration: 0.06, ease: "power1.inOut" }, 0.06);
 
           const beetleHome = { x: 0, y: 0, rotation: -8, scale: 1 };
-          const setBeetleHome = (x: number, y: number, rotation: number, scale: number) => {
-            beetleHome.x = x;
-            beetleHome.y = y;
-            beetleHome.rotation = rotation;
-            beetleHome.scale = scale;
-          };
 
           const startFly = () => {
             beetleWings?.play();
@@ -702,42 +582,24 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               y: beetleHome.y,
               rotation: beetleHome.rotation,
               scale: beetleHome.scale,
-              duration: 0.9,
-              ease: "power3.out",
+              duration: 0.8,
+              ease: "elastic.out(1, 0.45)",
+              overwrite: "auto",
               onComplete: () => {
-                stopFly();
                 beetleFlight?.resume();
               },
             });
           };
 
           if (!reduceMotion) {
-            beetleFlight = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
+            startFly();
+            beetleFlight = gsap.timeline({ repeat: -1 });
             beetleFlight
-              .call(() => {
-                stopFly();
-                setBeetleHome(0, 0, -8, 1);
-              })
-              .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 1.2, ease: "sine.inOut" })
-              .call(startFly)
-              .to(beetle, { x: 120, y: -95, rotation: 16, scale: 1.08, duration: 1.25, ease: "power2.inOut" })
-              .to(beetle, { x: 250, y: -42, rotation: -10, scale: 1.03, duration: 1.1, ease: "power2.inOut" })
-              .call(() => setBeetleHome(318, 18, 5, 0.96))
-              .to(beetle, { x: 318, y: 18, rotation: 5, scale: 0.96, duration: 0.75, ease: "power3.out" })
-              .call(stopFly)
-              .to(beetle, { y: 15, duration: 1.3, ease: "sine.inOut" })
-              .call(startFly)
-              .to(beetle, { x: 210, y: -118, rotation: -18, scale: 1.08, duration: 1.2, ease: "power2.inOut" })
-              .to(beetle, { x: -65, y: -58, rotation: 14, scale: 1.02, duration: 1.45, ease: "power2.inOut" })
-              .call(() => setBeetleHome(-128, 28, -7, 0.96))
-              .to(beetle, { x: -128, y: 28, rotation: -7, scale: 0.96, duration: 0.8, ease: "power3.out" })
-              .call(stopFly)
-              .to(beetle, { y: 25, duration: 1.3, ease: "sine.inOut" })
-              .call(startFly)
-              .to(beetle, { x: -20, y: -82, rotation: 16, scale: 1.06, duration: 1.2, ease: "power2.inOut" })
-              .call(() => setBeetleHome(0, 0, -8, 1))
-              .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 0.9, ease: "power3.out" })
-              .call(stopFly);
+              .to(beetle, { x: 22, y: -20, rotation: 14, scale: 1.08, duration: 1.55, ease: "sine.inOut", overwrite: "auto" })
+              .to(beetle, { x: 42, y: 6, rotation: -8, scale: 1.02, duration: 1.3, ease: "sine.inOut", overwrite: "auto" })
+              .to(beetle, { x: 12, y: 24, rotation: 10, scale: 0.98, duration: 1.45, ease: "sine.inOut", overwrite: "auto" })
+              .to(beetle, { x: -16, y: 4, rotation: -12, scale: 1.04, duration: 1.4, ease: "sine.inOut", overwrite: "auto" })
+              .to(beetle, { x: 0, y: 0, rotation: -8, scale: 1, duration: 1.2, ease: "sine.inOut", overwrite: "auto" });
           }
 
           const beetleDraggable = Draggable.create(beetle, {
@@ -774,6 +636,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           gsap.ticker.remove(tickerFn);
           cleanupFns.forEach((cleanup) => cleanup());
           allDraggables.forEach((draggable) => draggable.kill());
+          timelines.forEach((timeline) => timeline.kill());
           beetleFlight?.kill();
           beetleWings?.kill();
         };
