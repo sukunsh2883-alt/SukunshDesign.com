@@ -138,7 +138,7 @@
 
 html,
 body {
-  background: #0f0f0e;
+  background: #050505;
   margin: 0;
   min-height: 100%;
   overflow-x: hidden;
@@ -147,7 +147,7 @@ body {
 }
 
 body {
-  background-color: #0f0f0e;
+  background-color: #050505;
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
   overscroll-behavior-y: none;
@@ -401,7 +401,7 @@ header *,
 
 /* Inline SVG hero stage and JS-created beetle layer. */
 .hero {
-  background: #0f0f0e;
+  background: #050505;
   min-height: 100svh;
   overflow: hidden;
   position: relative;
@@ -418,14 +418,14 @@ header *,
 
 .svg-stage {
   align-items: center;
-  background: #0f0f0e;
+  background: #050505;
   display: flex;
   height: 100svh;
   justify-content: center;
   min-height: 100svh;
   overflow: hidden;
   position: relative;
-  width: min(142vw, 1760px);
+  width: min(150vw, 1880px);
 }
 
 .svg-stage > svg {
@@ -436,7 +436,7 @@ header *,
 }
 
 .svg-stage #Layer_38 rect {
-  fill: #0f0f0e !important;
+  fill: #050505 !important;
 }
 
 .svg-stage text,
@@ -569,7 +569,7 @@ header *,
 
   .hero-art {
     margin: 0 auto;
-    max-width: 420px;
+    max-width: 460px;
     position: relative;
     width: 90vw;
     z-index: 2;
@@ -586,10 +586,10 @@ header *,
 
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
-    max-width: 420px;
+    max-width: 460px;
     transform: none;
     transform-origin: center center;
-    width: 90vw !important;
+    width: 96vw !important;
   }
 
   .svg-stage #Sukunsh {
@@ -646,8 +646,8 @@ header *,
 
 @media (max-width: 480px) {
   .svg-stage > svg:not(.beetle-svg) {
-    max-width: 390px;
-    width: 92vw !important;
+    max-width: 430px;
+    width: 98vw !important;
   }
 
   .svg-stage #Layer_148 text,
@@ -662,7 +662,7 @@ header *,
 
 @media (max-width: 380px) {
   .svg-stage > svg:not(.beetle-svg) {
-    max-width: 350px;
-    width: 92vw !important;
+    max-width: 390px;
+    width: 98vw !important;
   }
 }
