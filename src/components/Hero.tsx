@@ -85,7 +85,16 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
         (layer) => layer.id !== "Sukunsh" && layer.id !== "Layer_38",
       );
-      const head = scopedSelector("#head-2")[0] || scopedSelector("#head")[0];
+      const selectFirst = (selectors: string[]) =>
+        selectors.flatMap((selector) => scopedSelector(selector))[0] as unknown as SVGGraphicsElement | undefined;
+      const neutralHead = selectFirst(["#head_neutral_main", "#HEAD_WITH_SMILE"]);
+      const laughHead = selectFirst(["#head_laugh_asset", "#HEAD"]);
+      const focusedHead = selectFirst(["#head_focused_asset", "#HEAD_WITH_NORMAL_EXPRESION"]);
+      const expressionHeads = [neutralHead, laughHead, focusedHead].filter(Boolean) as SVGGraphicsElement[];
+      const leftPupil = selectFirst(["#left_pupil", "#pupil_left"]);
+      const rightPupil = selectFirst(["#right_pupil", "#pupil_right"]);
+      const pupils = [leftPupil, rightPupil].filter(Boolean) as SVGGraphicsElement[];
+      const head = neutralHead || scopedSelector("#head-2")[0] || scopedSelector("#head")[0];
       const bigPen = scopedSelector("#right_arm_with_pen-2")[0];
       const shirt = scopedSelector("#shirt-2")[0];
       const collar = scopedSelector("#coler")[0];
@@ -95,6 +104,9 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const cleanupFns: Array<() => void> = [];
       let beetleFlight: gsap.core.Timeline | null = null;
       let beetleWings: gsap.core.Timeline | null = null;
+      let isHeadHovered = false;
+      let laughTimer = 0;
+      const expressionOffsets = new Map<SVGGraphicsElement, { x: number; y: number }>();
 
       const motion = {
         flowerAmp: isMobile || isTouch ? 0.75 : 1,
@@ -155,11 +167,178 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
         gsap.set(dragItems, { transformOrigin: "center center" });
 
-        if (head) gsap.set(head, { transformOrigin: "center bottom" });
+        if (head) gsap.set(head, { transformOrigin: "center 78%" });
+        if (expressionHeads.length) {
+          gsap.set(expressionHeads, {
+            pointerEvents: "none",
+            transformBox: "fill-box",
+            transformOrigin: "center 78%",
+          });
+        }
+        gsap.set(pupils, { transformOrigin: "center center" });
         if (bigPen) gsap.set(bigPen, { transformOrigin: "left center" });
         if (shirt) gsap.set(shirt, { transformOrigin: "center center" });
         if (collar) gsap.set(collar, { transformOrigin: "center center" });
         if (collarTwo) gsap.set(collarTwo, { transformOrigin: "center center" });
+
+        const getBox = (element?: SVGGraphicsElement) => {
+          try {
+            return element?.getBBox();
+          } catch {
+            return undefined;
+          }
+        };
+
+        const alignExpressionHead = (asset?: SVGGraphicsElement) => {
+          const neutralBox = getBox(neutralHead);
+          const assetBox = getBox(asset);
+          if (!asset || !neutralBox || !assetBox) return;
+
+          gsap.set(asset, {
+            x: neutralBox.x + neutralBox.width / 2 - (assetBox.x + assetBox.width / 2),
+            y: neutralBox.y + neutralBox.height / 2 - (assetBox.y + assetBox.height / 2),
+          });
+          expressionOffsets.set(asset, {
+            x: neutralBox.x + neutralBox.width / 2 - (assetBox.x + assetBox.width / 2),
+            y: neutralBox.y + neutralBox.height / 2 - (assetBox.y + assetBox.height / 2),
+          });
+        };
+
+        alignExpressionHead(laughHead);
+        alignExpressionHead(focusedHead);
+        if (neutralHead) expressionOffsets.set(neutralHead, { x: 0, y: 0 });
+        gsap.set(neutralHead, { autoAlpha: 1, x: 0, y: 0, rotation: 0 });
+        gsap.set([focusedHead, laughHead].filter(Boolean), { autoAlpha: 0, rotation: 0 });
+
+        const showExpression = (mode: "neutral" | "focused" | "laugh") => {
+          const showNeutral = mode === "neutral";
+          const showFocused = mode === "focused";
+          const showLaugh = mode === "laugh";
+
+          gsap.to(neutralHead, {
+            autoAlpha: showNeutral ? 1 : 0,
+            duration: 0.18,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+          gsap.to(focusedHead, {
+            autoAlpha: showFocused ? 1 : 0,
+            duration: 0.18,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+          gsap.to(laughHead, {
+            autoAlpha: showLaugh ? 1 : 0,
+            duration: 0.14,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+        };
+
+        const headQuickSetters = expressionHeads.map((expressionHead) => ({
+          expressionHead,
+          xTo: gsap.quickTo(expressionHead, "x", { duration: 0.42, ease: "power3.out" }),
+          yTo: gsap.quickTo(expressionHead, "y", { duration: 0.42, ease: "power3.out" }),
+          rotateTo: gsap.quickTo(expressionHead, "rotation", { duration: 0.5, ease: "power3.out" }),
+        }));
+        const pupilXTo = gsap.quickTo(pupils, "x", { duration: 0.28, ease: "power3.out" });
+        const pupilYTo = gsap.quickTo(pupils, "y", { duration: 0.28, ease: "power3.out" });
+
+        const resetExpressionMotion = () => {
+          alignExpressionHead(laughHead);
+          alignExpressionHead(focusedHead);
+          expressionHeads.forEach((expressionHead) => {
+            const base = expressionOffsets.get(expressionHead) || { x: 0, y: 0 };
+            gsap.to(expressionHead, {
+              x: base.x,
+              y: base.y,
+              rotation: 0,
+              duration: 0.55,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+          });
+          gsap.to(pupils, {
+            x: 0,
+            y: 0,
+            duration: 0.45,
+            ease: "power3.out",
+            overwrite: "auto",
+          });
+        };
+
+        const moveExpression = (event: PointerEvent) => {
+          if (!neutralHead) return;
+          const rect = stage.getBoundingClientRect();
+          const centerX = rect.left + rect.width * 0.5;
+          const centerY = rect.top + rect.height * 0.42;
+          const dx = gsap.utils.clamp(-1, 1, (event.clientX - centerX) / (rect.width * 0.38));
+          const dy = gsap.utils.clamp(-1, 1, (event.clientY - centerY) / (rect.height * 0.36));
+
+          headQuickSetters.forEach(({ expressionHead, xTo, yTo, rotateTo }) => {
+            const base = expressionOffsets.get(expressionHead) || { x: 0, y: 0 };
+            xTo(base.x + dx * 1.2);
+            yTo(base.y + dy * 0.9);
+            rotateTo(dx * 2.2);
+          });
+          pupilXTo(dx * 1.35);
+          pupilYTo(dy * 0.85);
+        };
+
+        const enterExpression = (event: PointerEvent) => {
+          isHeadHovered = true;
+          showExpression("focused");
+          moveExpression(event);
+        };
+
+        const leaveExpression = () => {
+          isHeadHovered = false;
+          window.clearTimeout(laughTimer);
+          showExpression("neutral");
+          resetExpressionMotion();
+        };
+
+        const clickExpression = (event: PointerEvent) => {
+          window.clearTimeout(laughTimer);
+          isHeadHovered = true;
+          showExpression("laugh");
+          moveExpression(event);
+          laughTimer = window.setTimeout(() => {
+            showExpression(isHeadHovered ? "focused" : "neutral");
+          }, 600);
+        };
+
+        if (!isTouch && neutralHead && (focusedHead || laughHead)) {
+          const neutralBox = getBox(neutralHead);
+          const ownerSvg = neutralHead.ownerSVGElement;
+          const expressionHitArea = neutralBox && ownerSvg
+            ? document.createElementNS("http://www.w3.org/2000/svg", "rect")
+            : null;
+
+          if (expressionHitArea && neutralBox && ownerSvg) {
+            expressionHitArea.setAttribute("x", String(neutralBox.x - 8));
+            expressionHitArea.setAttribute("y", String(neutralBox.y - 8));
+            expressionHitArea.setAttribute("width", String(neutralBox.width + 16));
+            expressionHitArea.setAttribute("height", String(neutralBox.height + 16));
+            expressionHitArea.setAttribute("fill", "transparent");
+            expressionHitArea.setAttribute("pointer-events", "all");
+            expressionHitArea.setAttribute("aria-hidden", "true");
+            ownerSvg.appendChild(expressionHitArea);
+
+            expressionHitArea.addEventListener("pointerenter", enterExpression);
+            expressionHitArea.addEventListener("pointermove", moveExpression);
+            expressionHitArea.addEventListener("pointerleave", leaveExpression);
+            expressionHitArea.addEventListener("click", clickExpression);
+            cleanupFns.push(
+              () => expressionHitArea.removeEventListener("pointerenter", enterExpression),
+              () => expressionHitArea.removeEventListener("pointermove", moveExpression),
+              () => expressionHitArea.removeEventListener("pointerleave", leaveExpression),
+              () => expressionHitArea.removeEventListener("click", clickExpression),
+              () => expressionHitArea.remove(),
+            );
+          }
+          cleanupFns.push(() => window.clearTimeout(laughTimer));
+        }
 
         if (!reduceMotion) {
           if (svgElement) {
@@ -203,7 +382,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               .to(heroText, { y: -120, opacity: 0.45, ease: "none" }, 0);
           }
 
-          if (head) {
+          if (head && !expressionHeads.length) {
             gsap.to(head, {
               rotation: 1.4,
               x: 0.8,
