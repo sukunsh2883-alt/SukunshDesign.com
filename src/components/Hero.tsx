@@ -55,6 +55,11 @@ function cleanSvg(svg: string) {
     .trim();
 }
 
+function findSvgElement<T extends Element>(svg: SVGSVGElement | null, id: string) {
+  if (!svg) return null;
+  return Array.from(svg.querySelectorAll<T>("[id]")).find((element) => element.id === id) || null;
+}
+
 function beetleMarkup() {
   return `
     <div class="beetle-wrap">
@@ -110,6 +115,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const tagRects = scopedSelector("#Layer_147 rect") as unknown as SVGGraphicsElement[];
       const tagTexts = scopedSelector("#Layer_148 text") as unknown as SVGGraphicsElement[];
       const svgElement = stage.querySelector("svg");
+      const rootGroup = svgElement?.firstElementChild instanceof SVGGElement ? svgElement.firstElementChild : null;
       const heroText = scopedSelector("#Sukunsh")[0] as unknown as SVGGraphicsElement | undefined;
       const selectFirst = (selectors: string[]) =>
         selectors.flatMap((selector) => scopedSelector(selector))[0] as unknown as SVGGraphicsElement | undefined;
@@ -123,26 +129,22 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         selectFirst(["#pupil_right"]),
       ].filter(Boolean) as SVGGraphicsElement[];
       const characterGroup = (() => {
-        if (!svgElement) return null;
-        const rootGroup = svgElement.querySelector(":scope > g");
-        if (!rootGroup) return null;
+        if (!svgElement || !rootGroup) return null;
         if (heroText) heroText.setAttribute("id", "sukunsh_text");
 
         const parts = characterPartIds
-          .map((id) => svgElement.querySelector<SVGGElement>(`#${CSS.escape(id)}`))
+          .map((id) => findSvgElement<SVGGElement>(svgElement, id))
           .filter(Boolean) as SVGGElement[];
         if (!parts.length) return null;
 
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
         group.setAttribute("id", "character_group");
-        rootGroup.insertBefore(group, parts[0]);
+        rootGroup.insertBefore(group, parts[0].parentElement === rootGroup ? parts[0] : null);
         parts.forEach((part) => group.appendChild(part));
         return group as unknown as SVGGraphicsElement;
       })();
       const faceFocusGroup = (() => {
-        if (!svgElement || !characterGroup) return null;
-        const rootGroup = svgElement.querySelector(":scope > g");
-        if (!rootGroup) return null;
+        if (!svgElement || !rootGroup || !characterGroup) return null;
 
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
         group.setAttribute("id", "face_focus_group");
@@ -659,8 +661,19 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
     fetch(SVG_URL)
       .then((response) => response.text())
-      .then((svg) => setupHero(cleanSvg(svg)))
-      .catch(() => {
+      .then((svg) => {
+        const stage = stageRef.current;
+        const svgMarkup = cleanSvg(svg);
+        if (stage && !cancelled) stage.innerHTML = svgMarkup;
+
+        try {
+          setupHero(svgMarkup);
+        } catch (error) {
+          console.error("Hero animation setup failed; keeping static artwork.", error);
+        }
+      })
+      .catch((error) => {
+        console.error("Hero SVG failed to load.", error);
         const stage = stageRef.current;
         if (stage && !cancelled) stage.innerHTML = "";
       });
