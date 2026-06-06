@@ -110,7 +110,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const tagRects = scopedSelector("#Layer_147 rect") as unknown as SVGGraphicsElement[];
       const tagTexts = scopedSelector("#Layer_148 text") as unknown as SVGGraphicsElement[];
       const svgElement = stage.querySelector("svg");
-      const heroText = scopedSelector("#Sukunsh")[0];
+      const heroText = scopedSelector("#Sukunsh")[0] as unknown as SVGGraphicsElement | undefined;
       const selectFirst = (selectors: string[]) =>
         selectors.flatMap((selector) => scopedSelector(selector))[0] as unknown as SVGGraphicsElement | undefined;
       const neutralHead = selectFirst(["#HEAD_WITH_SMILE"]);
@@ -126,6 +126,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         if (!svgElement) return null;
         const rootGroup = svgElement.querySelector(":scope > g");
         if (!rootGroup) return null;
+        if (heroText) heroText.setAttribute("id", "sukunsh_text");
 
         const parts = characterPartIds
           .map((id) => svgElement.querySelector<SVGGElement>(`#${CSS.escape(id)}`))
@@ -138,10 +139,22 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         parts.forEach((part) => group.appendChild(part));
         return group as unknown as SVGGraphicsElement;
       })();
+      const faceFocusGroup = (() => {
+        if (!svgElement || !characterGroup) return null;
+        const rootGroup = svgElement.querySelector(":scope > g");
+        if (!rootGroup) return null;
+
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.setAttribute("id", "face_focus_group");
+        rootGroup.insertBefore(group, characterGroup);
+        group.appendChild(characterGroup as unknown as SVGGElement);
+        return group as unknown as SVGGraphicsElement;
+      })();
       const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
         (layer) =>
-          layer.id !== "Sukunsh" &&
+          layer.id !== "sukunsh_text" &&
           layer.id !== "Layer_38" &&
+          layer.id !== "face_focus_group" &&
           layer.id !== "character_group" &&
           layer.id !== "HEAD" &&
           layer.id !== "HEAD_WITH_NORMAL_EXPRESION" &&
@@ -211,6 +224,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         if (svgElement) gsap.set(svgElement, { transformOrigin: "center bottom" });
         gsap.set(stage, { opacity: 1 });
         gsap.set(heroText, { transformOrigin: "center center" });
+        gsap.set(faceFocusGroup, { transformBox: "fill-box", transformOrigin: "center 50%" });
         gsap.set(artworkLayers, { transformOrigin: "center bottom" });
         gsap.set(flowers, { transformOrigin: "center bottom" });
         gsap.set(leaves, { transformOrigin: "center bottom" });
@@ -241,8 +255,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           : undefined;
 
         const resetHeadFocus = () => {
-          if (svgElement) {
-            gsap.to(svgElement, {
+          if (faceFocusGroup) {
+            gsap.to(faceFocusGroup, {
               scale: 1,
               x: 0,
               y: 0,
@@ -277,7 +291,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           pupilYTo(dy * 0.62);
         };
 
-        if (!isTouch && headFocusTarget && svgElement) {
+        if (!isTouch && headFocusTarget && faceFocusGroup) {
           const focusBox = getBox(headFocusTarget as SVGGraphicsElement);
           const ownerSvg = (headFocusTarget as SVGGraphicsElement).ownerSVGElement;
           const headHitArea = focusBox && ownerSvg
@@ -295,7 +309,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             ownerSvg.appendChild(headHitArea);
 
             const enterHeadFocus = (event: PointerEvent) => {
-              gsap.to(svgElement, {
+              gsap.to(faceFocusGroup, {
                 scale: 1.055,
                 x: -12,
                 y: 8,
