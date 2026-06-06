@@ -147,7 +147,7 @@ body {
 }
 
 body {
-  background-color: #050505;
+  background-color: #0f0f0e;
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
   overscroll-behavior-y: none;
@@ -401,7 +401,7 @@ header *,
 
 /* Inline SVG hero stage and JS-created beetle layer. */
 .hero {
-  background: #050505;
+  background: #0f0f0e;
   min-height: 100svh;
   overflow: hidden;
   position: relative;
@@ -409,8 +409,12 @@ header *,
 }
 
 .svg-stage {
-  background: #050505;
+  align-items: center;
+  background: #0f0f0e;
+  display: flex;
   height: 100svh;
+  justify-content: center;
+  min-height: 100svh;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -424,7 +428,7 @@ header *,
 }
 
 .svg-stage #Layer_38 rect {
-  fill: #050505 !important;
+  fill: #0f0f0e !important;
 }
 
 .svg-stage text,
@@ -526,7 +530,7 @@ header *,
 
   .hero {
     align-items: center;
-    height: auto;
+    height: 100svh;
     min-height: 100svh;
     padding-top: 0 !important;
   }
@@ -543,8 +547,9 @@ header *,
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
     max-width: none;
-    transform: translateX(-3vw) translateY(7vh);
-    width: 220vw !important;
+    transform: translateX(-2vw) translateY(4vh);
+    transform-origin: center center;
+    width: 300vw !important;
   }
 
   .svg-stage #Layer_147 rect {
@@ -557,10 +562,15 @@ header *,
     font-size: 10px !important;
   }
 
+  .svg-stage #Layer_147,
+  .svg-stage #Layer_148 {
+    display: none;
+  }
+
   .beetle-wrap {
-    left: 30%;
-    top: 70%;
-    width: 34px;
+    left: 34%;
+    top: 66%;
+    width: 28px;
   }
 
   .nav-links {
@@ -573,8 +583,18 @@ header *,
     padding-right: 22px;
   }
 
+  .navbar {
+    background: transparent;
+    left: 0;
+    padding: 18px 22px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+  }
+
   .logo {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
@@ -584,8 +604,8 @@ header *,
   }
 
   .svg-stage > svg:not(.beetle-svg) {
-    transform: translateX(-4vw) translateY(8vh);
-    width: 250vw !important;
+    transform: translateX(-3vw) translateY(5vh);
+    width: 340vw !important;
   }
 
   .svg-stage #Layer_148 text,
@@ -594,18 +614,13 @@ header *,
   }
 
   .beetle-wrap {
-    width: 30px;
+    width: 28px;
   }
 }
 
 @media (max-width: 380px) {
   .svg-stage > svg:not(.beetle-svg) {
-    transform: translateX(-6vw) translateY(9vh);
-    width: 270vw !important;
-  }
-
-  .svg-stage #Layer_147,
-  .svg-stage #Layer_148 {
-    display: none;
+    transform: translateX(-4vw) translateY(5vh);
+    width: 365vw !important;
   }
 }
