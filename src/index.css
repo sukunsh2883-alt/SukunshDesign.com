@@ -408,6 +408,14 @@ header *,
   width: 100%;
 }
 
+.hero-inner {
+  min-height: 100svh;
+}
+
+.hero-art {
+  width: 100%;
+}
+
 .svg-stage {
   align-items: center;
   background: #0f0f0e;
@@ -417,7 +425,7 @@ header *,
   min-height: 100svh;
   overflow: hidden;
   position: relative;
-  width: 100%;
+  width: min(142vw, 1760px);
 }
 
 .svg-stage > svg {
@@ -528,28 +536,66 @@ header *,
     overflow-y: auto;
   }
 
+  section {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
   .hero {
-    align-items: center;
-    height: 100svh;
-    min-height: 100svh;
-    padding-top: 0 !important;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    padding: 110px 20px 56px !important;
+  }
+
+  .hero-inner {
+    align-items: center !important;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    justify-content: flex-start !important;
+    min-height: auto;
+    padding: 0 !important;
+  }
+
+  .hero-content {
+    display: block;
+    position: relative;
+    text-align: center;
+    width: 100%;
+    z-index: 5;
+  }
+
+  .hero-art {
+    margin: 0 auto;
+    max-width: 420px;
+    position: relative;
+    width: 90vw;
+    z-index: 2;
   }
 
   .svg-stage {
     aspect-ratio: auto !important;
-    height: 100svh;
-    min-height: 100svh;
+    height: auto;
+    min-height: 0;
     margin-bottom: 0 !important;
-    overflow: hidden;
+    overflow: visible;
     width: 100% !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
-    max-width: none;
-    transform: translateX(-2vw) translateY(4vh);
+    max-width: 420px;
+    transform: none;
     transform-origin: center center;
-    width: 300vw !important;
+    width: 90vw !important;
+  }
+
+  .svg-stage #Sukunsh {
+    opacity: 0.16;
+    transform-box: fill-box;
+    transform-origin: center center;
   }
 
   .svg-stage #Layer_147 rect {
@@ -599,13 +645,9 @@ header *,
 }
 
 @media (max-width: 480px) {
-  .svg-stage {
-    margin-bottom: 0 !important;
-  }
-
   .svg-stage > svg:not(.beetle-svg) {
-    transform: translateX(-3vw) translateY(5vh);
-    width: 340vw !important;
+    max-width: 390px;
+    width: 92vw !important;
   }
 
   .svg-stage #Layer_148 text,
@@ -620,7 +662,7 @@ header *,
 
 @media (max-width: 380px) {
   .svg-stage > svg:not(.beetle-svg) {
-    transform: translateX(-4vw) translateY(5vh);
-    width: 365vw !important;
+    max-width: 350px;
+    width: 92vw !important;
   }
 }
