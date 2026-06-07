@@ -1,7 +1,5 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { Draggable } from "gsap/Draggable";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface HeroProps {
   onWatchShowreel: () => void;
@@ -14,39 +12,17 @@ const SVG_URL = "/artwork/main artwork.svg";
 
 const flowerIds = Array.from({ length: 9 }, (_, index) => `flower_${index + 1}`);
 const leafIds = Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`);
-const characterPartIds = [
-  "blue_pen-2",
-  "pink",
-  "ipad-2",
-  "paper-2",
-  "red_bag-2",
-  "pentab-2",
-  "Layer_136",
-  "Layer_135",
-  "Layer_134",
-  "Layer_133",
-  "Layer_152",
-  "Layer_130",
-  "Layer_129",
-  "right_arm_with_pen-2",
-  "Layer_253",
-  "Layer_252",
-  "head-2",
-  "Layer_123",
-  "shirt-2",
-  "green_bag",
-  "Layer_119",
-  "Layer_153",
-  "Layer_118",
-  "Layer_117",
-  "camera-2",
-  "Layer_116",
-  "Layer_114",
-  "Layer_112",
-  "Layer_109",
-  "Layer_108",
-];
-
+const flowerPerches: Record<string, { x: number; y: number }> = {
+  flower_1: { x: 382, y: 468 },
+  flower_2: { x: 315, y: 494 },
+  flower_3: { x: 250, y: 405 },
+  flower_4: { x: 880, y: 472 },
+  flower_5: { x: 465, y: 548 },
+  flower_6: { x: 875, y: 522 },
+  flower_7: { x: 844, y: 424 },
+  flower_8: { x: 922, y: 452 },
+  flower_9: { x: 785, y: 510 },
+};
 function cleanSvg(svg: string) {
   return svg
     .replace(/<\?xml[\s\S]*?\?>/g, "")
@@ -73,7 +49,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const stage = stageRef.current;
       if (!section || !stage || cancelled) return;
 
-      gsap.registerPlugin(Draggable, ScrollTrigger);
       stage.innerHTML = svgMarkup;
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -97,49 +72,11 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const tagRects = Array.from(svgElement.querySelectorAll("#Layer_147 rect")) as SVGGraphicsElement[];
       const tagTexts = Array.from(svgElement.querySelectorAll("#Layer_148 text")) as SVGGraphicsElement[];
 
-      const characterGroup = (() => {
-        if (heroText) {
-          heroText.setAttribute("id", "sukunsh_text");
-          const backgroundLayer = byId("Layer_38");
-          if (heroText.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
-            svgElement.insertBefore(heroText, backgroundLayer.nextSibling);
-          }
-        }
-
-        const existing = byId("character_group");
-        if (existing) return existing;
-
-        const parts = characterPartIds
-          .map((id) => findSvgElement<SVGGElement>(svgElement, id))
-          .filter(Boolean) as SVGGElement[];
-        if (!parts.length) return null;
-
-        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        group.setAttribute("id", "character_group");
-        const firstTopLevelPart = parts.find((part) => part.parentNode === svgElement) || null;
-        svgElement.insertBefore(group, firstTopLevelPart);
-        parts.forEach((part) => group.appendChild(part));
-        const sukunshText = byId("sukunsh_text");
-        const backgroundLayer = byId("Layer_38");
-        if (sukunshText?.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
-          svgElement.insertBefore(sukunshText, backgroundLayer.nextSibling);
-        }
-        return group as unknown as SVGGraphicsElement;
-      })();
-
-      const artworkLayers = (Array.from(svgElement.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
-        (layer) =>
-          layer.id !== "sukunsh_text" &&
-          layer.id !== "Layer_38" &&
-          layer.id !== "character_group" &&
-          layer.id !== "beetal_sit_posttion" &&
-          layer.id !== "beetal_sit_postion" &&
-          layer.id !== "beeta_flying_postion" &&
-          !layer.id.startsWith("flower_") &&
-          !layer.id.startsWith("leaf_") &&
-          layer.id !== "Layer_147" &&
-          layer.id !== "Layer_148",
-      );
+      const backgroundLayer = byId("Layer_38");
+      if (heroText?.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
+        svgElement.insertBefore(heroText, backgroundLayer.nextSibling);
+      }
+      const characterGroup = byId("character_group");
 
       const cleanupFns: Array<() => void> = [];
       const timelines: gsap.core.Animation[] = [];
@@ -156,7 +93,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         gsap.set(stage, { opacity: 1 });
         gsap.set(svgElement, { transformOrigin: "center bottom" });
         gsap.set(heroText, { transformOrigin: "center center" });
-        gsap.set(artworkLayers, { transformOrigin: "center bottom" });
         gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "50% 70%" });
         gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 95%" });
         gsap.set(penArm, { transformBox: "fill-box", transformOrigin: "80% 55%" });
@@ -226,10 +162,12 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         const flowerPoint = (index: number, poseBase: { x: number; y: number }) => {
           const flower = flowers[index];
           if (!flower) return { x: 0, y: 0 };
-          const point = flowerHeadSvg(flower);
+          const point = flowerPerches[flower.id] || flowerHeadSvg(flower);
+          const flowerX = Number(gsap.getProperty(flower, "x")) || 0;
+          const flowerY = Number(gsap.getProperty(flower, "y")) || 0;
           return {
-            x: point.x - poseBase.x,
-            y: point.y - poseBase.y + 8,
+            x: point.x + flowerX - poseBase.x,
+            y: point.y + flowerY - poseBase.y,
           };
         };
 
@@ -264,43 +202,16 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             ease: "power3.out",
           });
 
-          if (artworkLayers.length) {
-            timelines.push(
-              gsap
-                .timeline({
-                  scrollTrigger: {
-                    trigger: section,
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: 1.6,
-                    invalidateOnRefresh: true,
-                  },
-                })
-                .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0),
-            );
-          }
-
           if (characterGroup) {
             timelines.push(gsap.to(characterGroup, {
-              y: -1,
-              scale: 1.0015,
-              duration: 3.6,
+              y: -0.8,
+              scale: 1.001,
+              duration: 3.5,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
               overwrite: "auto",
             }));
-          } else {
-            [head, penArm, byId("camera-2")].filter(Boolean).forEach((part, index) => {
-              timelines.push(gsap.to(part, {
-                y: -1 * (index === 0 ? 1 : 0.6),
-                duration: 3.6 + index * 0.12,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut",
-                overwrite: "auto",
-              }));
-            });
           }
 
           timelines.push(gsap.to(tagRects, {
@@ -312,29 +223,14 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             ease: "sine.inOut",
           }));
 
-          const growTimeline = gsap.timeline({ delay: 0.18 });
-          gsap.set(leaves, { autoAlpha: 0, scaleY: 0.12, y: 10 });
-          gsap.set(flowers, { autoAlpha: 0, scale: 0.18, y: 8 });
-          growTimeline
-            .to(leaves, {
-              autoAlpha: 1,
-              scaleY: 1,
-              y: 0,
-              duration: 1.15,
-              stagger: 0.035,
-              ease: "expo.out",
-              overwrite: "auto",
-            }, 0)
-            .to(flowers, {
-              autoAlpha: 1,
-              scale: 1,
-              y: 0,
-              duration: 1,
-              stagger: 0.045,
-              ease: "back.out(1.45)",
-              overwrite: "auto",
-            }, 0.22);
-          timelines.push(growTimeline);
+          timelines.push(gsap.from([...leaves, ...flowers], {
+            autoAlpha: 0,
+            y: 8,
+            duration: 0.75,
+            stagger: 0.025,
+            ease: "power2.out",
+            overwrite: "auto",
+          }));
         }
 
         flowers.forEach((flower, index) => {
