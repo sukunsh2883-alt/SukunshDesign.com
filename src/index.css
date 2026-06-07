@@ -433,7 +433,7 @@ header *,
   min-height: 0;
   overflow: visible;
   position: relative;
-  transform: translateY(2vh);
+  transform: translateY(10vh);
   width: min(126vw, 1680px, calc((100svh - 44px) * 1.8581));
 }
 
