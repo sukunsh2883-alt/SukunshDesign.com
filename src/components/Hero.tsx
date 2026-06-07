@@ -936,7 +936,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       <div className="hero-inner relative flex min-h-screen items-end justify-center px-0 pt-10">
         <div className="hero-content hidden">
           <p className="text-sm font-medium tracking-[-0.025em] text-white/62">
-            Hello I’m Multidisciplinary Designer.
+            Hello I'm Multidisciplinary Designer.
           </p>
           <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-[-0.065em] text-white">
             {profile?.brandName || "Sukunsh"}.
@@ -962,7 +962,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         <div className="hero-art relative flex justify-center">
           <div
             ref={stageRef}
-            className="svg-stage relative mb-[-8vh] aspect-[1358.17/730.78] w-[min(150vw,1880px)] origin-bottom overflow-visible md:mb-[-12vh] md:w-[min(118vw,1960px)]"
+            className="svg-stage relative mb-0 aspect-[1358.17/730.78] w-[min(150vw,1880px)] -translate-y-[2vh] origin-bottom overflow-visible md:mb-0 md:w-[min(118vw,1960px)] md:-translate-y-[3vh]"
           />
         </div>
       </div>
