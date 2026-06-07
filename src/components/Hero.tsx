@@ -102,7 +102,13 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
       const characterGroup = (() => {
         if (!rootGroup) return byId("character_group");
-        if (heroText) heroText.setAttribute("id", "sukunsh_text");
+        if (heroText) {
+          heroText.setAttribute("id", "sukunsh_text");
+          const backgroundLayer = byId("Layer_38");
+          if (heroText.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
+            rootGroup.insertBefore(heroText, backgroundLayer.nextSibling);
+          }
+        }
 
         const existing = byId("character_group");
         if (existing) return existing;
@@ -151,7 +157,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         gsap.set(heroText, { transformOrigin: "center center" });
         gsap.set(artworkLayers, { transformOrigin: "center bottom" });
         gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "50% 70%" });
-        gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 85%" });
+        gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 95%" });
         gsap.set(penArm, { transformBox: "fill-box", transformOrigin: "80% 55%" });
         gsap.set([leftEye, rightEye].filter(Boolean), { transformOrigin: "50% 50%" });
         gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
@@ -275,9 +281,9 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
           if (characterGroup) {
             timelines.push(gsap.to(characterGroup, {
-              y: -1.5,
-              scale: 1.003,
-              duration: 3.2,
+              y: -1,
+              scale: 1.0015,
+              duration: 3.6,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
@@ -286,8 +292,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           } else {
             [head, penArm, byId("camera-2")].filter(Boolean).forEach((part, index) => {
               timelines.push(gsap.to(part, {
-                y: -1.5 * (index === 0 ? 1 : 0.6),
-                duration: 3.2 + index * 0.12,
+                y: -1 * (index === 0 ? 1 : 0.6),
+                duration: 3.6 + index * 0.12,
                 repeat: -1,
                 yoyo: true,
                 ease: "sine.inOut",
@@ -453,9 +459,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         const leftEyeY = quickTo(leftEye, "y", 0.22);
         const rightEyeX = quickTo(rightEye, "x", 0.22);
         const rightEyeY = quickTo(rightEye, "y", 0.22);
-        const headX = quickTo(head, "x", 0.45);
-        const headY = quickTo(head, "y", 0.45);
-        const headRotation = quickTo(head, "rotation", 0.45);
+        const headRotation = quickTo(head, "rotation", 0.55);
         const penX = quickTo(penArm, "x", 0.65);
         const penY = quickTo(penArm, "y", 0.65);
         const penRotation = quickTo(penArm, "rotation", 0.65);
@@ -465,16 +469,14 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           const x = (event.clientX - rect.left) / rect.width - 0.5;
           const y = (event.clientY - rect.top) / rect.height - 0.5;
 
-          leftEyeX?.(x * 6);
-          rightEyeX?.(x * 6);
-          leftEyeY?.(y * 4);
-          rightEyeY?.(y * 4);
-          headX?.(x * 4);
-          headY?.(y * 3);
-          headRotation?.(x * 4);
-          penX?.(x * 0.8);
-          penY?.(y * 0.5);
-          penRotation?.(x * -1.2);
+          leftEyeX?.(x * 3.6);
+          rightEyeX?.(x * 3.6);
+          leftEyeY?.(y * 2.4);
+          rightEyeY?.(y * 2.4);
+          headRotation?.(x * 1.6);
+          penX?.(x * 0.6);
+          penY?.(y * 0.4);
+          penRotation?.(x * -1);
         };
 
         const resetCharacterDetails = () => {
@@ -482,8 +484,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           leftEyeY?.(0);
           rightEyeX?.(0);
           rightEyeY?.(0);
-          headX?.(0);
-          headY?.(0);
           headRotation?.(0);
           penX?.(0);
           penY?.(0);
@@ -508,7 +508,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             return /wing|fly|flying|flyinh|transparent|beetal/i.test(`${id} ${name} ${className}`);
           }) || null
           : null;
-        const flutterWings = [wing1, extraWing, leftWing, rightWing].filter(Boolean) as SVGGraphicsElement[];
+        const flutterWings = [wing1, extraWing].filter(Boolean) as SVGGraphicsElement[];
+        const redWings = [leftWing, rightWing].filter(Boolean) as SVGGraphicsElement[];
 
         flutterWings.forEach((wing, index) => {
           gsap.set(wing, {
@@ -519,8 +520,40 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             rotation: index % 2 === 0 ? -8 : 8,
           });
         });
+        redWings.forEach((wing, index) => {
+          gsap.set(wing, {
+            transformOrigin: index === 0 ? "100% 50%" : "0% 50%",
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+            opacity: 1,
+          });
+        });
+
+        const openRedWings = () => {
+          redWings.forEach((wing, index) => {
+            gsap.to(wing, {
+              rotation: index === 0 ? -24 : 24,
+              duration: 0.28,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+          });
+        };
+
+        const closeRedWings = () => {
+          redWings.forEach((wing) => {
+            gsap.to(wing, {
+              rotation: 0,
+              duration: 0.32,
+              ease: "power3.inOut",
+              overwrite: "auto",
+            });
+          });
+        };
 
         const startFlyWingFlutter = () => {
+          openRedWings();
           if (!flutterWings.length) return;
           wingTimeline?.kill();
 
@@ -558,6 +591,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         const stopFlyWingFlutter = () => {
           wingTimeline?.kill();
           wingTimeline = null;
+          closeRedWings();
           flutterWings.forEach((wing, index) => {
             gsap.to(wing, {
               opacity: 0,
