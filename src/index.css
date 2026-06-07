@@ -413,7 +413,7 @@ header *,
   display: flex;
   justify-content: center;
   min-height: 100svh;
-  padding: 76px 0 0;
+  padding: 56px 0 0;
 }
 
 .hero-art {
@@ -433,7 +433,8 @@ header *,
   min-height: 0;
   overflow: visible;
   position: relative;
-  width: min(112vw, 1540px, calc((100svh - 76px) * 1.8581));
+  transform: translateY(2vh);
+  width: min(126vw, 1680px, calc((100svh - 44px) * 1.8581));
 }
 
 .svg-stage > svg {
@@ -517,7 +518,8 @@ header *,
     justify-content: center;
     margin-bottom: 0 !important;
     overflow: visible;
-    width: min(112vw, calc((100svh - 76px) * 1.8581)) !important;
+    transform: translateY(2vh);
+    width: min(126vw, calc((100svh - 44px) * 1.8581)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
@@ -590,6 +592,7 @@ header *,
     min-height: 0;
     margin-bottom: 0 !important;
     overflow: visible;
+    transform: none;
     width: 100% !important;
   }
 
