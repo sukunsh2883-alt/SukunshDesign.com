@@ -420,12 +420,12 @@ header *,
   align-items: center;
   background: #050505;
   display: flex;
-  height: 100svh;
+  height: clamp(560px, 88svh, 720px);
   justify-content: center;
-  min-height: 100svh;
+  min-height: 0;
   overflow: hidden;
   position: relative;
-  width: min(150vw, 1880px);
+  width: min(112vw, 1540px);
 }
 
 .svg-stage > svg {
