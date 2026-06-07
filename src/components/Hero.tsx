@@ -12,8 +12,8 @@ interface HeroProps {
 
 const SVG_URL = "/artwork/main artwork.svg";
 
-const flowerSelectors = Array.from({ length: 9 }, (_, index) => `#flower_${index + 1}`);
-const leafSelectors = Array.from({ length: 11 }, (_, index) => `#leaf_${index + 1}`);
+const flowerIds = Array.from({ length: 9 }, (_, index) => `flower_${index + 1}`);
+const leafIds = Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`);
 const characterPartIds = [
   "blue_pen-2",
   "pink",
@@ -78,27 +78,34 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const isTouch = window.matchMedia("(pointer: coarse)").matches;
-      const isMobile = window.innerWidth < 768;
-      const scopedSelector = gsap.utils.selector(stage);
-      const flowers = flowerSelectors.flatMap((selector) => scopedSelector(selector)) as unknown as SVGGraphicsElement[];
-      const leaves = leafSelectors.flatMap((selector) => scopedSelector(selector)) as unknown as SVGGraphicsElement[];
-      const tagRects = scopedSelector("#Layer_147 rect") as unknown as SVGGraphicsElement[];
-      const tagTexts = scopedSelector("#Layer_148 text") as unknown as SVGGraphicsElement[];
       const svgElement = stage.querySelector("svg");
-      const rootGroup = (Array.from(svgElement?.children || []).find(
+      if (!svgElement) return;
+
+      const rootGroup = (Array.from(svgElement.children).find(
         (child) => child instanceof SVGGElement,
       ) || null) as SVGGElement | null;
-      const heroText = scopedSelector("#Sukunsh")[0] as unknown as SVGGraphicsElement | undefined;
-      const selectFirst = (selectors: string[]) =>
-        selectors.flatMap((selector) => scopedSelector(selector))[0] as unknown as SVGGraphicsElement | undefined;
-      const neutralHead = selectFirst(["#head-2"]);
-      const pupils = [
-        selectFirst(["#eye_ball_left"]),
-        selectFirst(["#eyes_ball_right"]),
-      ].filter(Boolean) as SVGGraphicsElement[];
+      const byId = <T extends SVGGraphicsElement>(id: string) => findSvgElement<T>(svgElement, id);
+      const heroText = byId("Sukunsh");
+      const head = byId("head-2");
+      const leftEye = byId("eye_ball_left");
+      const rightEye = byId("eyes_ball_right");
+      const penArm = byId("right_arm_with_pen-2");
+      const sitPose = byId("beetal_sit_posttion") || byId("beetal_sit_postion");
+      const flyPose = byId("beeta_flying_postion");
+      const wing1 = byId("flyinh_beetal_right-2");
+      const leftWing = byId("beetal_left_wing-2");
+      const rightWing = byId("beetal_right_wing-2");
+      const flowers = flowerIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
+      const leaves = leafIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
+      const tagRects = Array.from(svgElement.querySelectorAll("#Layer_147 rect")) as SVGGraphicsElement[];
+      const tagTexts = Array.from(svgElement.querySelectorAll("#Layer_148 text")) as SVGGraphicsElement[];
+
       const characterGroup = (() => {
-        if (!svgElement || !rootGroup) return null;
+        if (!rootGroup) return byId("character_group");
         if (heroText) heroText.setAttribute("id", "sukunsh_text");
+
+        const existing = byId("character_group");
+        if (existing) return existing;
 
         const parts = characterPartIds
           .map((id) => findSvgElement<SVGGElement>(svgElement, id))
@@ -112,119 +119,56 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         parts.forEach((part) => group.appendChild(part));
         return group as unknown as SVGGraphicsElement;
       })();
-      const faceFocusGroup = (() => {
-        if (!svgElement || !rootGroup || !characterGroup) return null;
 
-        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        group.setAttribute("id", "face_focus_group");
-        rootGroup.insertBefore(group, characterGroup);
-        group.appendChild(characterGroup as unknown as SVGGElement);
-        return group as unknown as SVGGraphicsElement;
-      })();
-      const artworkLayers = (Array.from(stage.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
+      const artworkLayers = (Array.from(svgElement.querySelectorAll("svg > g > g")) as SVGGElement[]).filter(
         (layer) =>
           layer.id !== "sukunsh_text" &&
           layer.id !== "Layer_38" &&
-          layer.id !== "face_focus_group" &&
           layer.id !== "character_group" &&
-          layer.id !== "beetal-2" &&
+          layer.id !== "beetal_sit_posttion" &&
+          layer.id !== "beetal_sit_postion" &&
+          layer.id !== "beeta_flying_postion" &&
           !layer.id.startsWith("flower_") &&
           !layer.id.startsWith("leaf_") &&
           layer.id !== "Layer_147" &&
           layer.id !== "Layer_148",
       );
-      const beetle = selectFirst(["#beetal-2"]);
-      const beetleBody = selectFirst(["#beetal_body"]);
-      const beetleLeftWing = selectFirst(["#beetal_left_wing"]);
-      const beetleRightWing = selectFirst(["#beetal_right_wing"]);
-      const beetleFlyingWing = selectFirst(["#flyinh_beetal_right"]);
-      const beetleWingParts = [beetleLeftWing, beetleRightWing, beetleFlyingWing].filter(Boolean) as SVGGraphicsElement[];
-      const headFocusTarget = neutralHead || characterGroup || svgElement;
-      const allDraggables: Draggable[] = [];
+
       const cleanupFns: Array<() => void> = [];
       const timelines: gsap.core.Animation[] = [];
-      let beetleFlight: gsap.core.Timeline | null = null;
-      let beetleWingTimeline: gsap.core.Timeline | null = null;
-      let currentPerchFlower: SVGGraphicsElement | null = null;
-      let currentPerchIndex = 0;
-      let beetleState: "landed" | "flying" | "dragging" = "landed";
-      const beetleBase = { x: 0, y: 0 };
-
-      const motion = {
-        flowerAmp: isMobile || isTouch ? 0.75 : 1,
-        leafAmp: isMobile || isTouch ? 0.75 : 1,
-        flowerHover: 1,
-        leafHover: 1,
-        growth: reduceMotion ? 1 : 0,
-      };
-
-      const tickerFn = () => {
-        const time = performance.now() / 1000;
-
-        flowers.forEach((flower, index) => {
-          const speed = 0.72 + index * 0.045;
-          const wave = Math.sin(time * speed + index * 0.9);
-          const softWave = Math.cos(time * speed * 0.8 + index);
-          const amp = motion.flowerAmp * motion.flowerHover;
-          const growth = motion.growth;
-
-          gsap.set(flower, {
-            x: softWave * 1.4 * amp * growth,
-            y: wave * 3.8 * amp * growth,
-            rotation: wave * 3.6 * amp * growth,
-            scale: growth * (1 + Math.abs(wave) * 0.01 * amp),
-          });
-        });
-
-        leaves.forEach((leaf, index) => {
-          const speed = 0.62 + index * 0.04;
-          const wave = Math.sin(time * speed + index * 0.7);
-          const amp = motion.leafAmp * motion.leafHover;
-          const growth = motion.growth;
-
-          gsap.set(leaf, {
-            x: wave * 2.2 * amp * growth,
-            rotation: wave * 5.8 * amp * growth,
-            scaleY: growth,
-          });
-        });
-
-        if (beetle && beetleState === "landed" && currentPerchFlower) {
-          const flowerX = Number(gsap.getProperty(currentPerchFlower, "x")) || 0;
-          const flowerY = Number(gsap.getProperty(currentPerchFlower, "y")) || 0;
-          const flowerRotation = Number(gsap.getProperty(currentPerchFlower, "rotation")) || 0;
-
-          gsap.set(beetle, {
-            x: beetleBase.x + flowerX,
-            y: beetleBase.y + flowerY,
-            rotation: flowerRotation * 0.12,
-          });
-        }
-      };
-
-      const resumeHeroAnimations = () => {
-        motion.growth = 1;
-        gsap.globalTimeline.resume();
-        gsap.ticker.wake();
-        beetleFlight?.resume();
-      };
+      let mainBeetleTimeline: gsap.core.Timeline | null = null;
+      let wingTimeline: gsap.core.Timeline | null = null;
+      let currentState: "landed" | "takeoff" | "flying" | "landing" | "dragging" | "returning" = "landed";
+      let currentFlowerIndex = 0;
+      let dragging = false;
+      let pointerDragging = false;
 
       ctx = gsap.context(() => {
         gsap.ticker.lagSmoothing(1000, 16);
 
-        if (svgElement) gsap.set(svgElement, { transformOrigin: "center bottom" });
         gsap.set(stage, { opacity: 1 });
+        gsap.set(svgElement, { transformOrigin: "center bottom" });
         gsap.set(heroText, { transformOrigin: "center center" });
-        gsap.set(faceFocusGroup, { transformBox: "fill-box", transformOrigin: "center 50%" });
         gsap.set(artworkLayers, { transformOrigin: "center bottom" });
-        gsap.set(flowers, { transformOrigin: "center bottom" });
-        gsap.set(leaves, { transformOrigin: "center bottom" });
+        gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "50% 70%" });
+        gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 85%" });
+        gsap.set(penArm, { transformBox: "fill-box", transformOrigin: "80% 55%" });
+        gsap.set([leftEye, rightEye].filter(Boolean), { transformOrigin: "50% 50%" });
         gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
-        gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "center 72%" });
-        gsap.set(neutralHead, { autoAlpha: 1, transformBox: "fill-box", transformOrigin: "center 82%" });
-        gsap.set(pupils, { transformOrigin: "center center" });
 
-        const getBox = (element?: SVGGraphicsElement) => {
+        if (sitPose && flyPose) {
+          svgElement.appendChild(sitPose);
+          svgElement.appendChild(flyPose);
+          gsap.set([sitPose, flyPose], {
+            transformOrigin: "50% 50%",
+            cursor: "grab",
+            pointerEvents: "all",
+          });
+          gsap.set(sitPose, { autoAlpha: 1, pointerEvents: "all" });
+          gsap.set(flyPose, { autoAlpha: 0, pointerEvents: "all" });
+        }
+
+        const getBox = (element?: SVGGraphicsElement | null) => {
           try {
             return element?.getBBox();
           } catch {
@@ -232,126 +176,125 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           }
         };
 
-        const pupilXTo = gsap.quickTo(pupils, "x", { duration: 0.28, ease: "power3.out" });
-        const pupilYTo = gsap.quickTo(pupils, "y", { duration: 0.28, ease: "power3.out" });
+        const pointInSvg = (element: SVGGraphicsElement, x: number, y: number) => {
+          const point = svgElement.createSVGPoint();
+          point.x = x;
+          point.y = y;
 
-        const resetHeadFocus = () => {
-          if (faceFocusGroup) {
-            gsap.to(faceFocusGroup, {
-              scale: 1,
-              x: 0,
-              y: 0,
-              duration: 0.65,
-              ease: "power3.out",
-              overwrite: "auto",
-            });
-          }
-          gsap.to(pupils, {
-            x: 0,
-            y: 0,
-            duration: 0.45,
-            ease: "power3.out",
+          const elementMatrix = element.getCTM();
+          const svgMatrix = svgElement.getCTM();
+          if (!elementMatrix || !svgMatrix) return { x, y };
+
+          const global = point.matrixTransform(elementMatrix);
+          return global.matrixTransform(svgMatrix.inverse());
+        };
+
+        const bboxCenterSvg = (element: SVGGraphicsElement) => {
+          const box = element.getBBox();
+          return pointInSvg(element, box.x + box.width / 2, box.y + box.height / 2);
+        };
+
+        const flowerHeadSvg = (flower: SVGGraphicsElement) => {
+          const box = flower.getBBox();
+          return pointInSvg(flower, box.x + box.width / 2, box.y + box.height * 0.28);
+        };
+
+        const pointerSvgPoint = (event: PointerEvent) => {
+          const point = svgElement.createSVGPoint();
+          point.x = event.clientX;
+          point.y = event.clientY;
+
+          const screen = svgElement.getScreenCTM();
+          if (!screen) return { x: 0, y: 0 };
+          return point.matrixTransform(screen.inverse());
+        };
+
+        const getPosePosition = (pose: SVGGraphicsElement) => ({
+          x: Number(gsap.getProperty(pose, "x")) || 0,
+          y: Number(gsap.getProperty(pose, "y")) || 0,
+        });
+
+        const sitBase = sitPose ? bboxCenterSvg(sitPose) : { x: 0, y: 0 };
+        const flyBase = flyPose ? bboxCenterSvg(flyPose) : { x: 0, y: 0 };
+        const flowerPoint = (index: number, poseBase: { x: number; y: number }) => {
+          const flower = flowers[index];
+          if (!flower) return { x: 0, y: 0 };
+          const point = flowerHeadSvg(flower);
+          return {
+            x: point.x - poseBase.x,
+            y: point.y - poseBase.y + 8,
+          };
+        };
+
+        const showPose = (pose?: SVGGraphicsElement | null) => {
+          if (!pose) return;
+          gsap.set(pose, { visibility: "visible", pointerEvents: "all" });
+          gsap.to(pose, {
+            opacity: 1,
+            duration: 0.16,
+            ease: "power2.out",
             overwrite: "auto",
           });
         };
 
-        const moveHeadFocus = (event: PointerEvent) => {
-          const rect = stage.getBoundingClientRect();
-          const centerX = rect.left + rect.width * 0.5;
-          const centerY = rect.top + rect.height * 0.42;
-          const dx = gsap.utils.clamp(-1, 1, (event.clientX - centerX) / (rect.width * 0.38));
-          const dy = gsap.utils.clamp(-1, 1, (event.clientY - centerY) / (rect.height * 0.36));
-
-          pupilXTo(dx * 3);
-          pupilYTo(dy * 2);
+        const hidePose = (pose?: SVGGraphicsElement | null) => {
+          if (!pose) return;
+          gsap.to(pose, {
+            opacity: 0,
+            duration: 0.16,
+            ease: "power2.out",
+            overwrite: "auto",
+            onComplete: () => gsap.set(pose, { visibility: "hidden" }),
+          });
         };
 
-        if (!isTouch && headFocusTarget && faceFocusGroup) {
-          const focusBox = getBox(headFocusTarget as SVGGraphicsElement);
-          const ownerSvg = (headFocusTarget as SVGGraphicsElement).ownerSVGElement;
-          const headHitArea = focusBox && ownerSvg
-            ? document.createElementNS("http://www.w3.org/2000/svg", "rect")
-            : null;
-
-          if (headHitArea && focusBox && ownerSvg) {
-            headHitArea.setAttribute("x", String(focusBox.x - 18));
-            headHitArea.setAttribute("y", String(focusBox.y - 18));
-            headHitArea.setAttribute("width", String(focusBox.width + 36));
-            headHitArea.setAttribute("height", String(focusBox.height + 36));
-            headHitArea.setAttribute("fill", "transparent");
-            headHitArea.setAttribute("pointer-events", "all");
-            headHitArea.setAttribute("aria-hidden", "true");
-            ownerSvg.appendChild(headHitArea);
-
-            const enterHeadFocus = (event: PointerEvent) => {
-              gsap.to(faceFocusGroup, {
-                scale: 1.055,
-                x: -12,
-                y: 8,
-                duration: 0.5,
-                ease: "power3.out",
-                overwrite: "auto",
-              });
-              moveHeadFocus(event);
-            };
-
-            headHitArea.addEventListener("pointerenter", enterHeadFocus);
-            headHitArea.addEventListener("pointermove", moveHeadFocus);
-            headHitArea.addEventListener("pointerleave", resetHeadFocus);
-            cleanupFns.push(
-              () => headHitArea.removeEventListener("pointerenter", enterHeadFocus),
-              () => headHitArea.removeEventListener("pointermove", moveHeadFocus),
-              () => headHitArea.removeEventListener("pointerleave", resetHeadFocus),
-              () => headHitArea.remove(),
-            );
-          }
-        }
-
         if (!reduceMotion) {
-          if (svgElement) {
-            gsap.from(svgElement, {
-              opacity: 0,
-              y: 30,
-              scale: 0.985,
-              duration: 1,
-              ease: "power3.out",
-            });
-          }
-
-          gsap
-            .timeline({ delay: 0.18 })
-            .set([...leaves, ...flowers], { autoAlpha: 0 }, 0)
-            .to(leaves, { autoAlpha: 1, duration: 0.7, stagger: 0.035, ease: "power2.out" }, 0)
-            .to(flowers, { autoAlpha: 1, duration: 0.65, stagger: 0.045, ease: "power2.out" }, 0.16)
-            .to(motion, { growth: 1, duration: 1.9, ease: "expo.out" }, 0);
+          gsap.from(svgElement, {
+            opacity: 0,
+            y: 30,
+            scale: 0.985,
+            duration: 1,
+            ease: "power3.out",
+          });
 
           if (artworkLayers.length) {
-            gsap
-              .timeline({
-                scrollTrigger: {
-                  trigger: section,
-                  start: "top top",
-                  end: "bottom top",
-                  scrub: 1.6,
-                  invalidateOnRefresh: true,
-                },
-              })
-              .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0);
+            timelines.push(
+              gsap
+                .timeline({
+                  scrollTrigger: {
+                    trigger: section,
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1.6,
+                    invalidateOnRefresh: true,
+                  },
+                })
+                .to(artworkLayers, { y: -42, scale: 0.992, ease: "none" }, 0),
+            );
           }
 
           if (characterGroup) {
             timelines.push(gsap.to(characterGroup, {
-              y: -3,
-              scale: 1.01,
+              y: -1.5,
+              scale: 1.003,
               duration: 3.2,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
               overwrite: "auto",
             }));
+          } else {
+            [head, penArm, byId("camera-2")].filter(Boolean).forEach((part, index) => {
+              timelines.push(gsap.to(part, {
+                y: -1.5 * (index === 0 ? 1 : 0.6),
+                duration: 3.2 + index * 0.12,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                overwrite: "auto",
+              }));
+            });
           }
-
-          gsap.ticker.add(tickerFn);
 
           timelines.push(gsap.to(tagRects, {
             scale: 1.018,
@@ -363,42 +306,95 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           }));
         }
 
-        const strengthenMotion = () => {
-          gsap.to(motion, {
-            flowerAmp: 2.35,
-            leafAmp: 2.25,
-            duration: 1.4,
-            ease: "power3.out",
+        flowers.forEach((flower, index) => {
+          gsap.set(flower, {
+            transformOrigin: "50% 100%",
+            pointerEvents: "all",
           });
-        };
 
-        const softenMotion = () => {
-          gsap.to(motion, {
-            flowerAmp: 1,
-            leafAmp: 1,
-            duration: 1.8,
-            ease: "power3.out",
+          if (!reduceMotion) {
+            timelines.push(gsap.to(flower, {
+              rotation: index % 2 ? -4.2 : 4.2,
+              y: index % 2 ? 4 : -4,
+              duration: 1.6 + (index % 4) * 0.15,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+              overwrite: "auto",
+            }));
+          }
+
+          const enterFlower = () => {
+            gsap.to(flower, {
+              scale: 1.06,
+              duration: 0.28,
+              ease: "back.out(1.6)",
+              overwrite: "auto",
+            });
+          };
+          const leaveFlower = () => {
+            gsap.to(flower, {
+              scale: 1,
+              duration: 0.35,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+          };
+
+          if (!isTouch) {
+            flower.addEventListener("mouseenter", enterFlower);
+            flower.addEventListener("mouseleave", leaveFlower);
+            cleanupFns.push(
+              () => flower.removeEventListener("mouseenter", enterFlower),
+              () => flower.removeEventListener("mouseleave", leaveFlower),
+            );
+          }
+        });
+
+        leaves.forEach((leaf, index) => {
+          gsap.set(leaf, {
+            transformOrigin: "50% 100%",
+            pointerEvents: "all",
           });
-        };
 
-        if (!isTouch) {
-          stage.addEventListener("mouseenter", strengthenMotion);
-          stage.addEventListener("mouseleave", softenMotion);
-          cleanupFns.push(
-            () => stage.removeEventListener("mouseenter", strengthenMotion),
-            () => stage.removeEventListener("mouseleave", softenMotion),
-          );
-        }
-        window.addEventListener("scroll", resumeHeroAnimations, { passive: true });
-        window.addEventListener("focus", resumeHeroAnimations);
-        window.addEventListener("pageshow", resumeHeroAnimations);
-        document.addEventListener("visibilitychange", resumeHeroAnimations);
-        cleanupFns.push(
-          () => window.removeEventListener("scroll", resumeHeroAnimations),
-          () => window.removeEventListener("focus", resumeHeroAnimations),
-          () => window.removeEventListener("pageshow", resumeHeroAnimations),
-          () => document.removeEventListener("visibilitychange", resumeHeroAnimations),
-        );
+          if (!reduceMotion) {
+            timelines.push(gsap.to(leaf, {
+              rotation: index % 2 ? -3.5 : 3.5,
+              y: index % 2 ? 3 : -3,
+              duration: 1.8 + (index % 4) * 0.12,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+              overwrite: "auto",
+            }));
+          }
+
+          const enterLeaf = () => {
+            gsap.to(leaf, {
+              scale: 1.05,
+              duration: 0.28,
+              ease: "back.out(1.6)",
+              overwrite: "auto",
+            });
+          };
+          const leaveLeaf = () => {
+            gsap.to(leaf, {
+              scale: 1,
+              duration: 0.35,
+              ease: "power3.out",
+              overwrite: "auto",
+            });
+          };
+
+          if (!isTouch) {
+            leaf.addEventListener("mouseenter", enterLeaf);
+            leaf.addEventListener("mouseleave", leaveLeaf);
+            cleanupFns.push(
+              () => leaf.removeEventListener("mouseenter", enterLeaf),
+              () => leaf.removeEventListener("mouseleave", leaveLeaf),
+            );
+          }
+        });
 
         tagRects.forEach((rect, index) => {
           const text = tagTexts[index];
@@ -420,7 +416,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               });
             }
           };
-
           const leaveTag = () => {
             gsap.to(rect, {
               scale: 1,
@@ -441,8 +436,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           };
 
           if (!isTouch) {
-            (rect as unknown as HTMLElement).style.pointerEvents = "all";
-            (rect as unknown as HTMLElement).style.cursor = "pointer";
+            rect.style.pointerEvents = "all";
+            rect.style.cursor = "pointer";
             rect.addEventListener("mouseenter", enterTag);
             rect.addEventListener("mouseleave", leaveTag);
             cleanupFns.push(
@@ -452,251 +447,394 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           }
         });
 
-        flowers.forEach((flower) => {
-          const enterFlower = () => {
-            gsap.to(motion, { flowerHover: 1.55, duration: 0.9, ease: "power3.out" });
-          };
-          const leaveFlower = () => {
-            gsap.to(motion, { flowerHover: 1, duration: 1.2, ease: "power3.out" });
-          };
+        const quickTo = (node: SVGGraphicsElement | null | undefined, prop: string, duration = 0.25) =>
+          node ? gsap.quickTo(node, prop, { duration, ease: "power3.out" }) : null;
+        const leftEyeX = quickTo(leftEye, "x", 0.22);
+        const leftEyeY = quickTo(leftEye, "y", 0.22);
+        const rightEyeX = quickTo(rightEye, "x", 0.22);
+        const rightEyeY = quickTo(rightEye, "y", 0.22);
+        const headX = quickTo(head, "x", 0.45);
+        const headY = quickTo(head, "y", 0.45);
+        const headRotation = quickTo(head, "rotation", 0.45);
+        const penX = quickTo(penArm, "x", 0.65);
+        const penY = quickTo(penArm, "y", 0.65);
+        const penRotation = quickTo(penArm, "rotation", 0.65);
 
-          if (!isTouch) {
-            flower.style.pointerEvents = "all";
-            flower.addEventListener("mouseenter", enterFlower);
-            flower.addEventListener("mouseleave", leaveFlower);
-            cleanupFns.push(
-              () => flower.removeEventListener("mouseenter", enterFlower),
-              () => flower.removeEventListener("mouseleave", leaveFlower),
-            );
-          }
+        const moveCharacterDetails = (event: PointerEvent) => {
+          const rect = stage.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - 0.5;
+          const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+          leftEyeX?.(x * 6);
+          rightEyeX?.(x * 6);
+          leftEyeY?.(y * 4);
+          rightEyeY?.(y * 4);
+          headX?.(x * 4);
+          headY?.(y * 3);
+          headRotation?.(x * 4);
+          penX?.(x * 0.8);
+          penY?.(y * 0.5);
+          penRotation?.(x * -1.2);
+        };
+
+        const resetCharacterDetails = () => {
+          leftEyeX?.(0);
+          leftEyeY?.(0);
+          rightEyeX?.(0);
+          rightEyeY?.(0);
+          headX?.(0);
+          headY?.(0);
+          headRotation?.(0);
+          penX?.(0);
+          penY?.(0);
+          penRotation?.(0);
+        };
+
+        if (!isTouch) {
+          stage.addEventListener("mousemove", moveCharacterDetails);
+          stage.addEventListener("mouseleave", resetCharacterDetails);
+          cleanupFns.push(
+            () => stage.removeEventListener("mousemove", moveCharacterDetails),
+            () => stage.removeEventListener("mouseleave", resetCharacterDetails),
+          );
+        }
+
+        const extraWing = flyPose
+          ? Array.from(flyPose.querySelectorAll<SVGGraphicsElement>("ellipse,path")).find((node) => {
+            if (node === wing1 || node === leftWing || node === rightWing) return false;
+            const id = node.id || "";
+            const name = node.getAttribute("data-name") || "";
+            const className = node.getAttribute("class") || "";
+            return /wing|fly|flying|flyinh|transparent|beetal/i.test(`${id} ${name} ${className}`);
+          }) || null
+          : null;
+        const flutterWings = [wing1, extraWing, leftWing, rightWing].filter(Boolean) as SVGGraphicsElement[];
+
+        flutterWings.forEach((wing, index) => {
+          gsap.set(wing, {
+            transformOrigin: "50% 50%",
+            opacity: 0,
+            x: index % 2 === 0 ? -2.5 : 2.5,
+            y: index % 2 === 0 ? -1 : 1,
+            rotation: index % 2 === 0 ? -8 : 8,
+          });
         });
 
-        leaves.forEach((leaf) => {
-          const enterLeaf = () => {
-            gsap.to(motion, { leafHover: 1.5, duration: 0.9, ease: "power3.out" });
-          };
-          const leaveLeaf = () => {
-            gsap.to(motion, { leafHover: 1, duration: 1.2, ease: "power3.out" });
-          };
+        const startFlyWingFlutter = () => {
+          if (!flutterWings.length) return;
+          wingTimeline?.kill();
 
-          if (!isTouch) {
-            leaf.style.pointerEvents = "all";
-            leaf.addEventListener("mouseenter", enterLeaf);
-            leaf.addEventListener("mouseleave", leaveLeaf);
-            cleanupFns.push(
-              () => leaf.removeEventListener("mouseenter", enterLeaf),
-              () => leaf.removeEventListener("mouseleave", leaveLeaf),
-            );
-          }
-        });
+          flutterWings.forEach((wing, index) => {
+            gsap.set(wing, {
+              opacity: 0.55,
+              transformOrigin: "50% 50%",
+              x: index % 2 === 0 ? -2.5 : 2.5,
+              y: index % 2 === 0 ? -1 : 1,
+            });
+          });
 
-        if (beetle) {
-          if (rootGroup) rootGroup.appendChild(beetle as unknown as SVGGElement);
+          wingTimeline = gsap.timeline({ repeat: -1 });
+          wingTimeline
+            .to(flutterWings, {
+              rotation: (index) => (index % 2 ? 22 : -22),
+              scaleY: 0.45,
+              scaleX: 0.9,
+              opacity: 0.16,
+              duration: 0.035,
+              ease: "none",
+              stagger: 0.01,
+            })
+            .to(flutterWings, {
+              rotation: (index) => (index % 2 ? -22 : 22),
+              scaleY: 1.25,
+              scaleX: 1.08,
+              opacity: 0.7,
+              duration: 0.035,
+              ease: "none",
+              stagger: 0.01,
+            });
+        };
 
-          const getCenter = (element?: SVGGraphicsElement | null) => {
-            const box = getBox(element || undefined);
-            return box ? { x: box.x + box.width / 2, y: box.y + box.height / 2 } : null;
-          };
-          const beetleCenter = getCenter(beetle);
-          const perchFlowers = flowers.filter(Boolean) as SVGGraphicsElement[];
-          const flowerCenters = perchFlowers.map((flower) => getCenter(flower));
-          const validFlowerIndexes = flowerCenters
-            .map((center, index) => (center ? index : -1))
-            .filter((index) => index >= 0);
-          const perchOffset = { x: 0, y: -9 };
-
-          const setPerch = (index: number) => {
-            if (!beetleCenter || !validFlowerIndexes.length) return;
-
-            currentPerchIndex = validFlowerIndexes[index % validFlowerIndexes.length];
-            currentPerchFlower = perchFlowers[currentPerchIndex];
-            const target = flowerCenters[currentPerchIndex];
-            if (!target) return;
-
-            beetleBase.x = target.x - beetleCenter.x + perchOffset.x;
-            beetleBase.y = target.y - beetleCenter.y + perchOffset.y;
-          };
-
-          const nearestPerch = () => {
-            if (!beetleCenter || !validFlowerIndexes.length) return 0;
-
-            const currentX = Number(gsap.getProperty(beetle, "x")) || 0;
-            const currentY = Number(gsap.getProperty(beetle, "y")) || 0;
-            const beetleX = beetleCenter.x + currentX;
-            const beetleY = beetleCenter.y + currentY;
-
-            return validFlowerIndexes.reduce((nearest, index) => {
-              const center = flowerCenters[index];
-              const nearestCenter = flowerCenters[nearest];
-              if (!center || !nearestCenter) return nearest;
-
-              const distance = Math.hypot(center.x - beetleX, center.y - beetleY);
-              const nearestDistance = Math.hypot(nearestCenter.x - beetleX, nearestCenter.y - beetleY);
-              return distance < nearestDistance ? index : nearest;
-            }, validFlowerIndexes[0]);
-          };
-
-          const closeWings = () => {
-            beetleWingTimeline?.pause(0);
-            gsap.to(beetleWingParts, {
-              autoAlpha: 0,
-              rotation: 0,
-              scaleX: 1,
+        const stopFlyWingFlutter = () => {
+          wingTimeline?.kill();
+          wingTimeline = null;
+          flutterWings.forEach((wing, index) => {
+            gsap.to(wing, {
+              opacity: 0,
+              rotation: index % 2 === 0 ? -8 : 8,
               scaleY: 1,
-              duration: 0.28,
-              ease: "power3.out",
+              scaleX: 1,
+              x: index % 2 === 0 ? -2.5 : 2.5,
+              y: index % 2 === 0 ? -1 : 1,
+              duration: 0.18,
               overwrite: "auto",
             });
-          };
+          });
+        };
 
-          const openWings = () => {
-            gsap.to(beetleWingParts, {
-              autoAlpha: 1,
+        const alignSitToFlower = (index: number) => {
+          if (!sitPose) return;
+          const point = flowerPoint(index, sitBase);
+          gsap.set(sitPose, {
+            x: point.x,
+            y: point.y,
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+          });
+        };
+
+        const alignFlyToFlower = (index: number) => {
+          if (!flyPose) return;
+          const point = flowerPoint(index, flyBase);
+          gsap.set(flyPose, {
+            x: point.x,
+            y: point.y,
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+          });
+        };
+
+        const switchToFly = (index: number, onComplete?: () => void) => {
+          if (!sitPose || !flyPose) return;
+          currentState = "takeoff";
+          alignFlyToFlower(index);
+
+          gsap
+            .timeline({ onComplete })
+            .to(sitPose, {
+              y: "+=2",
+              scale: 0.985,
               duration: 0.12,
               ease: "power2.out",
               overwrite: "auto",
+            })
+            .call(() => {
+              showPose(flyPose);
+              hidePose(sitPose);
+              startFlyWingFlutter();
+            })
+            .to(flyPose, {
+              y: "-=8",
+              scale: 1.02,
+              duration: 0.18,
+              ease: "power2.out",
+              overwrite: "auto",
             });
-            beetleWingTimeline?.play();
-          };
+        };
 
-          gsap.set(beetle, {
-            transformBox: "fill-box",
-            transformOrigin: "center center",
-            cursor: "grab",
-            pointerEvents: "all",
-          });
-          gsap.set(beetleBody, { transformBox: "fill-box", transformOrigin: "center center" });
-          gsap.set(beetleLeftWing, { transformBox: "fill-box", transformOrigin: "right center" });
-          gsap.set(beetleRightWing, { transformBox: "fill-box", transformOrigin: "left center" });
-          gsap.set(beetleFlyingWing, { transformBox: "fill-box", transformOrigin: "center center" });
+        const switchToSit = (index: number) => {
+          if (!sitPose || !flyPose) return;
+          currentState = "landing";
+          stopFlyWingFlutter();
+          alignSitToFlower(index);
 
-          beetleWingTimeline = gsap.timeline({ repeat: -1, paused: true });
-          beetleWingTimeline
-            .to(beetleLeftWing, { rotation: -18, scaleX: 0.72, duration: 0.055, ease: "power1.inOut" }, 0)
-            .to(beetleRightWing, { rotation: 18, scaleX: 0.72, duration: 0.055, ease: "power1.inOut" }, 0)
-            .to(beetleFlyingWing, { rotation: 8, scaleY: 0.68, duration: 0.055, ease: "power1.inOut" }, 0)
-            .to(beetleLeftWing, { rotation: -4, scaleX: 1, duration: 0.055, ease: "power1.inOut" }, 0.055)
-            .to(beetleRightWing, { rotation: 4, scaleX: 1, duration: 0.055, ease: "power1.inOut" }, 0.055)
-            .to(beetleFlyingWing, { rotation: -8, scaleY: 1, duration: 0.055, ease: "power1.inOut" }, 0.055);
+          gsap
+            .timeline({
+              onComplete: () => {
+                currentState = "landed";
+              },
+            })
+            .call(() => {
+              showPose(sitPose);
+              hidePose(flyPose);
+            })
+            .fromTo(
+              sitPose,
+              { scale: 1.03 },
+              {
+                scale: 1,
+                duration: 0.28,
+                ease: "back.out(1.6)",
+                overwrite: "auto",
+              },
+            );
+        };
 
-          setPerch(0);
-          gsap.set(beetle, {
-            x: beetleBase.x,
-            y: beetleBase.y,
-            rotation: -4,
-            scale: 1,
-          });
-          closeWings();
+        const beetleTicker = () => {
+          if (currentState !== "landed" || dragging) return;
+          alignSitToFlower(currentFlowerIndex);
+        };
 
-          const flyToPerch = (index: number) => {
-            if (!beetleCenter || !validFlowerIndexes.length) return;
-
-            const routeIndex = validFlowerIndexes.indexOf(index) >= 0 ? index : validFlowerIndexes[0];
-            const startX = Number(gsap.getProperty(beetle, "x")) || 0;
-            const startY = Number(gsap.getProperty(beetle, "y")) || 0;
-            setPerch(routeIndex);
-            const targetX = beetleBase.x;
-            const targetY = beetleBase.y;
-
-            beetleState = "flying";
-            currentPerchFlower = null;
-            openWings();
+        const flyTo = (index: number) => {
+          if (!flyPose) return;
+          switchToFly(currentFlowerIndex, () => {
+            currentState = "flying";
+            const start = getPosePosition(flyPose);
+            const end = flowerPoint(index, flyBase);
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            const rotation = gsap.utils.clamp(-45, 45, Math.atan2(dy, dx) * (180 / Math.PI) + 90);
+            const mid = {
+              x: (start.x + end.x) / 2 + gsap.utils.random(-35, 35),
+              y: Math.min(start.y, end.y) - gsap.utils.random(55, 90),
+            };
 
             gsap
               .timeline({
                 onComplete: () => {
-                  beetleState = "landed";
-                  closeWings();
+                  currentFlowerIndex = index;
+                  switchToSit(index);
                 },
               })
-              .to(beetle, {
-                x: (startX + targetX) / 2,
-                y: Math.min(startY, targetY) - 36,
-                rotation: targetX > startX ? 14 : -14,
-                scale: 1.07,
+              .to(flyPose, {
+                x: mid.x,
+                y: mid.y,
+                rotation,
+                scaleX: 1,
+                scaleY: 1,
                 duration: 0.72,
-                ease: "sine.inOut",
+                ease: "power2.out",
                 overwrite: "auto",
               })
-              .to(beetle, {
-                x: targetX,
-                y: targetY,
-                rotation: -4,
-                scale: 1,
-                duration: 0.78,
+              .to(flyPose, {
+                x: end.x,
+                y: end.y,
+                rotation: 0,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 0.72,
                 ease: "power2.inOut",
                 overwrite: "auto",
               });
-          };
+          });
+        };
 
-          if (!reduceMotion && validFlowerIndexes.length) {
-            const route = [0, 2, 5, 8, 4, 1, 7, 3, 6]
-              .map((index) => validFlowerIndexes[index % validFlowerIndexes.length]);
-            beetleFlight = gsap.timeline({ repeat: -1, repeatDelay: 0.3 });
-            route.forEach((index) => {
-              beetleFlight
-                ?.call(() => flyToPerch(index))
-                .to({}, { duration: 2.35 });
-            });
+        const nearestFlowerFromPoint = (x: number, y: number) => {
+          let nearest = 0;
+          let best = Infinity;
+
+          flowers.forEach((_, index) => {
+            const point = flowerPoint(index, flyBase);
+            const distance = Math.hypot(x - point.x, y - point.y);
+            if (distance < best) {
+              best = distance;
+              nearest = index;
+            }
+          });
+
+          return nearest;
+        };
+
+        const moveManualDrag = (event: PointerEvent) => {
+          if (!pointerDragging || !flyPose) return;
+          const point = pointerSvgPoint(event);
+          gsap.set(flyPose, {
+            x: point.x - flyBase.x,
+            y: point.y - flyBase.y,
+            scaleX: 1,
+          });
+        };
+
+        const stopManualDrag = () => {
+          if (!flyPose) return;
+          pointerDragging = false;
+          dragging = false;
+          currentState = "returning";
+          window.removeEventListener("pointermove", moveManualDrag);
+          window.removeEventListener("pointerup", stopManualDrag);
+
+          const position = getPosePosition(flyPose);
+          const nearest = nearestFlowerFromPoint(position.x, position.y);
+          const point = flowerPoint(nearest, flyBase);
+
+          gsap.to(flyPose, {
+            x: point.x,
+            y: point.y,
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 0.8,
+            ease: "elastic.out(1, 0.45)",
+            overwrite: "auto",
+            onComplete: () => {
+              currentFlowerIndex = nearest;
+              switchToSit(nearest);
+              mainBeetleTimeline?.resume();
+            },
+          });
+        };
+
+        const startManualDrag = (event: PointerEvent) => {
+          if (!sitPose || !flyPose) return;
+          event.preventDefault();
+          dragging = true;
+          pointerDragging = true;
+          currentState = "dragging";
+          mainBeetleTimeline?.pause();
+
+          const currentSit = getPosePosition(sitPose);
+          gsap.set(flyPose, {
+            x: currentSit.x,
+            y: currentSit.y,
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+          });
+
+          showPose(flyPose);
+          hidePose(sitPose);
+          startFlyWingFlutter();
+          moveManualDrag(event);
+          window.addEventListener("pointermove", moveManualDrag);
+          window.addEventListener("pointerup", stopManualDrag);
+        };
+
+        if (sitPose && flyPose && flowers.length) {
+          alignSitToFlower(0);
+          currentFlowerIndex = 0;
+          currentState = "landed";
+          showPose(sitPose);
+          hidePose(flyPose);
+
+          if (!reduceMotion) {
+            mainBeetleTimeline = gsap.timeline({ repeat: -1 });
+            for (let index = 1; index <= flowers.length; index += 1) {
+              const next = index % flowers.length;
+              mainBeetleTimeline
+                .to({}, { duration: 1.5 })
+                .call(() => {
+                  if (!dragging && currentState === "landed") flyTo(next);
+                })
+                .to({}, { duration: 2.45 });
+            }
           }
 
-          const returnBeetleToPerch = () => {
-            const nearest = nearestPerch();
-            setPerch(nearest);
-            beetleState = "flying";
-            openWings();
-
-            gsap.to(beetle, {
-              x: beetleBase.x,
-              y: beetleBase.y,
-              rotation: -4,
-              scale: 1,
-              duration: 0.8,
-              ease: "elastic.out(1, 0.45)",
-              overwrite: "auto",
-              onComplete: () => {
-                beetleState = "landed";
-                closeWings();
-                beetleFlight?.resume();
-              },
-            });
-          };
-
-          const beetleDraggable = Draggable.create(beetle, {
-            type: "x,y",
-            allowNativeTouchScrolling: true,
-            onPress() {
-              beetleState = "dragging";
-              beetleFlight?.pause();
-              openWings();
-              gsap.to(this.target, {
-                scale: 1.12,
-                duration: 0.22,
-                ease: "power2.out",
-                overwrite: "auto",
-              });
-            },
-            onDrag() {
-              gsap.to(this.target, {
-                rotation: gsap.utils.clamp(-22, 22, this.x * 0.04),
-                duration: 0.12,
-                ease: "power2.out",
-                overwrite: "auto",
-              });
-            },
-            onRelease: returnBeetleToPerch,
-          })[0];
-
-          allDraggables.push(beetleDraggable);
+          sitPose.addEventListener("pointerdown", startManualDrag);
+          flyPose.addEventListener("pointerdown", startManualDrag);
+          cleanupFns.push(
+            () => sitPose.removeEventListener("pointerdown", startManualDrag),
+            () => flyPose.removeEventListener("pointerdown", startManualDrag),
+          );
+          gsap.ticker.add(beetleTicker);
+          cleanupFns.push(() => gsap.ticker.remove(beetleTicker));
         }
 
+        const resumeHeroAnimations = () => {
+          gsap.globalTimeline.resume();
+          gsap.ticker.wake();
+          mainBeetleTimeline?.resume();
+        };
+
+        window.addEventListener("scroll", resumeHeroAnimations, { passive: true });
+        window.addEventListener("focus", resumeHeroAnimations);
+        window.addEventListener("pageshow", resumeHeroAnimations);
+        document.addEventListener("visibilitychange", resumeHeroAnimations);
+        cleanupFns.push(
+          () => window.removeEventListener("scroll", resumeHeroAnimations),
+          () => window.removeEventListener("focus", resumeHeroAnimations),
+          () => window.removeEventListener("pageshow", resumeHeroAnimations),
+          () => document.removeEventListener("visibilitychange", resumeHeroAnimations),
+          () => window.removeEventListener("pointermove", moveManualDrag),
+          () => window.removeEventListener("pointerup", stopManualDrag),
+        );
+
         cleanupHero = () => {
-          gsap.ticker.remove(tickerFn);
           cleanupFns.forEach((cleanup) => cleanup());
-          allDraggables.forEach((draggable) => draggable.kill());
           timelines.forEach((timeline) => timeline.kill());
-          beetleFlight?.kill();
-          beetleWingTimeline?.kill();
+          mainBeetleTimeline?.kill();
+          wingTimeline?.kill();
         };
       }, stage);
     };
