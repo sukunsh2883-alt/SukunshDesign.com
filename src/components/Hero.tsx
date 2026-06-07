@@ -829,7 +829,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       id="home"
       className="hero relative overflow-hidden bg-[#050505]"
     >
-      <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-10">
+      <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
         <div className="hero-content hidden">
           <p className="text-sm font-medium tracking-[-0.025em] text-white/62">
             Hello I'm Delhi Based Multidisciplinary Designer.
@@ -858,7 +858,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         <div className="hero-art relative flex justify-center">
           <div
             ref={stageRef}
-            className="svg-stage relative mb-0 aspect-[1358.17/730.78] w-[min(112vw,1540px)] translate-y-[1vh] origin-center overflow-visible md:mb-0 md:w-[min(104vw,1500px)] md:translate-y-[2vh]"
+            className="svg-stage relative mb-0 aspect-[1358.17/730.78] origin-center overflow-visible"
           />
         </div>
       </div>

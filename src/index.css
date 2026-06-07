@@ -409,7 +409,11 @@ header *,
 }
 
 .hero-inner {
+  align-items: center;
+  display: flex;
+  justify-content: center;
   min-height: 100svh;
+  padding: 76px 0 18px;
 }
 
 .hero-art {
@@ -420,17 +424,18 @@ header *,
   align-items: center;
   background: #050505;
   display: flex;
-  height: clamp(560px, 88svh, 720px);
+  aspect-ratio: 1358.17 / 730.78;
+  height: auto;
   justify-content: center;
   min-height: 0;
   overflow: hidden;
   position: relative;
-  width: min(112vw, 1540px);
+  width: min(100vw, 1420px, calc((100svh - 104px) * 1.8581));
 }
 
 .svg-stage > svg {
   display: block;
-  height: 100%;
+  height: auto;
   overflow: visible;
   width: 100%;
 }
@@ -504,17 +509,18 @@ header *,
   .svg-stage {
     align-items: center;
     display: flex;
-    height: 100svh;
+    aspect-ratio: 1358.17 / 730.78;
+    height: auto;
     justify-content: center;
-    margin-bottom: -5vh !important;
+    margin-bottom: 0 !important;
     overflow: hidden;
-    width: 100vw !important;
+    width: min(100vw, calc((100svh - 96px) * 1.8581)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
     max-width: none;
-    width: 165vw !important;
+    width: 100% !important;
   }
 
   .svg-stage #Layer_147,
