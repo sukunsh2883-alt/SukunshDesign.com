@@ -518,7 +518,7 @@ header *,
     justify-content: center;
     margin-bottom: 0 !important;
     overflow: visible;
-    transform: translateY(4vh);
+    transform: translateY(8vh);
     width: min(126vw, calc((100svh - 44px) * 1.8581)) !important;
   }
 
