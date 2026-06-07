@@ -81,9 +81,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const svgElement = stage.querySelector("svg");
       if (!svgElement) return;
 
-      const rootGroup = (Array.from(svgElement.children).find(
-        (child) => child instanceof SVGGElement,
-      ) || null) as SVGGElement | null;
       const byId = <T extends SVGGraphicsElement>(id: string) => findSvgElement<T>(svgElement, id);
       const heroText = byId("Sukunsh");
       const head = byId("head-2");
@@ -101,12 +98,11 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const tagTexts = Array.from(svgElement.querySelectorAll("#Layer_148 text")) as SVGGraphicsElement[];
 
       const characterGroup = (() => {
-        if (!rootGroup) return byId("character_group");
         if (heroText) {
           heroText.setAttribute("id", "sukunsh_text");
           const backgroundLayer = byId("Layer_38");
-          if (heroText.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
-            rootGroup.insertBefore(heroText, backgroundLayer.nextSibling);
+          if (heroText.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
+            svgElement.insertBefore(heroText, backgroundLayer.nextSibling);
           }
         }
 
@@ -120,13 +116,13 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
         group.setAttribute("id", "character_group");
-        const firstTopLevelPart = parts.find((part) => part.parentNode === rootGroup) || null;
-        rootGroup.insertBefore(group, firstTopLevelPart);
+        const firstTopLevelPart = parts.find((part) => part.parentNode === svgElement) || null;
+        svgElement.insertBefore(group, firstTopLevelPart);
         parts.forEach((part) => group.appendChild(part));
         const sukunshText = byId("sukunsh_text");
         const backgroundLayer = byId("Layer_38");
-        if (sukunshText?.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
-          rootGroup.insertBefore(sukunshText, backgroundLayer.nextSibling);
+        if (sukunshText?.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
+          svgElement.insertBefore(sukunshText, backgroundLayer.nextSibling);
         }
         return group as unknown as SVGGraphicsElement;
       })();
