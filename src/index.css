@@ -409,14 +409,17 @@ header *,
 }
 
 .hero-inner {
-  align-items: center;
+  align-items: flex-end;
   display: flex;
   justify-content: center;
   min-height: 100svh;
-  padding: 76px 0 18px;
+  padding: 76px 0 0;
 }
 
 .hero-art {
+  align-items: flex-end;
+  display: flex;
+  justify-content: center;
   width: 100%;
 }
 
@@ -428,9 +431,9 @@ header *,
   height: auto;
   justify-content: center;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
-  width: min(100vw, 1420px, calc((100svh - 104px) * 1.8581));
+  width: min(112vw, 1540px, calc((100svh - 76px) * 1.8581));
 }
 
 .svg-stage > svg {
@@ -513,8 +516,8 @@ header *,
     height: auto;
     justify-content: center;
     margin-bottom: 0 !important;
-    overflow: hidden;
-    width: min(100vw, calc((100svh - 96px) * 1.8581)) !important;
+    overflow: visible;
+    width: min(112vw, calc((100svh - 76px) * 1.8581)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
