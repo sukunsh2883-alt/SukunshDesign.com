@@ -104,10 +104,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         if (!rootGroup) return byId("character_group");
         if (heroText) {
           heroText.setAttribute("id", "sukunsh_text");
-          const backgroundLayer = byId("Layer_38");
-          if (heroText.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
-            rootGroup.insertBefore(heroText, backgroundLayer.nextSibling);
-          }
         }
 
         const existing = byId("character_group");
@@ -123,6 +119,13 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         const firstTopLevelPart = parts.find((part) => part.parentNode === rootGroup) || null;
         rootGroup.insertBefore(group, firstTopLevelPart);
         parts.forEach((part) => group.appendChild(part));
+        const sukunshText = byId("sukunsh_text");
+        const backgroundLayer = byId("Layer_38");
+        if (sukunshText?.parentNode === rootGroup) {
+          rootGroup.insertBefore(sukunshText, group);
+        } else if (heroText?.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
+          rootGroup.insertBefore(heroText, backgroundLayer.nextSibling);
+        }
         return group as unknown as SVGGraphicsElement;
       })();
 
@@ -310,6 +313,30 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             stagger: 0.25,
             ease: "sine.inOut",
           }));
+
+          const growTimeline = gsap.timeline({ delay: 0.18 });
+          gsap.set(leaves, { autoAlpha: 0, scaleY: 0.12, y: 10 });
+          gsap.set(flowers, { autoAlpha: 0, scale: 0.18, y: 8 });
+          growTimeline
+            .to(leaves, {
+              autoAlpha: 1,
+              scaleY: 1,
+              y: 0,
+              duration: 1.15,
+              stagger: 0.035,
+              ease: "expo.out",
+              overwrite: "auto",
+            }, 0)
+            .to(flowers, {
+              autoAlpha: 1,
+              scale: 1,
+              y: 0,
+              duration: 1,
+              stagger: 0.045,
+              ease: "back.out(1.45)",
+              overwrite: "auto",
+            }, 0.22);
+          timelines.push(growTimeline);
         }
 
         flowers.forEach((flower, index) => {
@@ -323,6 +350,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               rotation: index % 2 ? -4.2 : 4.2,
               y: index % 2 ? 4 : -4,
               duration: 1.6 + (index % 4) * 0.15,
+              delay: 1.25 + index * 0.025,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
@@ -368,6 +396,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               rotation: index % 2 ? -3.5 : 3.5,
               y: index % 2 ? 3 : -3,
               duration: 1.8 + (index % 4) * 0.12,
+              delay: 1.15 + index * 0.02,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
@@ -473,7 +502,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           rightEyeX?.(x * 3.6);
           leftEyeY?.(y * 2.4);
           rightEyeY?.(y * 2.4);
-          headRotation?.(x * 1.6);
+          headRotation?.(x * 0.85);
           penX?.(x * 0.6);
           penY?.(y * 0.4);
           penRotation?.(x * -1);
@@ -515,8 +544,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           gsap.set(wing, {
             transformOrigin: "50% 50%",
             opacity: 0,
-            x: index % 2 === 0 ? -2.5 : 2.5,
-            y: index % 2 === 0 ? -1 : 1,
+            x: index % 2 === 0 ? -1.2 : 1.2,
+            y: -4,
             rotation: index % 2 === 0 ? -8 : 8,
           });
         });
@@ -561,8 +590,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             gsap.set(wing, {
               opacity: 0.55,
               transformOrigin: "50% 50%",
-              x: index % 2 === 0 ? -2.5 : 2.5,
-              y: index % 2 === 0 ? -1 : 1,
+              x: index % 2 === 0 ? -1.2 : 1.2,
+              y: -4,
             });
           });
 
@@ -598,8 +627,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               rotation: index % 2 === 0 ? -8 : 8,
               scaleY: 1,
               scaleX: 1,
-              x: index % 2 === 0 ? -2.5 : 2.5,
-              y: index % 2 === 0 ? -1 : 1,
+              x: index % 2 === 0 ? -1.2 : 1.2,
+              y: -4,
               duration: 0.18,
               overwrite: "auto",
             });
@@ -909,8 +938,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       <div className="hero-inner relative flex min-h-screen items-end justify-center px-0 pt-10">
         <div className="hero-content hidden">
           <p className="text-sm font-medium tracking-[-0.025em] text-white/62">
-            Delhi Based<br />
-            Multidisciplinary Designer.
+            Hello I’m Multidisciplinary Designer.
           </p>
           <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-[-0.065em] text-white">
             {profile?.brandName || "Sukunsh"}.
