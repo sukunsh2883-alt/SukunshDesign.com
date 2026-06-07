@@ -104,6 +104,10 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         if (!rootGroup) return byId("character_group");
         if (heroText) {
           heroText.setAttribute("id", "sukunsh_text");
+          const backgroundLayer = byId("Layer_38");
+          if (heroText.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
+            rootGroup.insertBefore(heroText, backgroundLayer.nextSibling);
+          }
         }
 
         const existing = byId("character_group");
@@ -121,10 +125,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         parts.forEach((part) => group.appendChild(part));
         const sukunshText = byId("sukunsh_text");
         const backgroundLayer = byId("Layer_38");
-        if (sukunshText?.parentNode === rootGroup) {
-          rootGroup.insertBefore(sukunshText, group);
-        } else if (heroText?.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
-          rootGroup.insertBefore(heroText, backgroundLayer.nextSibling);
+        if (sukunshText?.parentNode === rootGroup && backgroundLayer?.parentNode === rootGroup) {
+          rootGroup.insertBefore(sukunshText, backgroundLayer.nextSibling);
         }
         return group as unknown as SVGGraphicsElement;
       })();
@@ -502,7 +504,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           rightEyeX?.(x * 3.6);
           leftEyeY?.(y * 2.4);
           rightEyeY?.(y * 2.4);
-          headRotation?.(x * 0.85);
+          headRotation?.(x * 0.35);
           penX?.(x * 0.6);
           penY?.(y * 0.4);
           penRotation?.(x * -1);
@@ -544,8 +546,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           gsap.set(wing, {
             transformOrigin: "50% 50%",
             opacity: 0,
-            x: index % 2 === 0 ? -1.2 : 1.2,
-            y: -4,
+            x: index % 2 === 0 ? -0.6 : 0.6,
+            y: -8,
             rotation: index % 2 === 0 ? -8 : 8,
           });
         });
@@ -590,8 +592,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             gsap.set(wing, {
               opacity: 0.55,
               transformOrigin: "50% 50%",
-              x: index % 2 === 0 ? -1.2 : 1.2,
-              y: -4,
+              x: index % 2 === 0 ? -0.6 : 0.6,
+              y: -8,
             });
           });
 
@@ -627,8 +629,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
               rotation: index % 2 === 0 ? -8 : 8,
               scaleY: 1,
               scaleX: 1,
-              x: index % 2 === 0 ? -1.2 : 1.2,
-              y: -4,
+              x: index % 2 === 0 ? -0.6 : 0.6,
+              y: -8,
               duration: 0.18,
               overwrite: "auto",
             });
