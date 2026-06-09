@@ -97,7 +97,8 @@ export default function ProjectCaseStudy({ project, onClose, onUpdateProject }: 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[120] bg-black/95 overflow-y-auto font-sans flex flex-col h-full"
+      data-native-scroll
+      className="fixed inset-0 z-[120] flex h-dvh flex-col overflow-y-auto overscroll-contain bg-[#080807]/95 font-sans"
     >
       {/* Sleek Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-black/80 backdrop-blur-xl border-b border-white/5 shrink-0 sticky top-0 z-50">

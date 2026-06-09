@@ -82,6 +82,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const timelines: gsap.core.Animation[] = [];
       let mainBeetleTimeline: gsap.core.Timeline | null = null;
       let wingTimeline: gsap.core.Timeline | null = null;
+      let cursorBeetleTicker: (() => void) | null = null;
       let currentState: "landed" | "takeoff" | "flying" | "landing" | "dragging" | "returning" = "landed";
       let currentFlowerIndex = 0;
       let dragging = false;
@@ -118,6 +119,52 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             return undefined;
           }
         };
+
+        const cursorBeetle = document.createElement("div");
+        cursorBeetle.className = "hero-cursor-beetle";
+        cursorBeetle.innerHTML = `
+          <svg viewBox="0 0 42 34" aria-hidden="true">
+            <path class="cursor-beetle-wing left" d="M18 13 C9 4 3 8 7 18 C10 25 16 24 20 18 Z" />
+            <path class="cursor-beetle-wing right" d="M24 13 C33 4 39 8 35 18 C32 25 26 24 22 18 Z" />
+            <ellipse cx="21" cy="18" rx="8.5" ry="10" fill="#f25a00" />
+            <path d="M21 8 L21 28" stroke="#201410" stroke-width="1.5" opacity=".55" />
+            <circle cx="17.5" cy="15" r="1.4" fill="#201410" />
+            <circle cx="24.5" cy="15" r="1.4" fill="#201410" />
+          </svg>
+        `;
+        stage.appendChild(cursorBeetle);
+        const cursorBeetleX = gsap.quickTo(cursorBeetle, "x", { duration: 0.75, ease: "power3.out" });
+        const cursorBeetleY = gsap.quickTo(cursorBeetle, "y", { duration: 0.75, ease: "power3.out" });
+        const cursorBeetleRot = gsap.quickTo(cursorBeetle, "rotation", { duration: 0.65, ease: "power3.out" });
+        let lastCursorMove = 0;
+
+        const moveCursorBeetle = (event: PointerEvent) => {
+          const rect = stage.getBoundingClientRect();
+          lastCursorMove = performance.now();
+          cursorBeetleX(event.clientX - rect.left + 26);
+          cursorBeetleY(event.clientY - rect.top - 18);
+          cursorBeetleRot(gsap.utils.clamp(-18, 18, ((event.clientX - rect.left) / rect.width - 0.5) * 36));
+        };
+
+        cursorBeetleTicker = () => {
+          if (performance.now() - lastCursorMove < 900) return;
+          const time = performance.now() / 1000;
+          const rect = stage.getBoundingClientRect();
+          cursorBeetleX(rect.width * 0.72 + Math.sin(time * 0.75) * 56);
+          cursorBeetleY(rect.height * 0.22 + Math.cos(time * 0.62) * 34);
+          cursorBeetleRot(Math.sin(time * 0.9) * 12);
+        };
+
+        if (!isTouch && !reduceMotion) {
+          stage.addEventListener("pointermove", moveCursorBeetle);
+          gsap.ticker.add(cursorBeetleTicker);
+          cleanupFns.push(
+            () => stage.removeEventListener("pointermove", moveCursorBeetle),
+            () => cursorBeetleTicker && gsap.ticker.remove(cursorBeetleTicker),
+          );
+        } else {
+          cursorBeetle.remove();
+        }
 
         const pointInSvg = (element: SVGGraphicsElement, x: number, y: number) => {
           const point = svgElement.createSVGPoint();
@@ -792,6 +839,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           timelines.forEach((timeline) => timeline.kill());
           mainBeetleTimeline?.kill();
           wingTimeline?.kill();
+          cursorBeetle.remove();
         };
       }, stage);
     };
@@ -827,13 +875,10 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
     <section
       ref={sectionRef}
       id="home"
-      className="hero relative overflow-hidden bg-[#050505]"
+      className="hero relative overflow-hidden bg-[#080807]"
     >
       <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
         <div className="hero-content hidden">
-          <p className="text-sm font-medium tracking-[-0.025em] text-white/62">
-            Hello I'm Delhi Based Multidisciplinary Designer.
-          </p>
           <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-[-0.065em] text-white">
             {profile?.brandName || "Sukunsh"}.
           </h1>

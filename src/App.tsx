@@ -170,11 +170,12 @@ export default function App() {
     if (reduceMotion || isTouch || isMobile) return;
 
     const lenis = new Lenis({
-      duration: 1.6,
+      duration: 1.05,
       smoothWheel: true,
-      wheelMultiplier: 0.72,
+      wheelMultiplier: 0.95,
       touchMultiplier: 1,
-      lerp: 0.055,
+      lerp: 0.085,
+      prevent: (node) => Boolean((node as Element).closest?.("[data-native-scroll]")),
     });
 
     const update = (time: number) => {
@@ -348,7 +349,7 @@ export default function App() {
   };
 
   return (
-    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300">
+    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#080807] text-neutral-900 transition-colors duration-300">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />

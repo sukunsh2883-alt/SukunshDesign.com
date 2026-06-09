@@ -138,7 +138,7 @@
 
 html,
 body {
-  background: #050505;
+  background: #080807;
   margin: 0;
   min-height: 100%;
   overflow-x: hidden;
@@ -147,7 +147,7 @@ body {
 }
 
 body {
-  background-color: #050505;
+  background-color: #080807;
   color: #18181b;
   font-family: "Clash Display Local", sans-serif;
   overscroll-behavior-y: none;
@@ -325,7 +325,7 @@ header *,
 }
 
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #f4f1e8;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -401,7 +401,7 @@ header *,
 
 /* Inline SVG hero stage and JS-created beetle layer. */
 .hero {
-  background: #050505;
+  background: #080807;
   min-height: 100svh;
   overflow: hidden;
   position: relative;
@@ -425,7 +425,7 @@ header *,
 
 .svg-stage {
   align-items: center;
-  background: #050505;
+  background: #080807;
   display: flex;
   aspect-ratio: 1358.17 / 730.78;
   height: auto;
@@ -433,8 +433,8 @@ header *,
   min-height: 0;
   overflow: visible;
   position: relative;
-  transform: translateY(10vh);
-  width: min(126vw, 1680px, calc((100svh - 44px) * 1.8581));
+  transform: translateY(11vh);
+  width: min(136vw, 1840px, calc((100svh - 26px) * 2.04));
 }
 
 .svg-stage > svg {
@@ -445,7 +445,12 @@ header *,
 }
 
 .svg-stage #Layer_38 rect {
-  fill: #050505 !important;
+  fill: #080807 !important;
+}
+
+.svg-stage #Sukunsh text,
+.svg-stage #Sukunsh tspan {
+  fill: #f3efe5 !important;
 }
 
 .svg-stage text,
@@ -455,7 +460,7 @@ header *,
 }
 
 .svg-stage #Layer_147 rect {
-  fill: rgba(12, 12, 12, 0.72) !important;
+  fill: rgba(14, 14, 12, 0.7) !important;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.42)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.08));
   stroke: rgba(255, 255, 255, 0.34);
   stroke-width: 1.2px;
@@ -463,8 +468,55 @@ header *,
 
 .svg-stage #Layer_148 text,
 .svg-stage #Layer_148 tspan {
-  fill: rgba(255, 255, 255, 0.96) !important;
+  fill: rgba(243, 239, 229, 0.96) !important;
   font-weight: 500 !important;
+}
+
+.hero-cursor-beetle {
+  height: 34px;
+  left: 0;
+  opacity: 0.86;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform-origin: center center;
+  width: 42px;
+  will-change: transform;
+  z-index: 99998;
+}
+
+.hero-cursor-beetle svg {
+  display: block;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.34));
+  height: auto;
+  overflow: visible;
+  width: 100%;
+}
+
+.cursor-beetle-wing {
+  fill: rgba(243, 239, 229, 0.22);
+  stroke: rgba(243, 239, 229, 0.42);
+  stroke-width: 1.2;
+  transform-box: fill-box;
+  transform-origin: center center;
+}
+
+.cursor-beetle-wing.left {
+  animation: cursor-beetle-left 0.16s ease-in-out infinite alternate;
+}
+
+.cursor-beetle-wing.right {
+  animation: cursor-beetle-right 0.16s ease-in-out infinite alternate;
+}
+
+@keyframes cursor-beetle-left {
+  from { transform: rotate(-14deg) scaleY(0.72); opacity: 0.32; }
+  to { transform: rotate(18deg) scaleY(1.08); opacity: 0.74; }
+}
+
+@keyframes cursor-beetle-right {
+  from { transform: rotate(14deg) scaleY(0.72); opacity: 0.32; }
+  to { transform: rotate(-18deg) scaleY(1.08); opacity: 0.74; }
 }
 
 .beetle-wrap {
@@ -518,8 +570,8 @@ header *,
     justify-content: center;
     margin-bottom: 0 !important;
     overflow: visible;
-    transform: translateY(10vh);
-    width: min(126vw, calc((100svh - 44px) * 1.8581)) !important;
+    transform: translateY(11vh);
+    width: min(136vw, calc((100svh - 26px) * 2.04)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
@@ -557,7 +609,7 @@ header *,
     height: auto;
     min-height: auto;
     overflow: visible;
-    padding: 110px 20px 56px !important;
+    padding: 96px 20px 54px !important;
   }
 
   .hero-inner {
@@ -580,7 +632,7 @@ header *,
 
   .hero-art {
     margin: 0 auto;
-    max-width: 460px;
+    max-width: 520px;
     position: relative;
     width: 90vw;
     z-index: 2;
@@ -598,10 +650,10 @@ header *,
 
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
-    max-width: 460px;
+    max-width: 520px;
     transform: none;
     transform-origin: center center;
-    width: 96vw !important;
+    width: 108vw !important;
   }
 
   .svg-stage #Sukunsh {
@@ -658,8 +710,8 @@ header *,
 
 @media (max-width: 480px) {
   .svg-stage > svg:not(.beetle-svg) {
-    max-width: 430px;
-    width: 98vw !important;
+    max-width: 500px;
+    width: 112vw !important;
   }
 
   .svg-stage #Layer_148 text,
@@ -674,7 +726,7 @@ header *,
 
 @media (max-width: 380px) {
   .svg-stage > svg:not(.beetle-svg) {
-    max-width: 390px;
-    width: 98vw !important;
+    max-width: 460px;
+    width: 116vw !important;
   }
 }
