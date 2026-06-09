@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 // Subcomponents
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import AboutIntro from "./components/AboutIntro";
 import DesignWorks from "./components/DesignWorks";
 import Footer from "./components/Footer";
 import Lightbox from "./components/Lightbox";
@@ -162,6 +164,20 @@ export default function App() {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const refresh = () => ScrollTrigger.refresh();
+    const refreshTimer = window.setTimeout(refresh, 320);
+
+    window.addEventListener("load", refresh, { once: true });
+    return () => {
+      window.clearTimeout(refreshTimer);
+      window.removeEventListener("load", refresh);
+    };
+  }, [isLoading]);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -356,9 +372,9 @@ export default function App() {
         ) : (
           <motion.div
             key="content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 26, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col min-h-screen"
           >
             {/* Header Floating navigation bar */}
@@ -388,6 +404,8 @@ export default function App() {
                 onOpenProjects={() => openPortal("projects")}
                 onOpenAIWork={() => openPortal("ai-work")}
               />
+
+              <AboutIntro />
 
               {/* Selected Design works bento grid */}
               <DesignWorks

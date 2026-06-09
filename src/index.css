@@ -213,6 +213,8 @@ header *,
 #home *,
 #projects,
 #projects *,
+#about-intro,
+#about-intro *,
 #showreel,
 #showreel *,
 #about-me,
@@ -397,6 +399,61 @@ header *,
 
 .pause-on-hover:hover .animate-marquee-scroll {
   animation-play-state: paused;
+}
+
+.about-intro-section {
+  min-height: 100svh;
+  position: relative;
+}
+
+.about-intro-phrase {
+  font-size: clamp(2.35rem, 7.4vw, 7.4rem);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  line-height: 0.98;
+  max-width: 1120px;
+  will-change: transform, opacity, filter;
+}
+
+.about-intro-left {
+  align-self: flex-start;
+}
+
+.about-intro-right {
+  align-self: flex-end;
+  max-width: 1040px;
+  text-align: right;
+}
+
+.about-intro-center {
+  align-self: center;
+  max-width: 1180px;
+  text-align: center;
+}
+
+.about-intro-mist {
+  border-radius: 999px;
+  filter: blur(64px);
+  opacity: 0.22;
+  pointer-events: none;
+  position: absolute;
+  will-change: transform, opacity;
+}
+
+.about-intro-mist-one {
+  background: #f25a00;
+  height: 36vw;
+  left: -12vw;
+  top: 12vh;
+  width: 36vw;
+}
+
+.about-intro-mist-two {
+  background: #8b7cf2;
+  bottom: 6vh;
+  height: 34vw;
+  right: -10vw;
+  width: 34vw;
 }
 
 /* Inline SVG hero stage and JS-created beetle layer. */
@@ -705,6 +762,23 @@ header *,
 
   .logo {
     font-size: 16px;
+  }
+
+  .about-intro-section {
+    min-height: 92svh;
+  }
+
+  .about-intro-phrase {
+    font-size: clamp(2.15rem, 13vw, 4.9rem);
+    line-height: 1.02;
+    max-width: 100%;
+  }
+
+  .about-intro-left,
+  .about-intro-right,
+  .about-intro-center {
+    align-self: flex-start;
+    text-align: left;
   }
 }
 
