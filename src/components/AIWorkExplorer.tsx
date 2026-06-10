@@ -108,7 +108,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
         exit={{ opacity: 0 }}
         data-native-scroll
         className={`fixed inset-0 z-50 overflow-y-auto select-none transition-colors duration-700 ${
-          activePlayingId ? "bg-[#080807] text-[#f3efe5]" : "bg-[#f4f1e8] text-[#11110f]"
+          activePlayingId ? "bg-[#191816] text-[#f3ead7]" : "bg-[#f3ead7] text-[#191816]"
         }`}
       >
         {/* Main Immersive Canvas */}

@@ -98,11 +98,11 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
   };
 
   return (
-    <section ref={sectionRef} id="showreel" className="bg-[#080807] px-6 py-16 text-[#f3efe5] md:px-8 md:py-24">
+    <section ref={sectionRef} id="showreel" className="bg-[#191816] px-6 py-20 text-[#f3ead7] md:px-8 md:py-28">
       <div className="mx-auto max-w-[1520px]">
         <div ref={titleRef} className="section-title mb-8 flex items-end justify-between gap-6">
-          <h2 className="text-3xl font-medium tracking-[-0.018em] text-[#f3efe5] md:text-5xl">AI films</h2>
-          <button onClick={onOpenExplorer} className="text-xs font-medium tracking-normal text-[#f3efe5]/60 transition-colors hover:text-[#f3efe5]">
+          <h2 className="font-serif text-5xl font-normal leading-[0.95] tracking-normal text-[#f3ead7] md:text-8xl">AI films</h2>
+          <button onClick={onOpenExplorer} className="text-xs font-medium tracking-normal text-[#b8ad9b] transition-colors hover:text-[#f3ead7]">
             See more
           </button>
         </div>
@@ -137,10 +137,10 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
                     />
                   )}
                 </div>
-                <h3 className="mt-4 text-center text-[10px] font-medium tracking-normal text-[#f3efe5] md:text-sm">
+                <h3 className="mt-4 text-center text-[10px] font-medium tracking-normal text-[#f3ead7] md:text-sm">
                   {item.title}
                 </h3>
-                <p className="mt-1 text-center text-[7px] font-medium text-[#f3efe5]/55 md:text-[10px]">
+                <p className="mt-1 text-center text-[7px] font-medium text-[#b8ad9b] md:text-[10px]">
                   {item.meta}
                 </p>
               </button>
@@ -149,10 +149,10 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
         </div>
 
         <div className="mt-4 flex items-center justify-end gap-3">
-          <button onClick={() => scroll(-360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f3efe5]/25 text-[#f3efe5] hover:border-[#f3efe5]" aria-label="Scroll left">
+          <button onClick={() => scroll(-360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f3ead7]/25 text-[#f3ead7] hover:border-[#f3ead7]" aria-label="Scroll left">
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <button onClick={() => scroll(360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f3efe5]/25 text-[#f3efe5] hover:border-[#f3efe5]" aria-label="Scroll right">
+          <button onClick={() => scroll(360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f3ead7]/25 text-[#f3ead7] hover:border-[#f3ead7]" aria-label="Scroll right">
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>

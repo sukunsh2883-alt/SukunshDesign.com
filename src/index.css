@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Sora:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 
 @font-face {
@@ -108,8 +109,8 @@
   --color-stroke: hsl(var(--stroke));
   --color-accent: hsl(var(--accent));
   
-  --font-sans: "Clash Display Local", sans-serif;
-  --font-serif: "Clash Display Local", sans-serif;
+  --font-sans: "Sora", "Clash Display Local", sans-serif;
+  --font-serif: "Instrument Serif", "Clash Display Local", serif;
   --font-display: "Gasoek One", sans-serif;
   --font-sixcaps: "Gasoek One", sans-serif;
   --font-boldonse: "Clash Display Local", sans-serif;
@@ -138,7 +139,7 @@
 
 html,
 body {
-  background: #080807;
+  background: #191816;
   margin: 0;
   min-height: 100%;
   overflow-x: hidden;
@@ -147,9 +148,9 @@ body {
 }
 
 body {
-  background-color: #080807;
-  color: #18181b;
-  font-family: "Clash Display Local", sans-serif;
+  background-color: #191816;
+  color: #f3ead7;
+  font-family: "Sora", "Clash Display Local", sans-serif;
   overscroll-behavior-y: none;
   position: relative;
   scroll-behavior: smooth;
@@ -178,7 +179,7 @@ html {
 
 ::selection {
   background: rgba(255, 106, 0, 0.18);
-  color: #18181b;
+  color: #191816;
 }
 
 h1,
@@ -204,7 +205,7 @@ video,
 :is(div, article, figure)[class*="aspect-"][class*="overflow-hidden"],
 :is(div, article, figure)[class*="bg-neutral-950"][class*="overflow-hidden"],
 :is(div, article, figure)[class*="bg-black"][class*="overflow-hidden"] {
-  border-radius: 0 !important;
+  border-radius: 22px !important;
 }
 
 header,
@@ -457,8 +458,37 @@ header *,
 }
 
 /* Inline SVG hero stage and JS-created beetle layer. */
+.loader-letter-shell {
+  position: relative;
+  z-index: 2;
+}
+
+.loader-tittle {
+  background: #191816;
+  border-radius: 999px;
+  height: 0.14em;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 0.09em;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center center;
+  width: 0.14em;
+  z-index: 5;
+}
+
+#smooth-wrapper {
+  background: #191816;
+  overflow: hidden;
+}
+
+#smooth-content {
+  background: #191816;
+  will-change: transform;
+}
+
 .hero {
-  background: #080807;
+  background: #191816;
   min-height: 100svh;
   overflow: hidden;
   position: relative;
@@ -482,7 +512,7 @@ header *,
 
 .svg-stage {
   align-items: center;
-  background: #080807;
+  background: #191816;
   display: flex;
   aspect-ratio: 1358.17 / 730.78;
   height: auto;
@@ -490,8 +520,8 @@ header *,
   min-height: 0;
   overflow: visible;
   position: relative;
-  transform: translateY(11vh);
-  width: min(136vw, 1840px, calc((100svh - 26px) * 2.04));
+  transform: translateY(8vh);
+  width: min(148vw, 2040px, calc((100svh - 8px) * 2.18));
 }
 
 .svg-stage > svg {
@@ -502,7 +532,7 @@ header *,
 }
 
 .svg-stage #Layer_38 rect {
-  fill: #080807 !important;
+  fill: #191816 !important;
 }
 
 .svg-stage #Sukunsh text,
@@ -529,51 +559,30 @@ header *,
   font-weight: 500 !important;
 }
 
-.hero-cursor-beetle {
-  height: 34px;
-  left: 0;
-  opacity: 0.86;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
+.hero-tag {
+  align-items: center;
+  background: rgba(243, 234, 215, 0.08);
+  border: 1px solid rgba(243, 234, 215, 0.18);
+  border-radius: 999px;
+  color: #f3ead7;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 10px 14px;
   transform-origin: center center;
-  width: 42px;
+  user-select: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   will-change: transform;
-  z-index: 99998;
 }
 
-.hero-cursor-beetle svg {
-  display: block;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.34));
-  height: auto;
-  overflow: visible;
-  width: 100%;
-}
-
-.cursor-beetle-wing {
-  fill: rgba(243, 239, 229, 0.22);
-  stroke: rgba(243, 239, 229, 0.42);
-  stroke-width: 1.2;
-  transform-box: fill-box;
-  transform-origin: center center;
-}
-
-.cursor-beetle-wing.left {
-  animation: cursor-beetle-left 0.16s ease-in-out infinite alternate;
-}
-
-.cursor-beetle-wing.right {
-  animation: cursor-beetle-right 0.16s ease-in-out infinite alternate;
-}
-
-@keyframes cursor-beetle-left {
-  from { transform: rotate(-14deg) scaleY(0.72); opacity: 0.32; }
-  to { transform: rotate(18deg) scaleY(1.08); opacity: 0.74; }
-}
-
-@keyframes cursor-beetle-right {
-  from { transform: rotate(14deg) scaleY(0.72); opacity: 0.32; }
-  to { transform: rotate(-18deg) scaleY(1.08); opacity: 0.74; }
+.horizontal-gallery-card {
+  height: min(46vh, 440px);
+  width: min(58vw, 520px);
+  flex: 0 0 auto;
+  will-change: transform;
 }
 
 .beetle-wrap {
@@ -627,8 +636,8 @@ header *,
     justify-content: center;
     margin-bottom: 0 !important;
     overflow: visible;
-    transform: translateY(11vh);
-    width: min(136vw, calc((100svh - 26px) * 2.04)) !important;
+    transform: translateY(8vh);
+    width: min(148vw, calc((100svh - 8px) * 2.18)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
@@ -666,14 +675,14 @@ header *,
     height: auto;
     min-height: auto;
     overflow: visible;
-    padding: 96px 20px 54px !important;
+    padding: 92px 20px 64px !important;
   }
 
   .hero-inner {
     align-items: center !important;
     display: flex;
     flex-direction: column;
-    gap: 36px;
+    gap: 28px;
     justify-content: flex-start !important;
     min-height: auto;
     padding: 0 !important;
@@ -689,7 +698,7 @@ header *,
 
   .hero-art {
     margin: 0 auto;
-    max-width: 520px;
+    max-width: 500px;
     position: relative;
     width: 90vw;
     z-index: 2;
@@ -707,10 +716,23 @@ header *,
 
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
-    max-width: 520px;
+    max-width: 500px;
     transform: none;
     transform-origin: center center;
-    width: 108vw !important;
+    width: 104vw !important;
+  }
+
+  .hero-copy {
+    max-width: 100%;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    padding: 0 2px;
+    text-align: left;
+  }
+
+  .hero-copy h1 {
+    max-width: 9.8ch;
   }
 
   .svg-stage #Sukunsh {
@@ -765,7 +787,7 @@ header *,
   }
 
   .about-intro-section {
-    min-height: 92svh;
+    min-height: auto;
   }
 
   .about-intro-phrase {
@@ -779,6 +801,21 @@ header *,
   .about-intro-center {
     align-self: flex-start;
     text-align: left;
+  }
+
+  .horizontal-gallery {
+    overflow-x: hidden;
+  }
+
+  .horizontal-gallery-row {
+    width: 100% !important;
+    flex-direction: column;
+  }
+
+  .horizontal-gallery-card {
+    height: auto;
+    aspect-ratio: 4 / 5;
+    width: 100%;
   }
 }
 

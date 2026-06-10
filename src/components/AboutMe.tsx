@@ -49,7 +49,7 @@ export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about-me" className="about-section bg-[#080807] px-6 py-24 text-[#f3efe5] md:px-[7vw] md:py-[150px]">
+    <section ref={sectionRef} id="about-me" className="about-section bg-[#191816] px-6 py-24 text-[#f3ead7] md:px-[7vw] md:py-[150px]">
       <div className="mx-auto grid max-w-[1240px] items-center gap-12 md:min-h-[78vh] md:grid-cols-[360px_1fr] md:gap-24">
         <figure className="about-mist relative aspect-[0.82] w-full max-w-[290px] overflow-hidden bg-[#1a1916] md:max-w-[360px]">
           <img
@@ -61,13 +61,13 @@ export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
         </figure>
 
         <div className="max-w-[780px]">
-          <p className="about-mist mb-4 text-sm font-medium tracking-normal text-[#f3efe5]">About me</p>
-          <h2 className="about-mist max-w-[680px] text-4xl font-medium leading-[1.04] tracking-[-0.02em] text-[#f3efe5] md:text-[62px]">
+          <p className="about-mist mb-4 text-sm font-medium tracking-normal text-[#b8ad9b]">About me</p>
+          <h2 className="about-mist max-w-[680px] font-serif text-5xl font-normal leading-[1] tracking-normal text-[#f3ead7] md:text-[76px]">
             emotional, bold,<br />
             story driven visuals.
           </h2>
 
-          <div className="mt-8 grid gap-8 text-base leading-[1.42] tracking-normal text-[#f3efe5]/68 md:grid-cols-2">
+          <div className="mt-8 grid gap-8 text-base leading-[1.42] tracking-normal text-[#b8ad9b] md:grid-cols-2">
             <p className="about-mist">
               I&apos;m a Delhi-based visual artist, rooted in Bihar&apos;s rich cultural heritage, with a background in Fine Art and Design.
             </p>
@@ -75,11 +75,11 @@ export default function AboutMe({ profile, onOpenResume }: AboutMeProps) {
               My work lives between art, design, and cinema, creating visuals that feel emotional, bold, and story driven.
             </p>
           </div>
-          <p className="about-mist mt-8 max-w-[620px] text-xl font-medium leading-[1.18] tracking-[-0.01em] text-[#f3efe5] md:text-3xl">
+          <p className="about-mist mt-8 max-w-[620px] text-xl font-medium leading-[1.18] tracking-normal text-[#f3ead7] md:text-3xl">
             Yeah, that&apos;s me, Suraj Kumar Sharma. People call me Sukunsh.
           </p>
 
-          <div className="about-mist mt-9 flex flex-wrap gap-14 text-xl font-medium tracking-normal text-[#f3efe5]">
+          <div className="about-mist mt-9 flex flex-wrap gap-14 text-xl font-medium tracking-normal text-[#f3ead7]">
             <a href={profile.behance} target="_blank" rel="noreferrer" className="transition-colors hover:text-[#f25a00]">
               Behance
             </a>

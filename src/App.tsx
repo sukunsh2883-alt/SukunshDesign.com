@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "lenis";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 
 // Subcomponents
 import LoadingScreen from "./components/LoadingScreen";
@@ -20,6 +20,7 @@ import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
 import AboutMe from "./components/AboutMe";
 import Showreel from "./components/Showreel";
+import HorizontalGallery from "./components/HorizontalGallery";
 
 // State Engines and Credentials
 import {
@@ -185,25 +186,19 @@ export default function App() {
     const isMobile = window.innerWidth < 768;
     if (reduceMotion || isTouch || isMobile) return;
 
-    const lenis = new Lenis({
-      duration: 1.05,
-      smoothWheel: true,
-      wheelMultiplier: 0.95,
-      touchMultiplier: 1,
-      lerp: 0.085,
-      prevent: (node) => Boolean((node as Element).closest?.("[data-native-scroll]")),
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+    const smoother = ScrollSmoother.create({
+      wrapper: "#smooth-wrapper",
+      content: "#smooth-content",
+      smooth: 2,
+      effects: true,
+      normalizeScroll: true,
+      smoothTouch: 0.1,
+      ignoreMobileResize: true,
     });
 
-    const update = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-
-    gsap.ticker.add(update);
-    gsap.ticker.lagSmoothing(0);
-
     return () => {
-      gsap.ticker.remove(update);
-      lenis.destroy();
+      smoother.kill();
     };
   }, []);
 
@@ -365,7 +360,7 @@ export default function App() {
   };
 
   return (
-    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#080807] text-neutral-900 transition-colors duration-300">
+    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#191816] text-[#f3ead7] transition-colors duration-300">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
@@ -395,6 +390,8 @@ export default function App() {
             />
 
             {/* Main view container */}
+            <div id="smooth-wrapper">
+              <div id="smooth-content">
             <main className="main flex-grow overflow-x-hidden overflow-y-visible">
               
               {/* Cinematic hero section */}
@@ -441,6 +438,12 @@ export default function App() {
                 onOpenExplorer={() => openPortal("ai-work")}
               />
 
+              <HorizontalGallery
+                projects={designs}
+                videos={videosState}
+                films={films}
+              />
+
               {/* Seamless-picture homepage About Me Section */}
               <AboutMe
                 profile={profileState}
@@ -453,6 +456,8 @@ export default function App() {
 
             {/* Marqueed footer section */}
             <Footer profile={profileState} />
+              </div>
+            </div>
 
             {/* Floating portfolio control admin panel */}
             <AdminPanel

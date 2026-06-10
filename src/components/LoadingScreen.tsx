@@ -8,8 +8,8 @@ interface LoadingScreenProps {
 }
 
 const phraseGroups = [
-  ["Hello"],
-  ["I'm"],
+  ["Hello,"],
+  ["I'm", "a"],
   ["Delhi", "Based"],
   ["Multidisciplinary", "Designer."],
 ];
@@ -28,6 +28,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     const ctx = gsap.context(() => {
       const words = gsap.utils.toArray<HTMLElement>(".loader-word");
       const letters = gsap.utils.toArray<HTMLElement>(".loader-letter");
+      const tittle = loader.querySelector<HTMLElement>(".loader-tittle");
 
       gsap.set(words, {
         y: 28,
@@ -77,15 +78,25 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           ease: "sine.inOut",
         })
         .to(
+          tittle,
+          {
+            scale: 520,
+            backgroundColor: "#191816",
+            duration: 1.05,
+            ease: "power4.inOut",
+          },
+          "+=0.12",
+        )
+        .to(
           text,
           {
-            scale: 1.055,
+            scale: 1.08,
             opacity: 0,
             filter: "blur(18px)",
-            duration: 0.78,
-            ease: "power3.inOut",
+            duration: 0.55,
+            ease: "expo.out",
           },
-          "+=0.2",
+          "-=0.72",
         )
         .to(
           loader,
@@ -104,20 +115,30 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   return (
     <div
       ref={loaderRef}
-      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#f4f1e8] px-6 text-[#151512] select-none"
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#f3ead7] px-6 text-[#191816] select-none"
     >
       <div className="pointer-events-none absolute -left-[12vw] top-[18vh] h-[36vw] w-[36vw] rounded-full bg-[#f25a00]/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-[10vw] bottom-[14vh] h-[34vw] w-[34vw] rounded-full bg-[#8b7cf2]/14 blur-3xl" />
       <p
         ref={textRef}
-        className="relative z-10 flex max-w-[1120px] flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-[clamp(2.1rem,6.8vw,6.7rem)] font-medium leading-[1.02] tracking-[-0.01em]"
-        aria-label="Hello I'm Delhi Based Multidisciplinary Designer."
+        className="relative z-10 flex max-w-[1160px] flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-[clamp(2.2rem,6.6vw,6.6rem)] font-medium leading-[1.04] tracking-normal"
+        aria-label="Hello, I'm a Delhi Based Multidisciplinary Designer."
       >
         {sentence.map((word, wordIndex) => (
           <span key={`${word}-${wordIndex}`} className="loader-word inline-flex whitespace-nowrap">
             {word.split("").map((letter, letterIndex) => (
-              <span key={`${word}-${letterIndex}`} className="loader-letter">
+              <span
+                key={`${word}-${letterIndex}`}
+                className={
+                  word === "Multidisciplinary" && letter === "i" && letterIndex === 4
+                    ? "loader-letter loader-letter-shell"
+                    : "loader-letter"
+                }
+              >
                 {letter}
+                {word === "Multidisciplinary" && letter === "i" && letterIndex === 4 && (
+                  <span className="loader-tittle" aria-hidden="true" />
+                )}
               </span>
             ))}
           </span>

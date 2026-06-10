@@ -11,9 +11,7 @@ interface DesignWorksProps {
 
 export default function DesignWorks({ projects, onSelectProject, onOpenExplorer }: DesignWorksProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const displayedProjects = projects.slice(0, 3);
-  const [firstProject, secondProject, featureProject] = displayedProjects;
-  const renderMeta = (project: DesignProject) => `${project.title} / ${project.type}`;
+  const displayedProjects = projects.slice(0, 6);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -21,6 +19,7 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
 
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       gsap.from(".work-heading", {
         y: 32,
         opacity: 0,
@@ -32,125 +31,94 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
           start: "top 82%",
         },
       });
-      gsap.from(".work-card-left", {
-        x: -90,
-        opacity: 0,
-        duration: 1.05,
-        ease: "power3.out",
-        scrollTrigger: { trigger: section, start: "top 72%" },
-      });
-      gsap.from(".work-card-right", {
-        x: 90,
-        opacity: 0,
-        duration: 1.05,
-        ease: "power3.out",
-        scrollTrigger: { trigger: section, start: "top 72%" },
-      });
-      gsap.from(".work-card-feature", {
-        y: 76,
-        opacity: 0,
-        scale: 0.985,
-        duration: 1.1,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".work-card-feature", start: "top 88%" },
-      });
+
+      if (!reduceMotion) {
+        gsap.fromTo(
+          ".project-grid",
+          { scale: 1.08, y: 90 },
+          {
+            scale: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 82%",
+              end: "bottom 58%",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+
+        gsap.from(".project-card", {
+          x: (index) => (index % 3 === 0 ? -120 : index % 3 === 2 ? 120 : 0),
+          y: (index) => (index % 3 === 1 ? 110 : 70),
+          opacity: 0,
+          scale: 0.96,
+          filter: "blur(12px)",
+          stagger: 0.08,
+          duration: 1.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".project-grid",
+            start: "top 82%",
+            invalidateOnRefresh: true,
+          },
+        });
+      }
     }, section);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={sectionRef} id="projects" className="bg-[#f4f1e8] px-6 py-16 text-[#11110f] md:px-8 md:py-24">
-      <div className="mx-auto max-w-[1320px]">
+    <section ref={sectionRef} id="projects" className="bg-[#191816] px-6 py-20 text-[#f3ead7] md:px-8 md:py-28">
+      <div className="mx-auto max-w-[1520px]">
         <div className="work-heading mb-8 flex items-start justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-medium tracking-[-0.018em] md:text-5xl">
+            <p className="mb-3 text-sm font-medium tracking-normal text-[#b8ad9b]">Selected work</p>
+            <h2 className="font-serif text-5xl font-normal leading-[0.95] tracking-normal md:text-8xl">
               Selected Project
             </h2>
           </div>
           <button
             type="button"
             onClick={onOpenExplorer}
-            className="pt-3 text-xs font-medium tracking-normal text-[#11110f]/62 transition-colors hover:text-[#11110f]"
+            className="rounded-full border border-[#f3ead7]/16 bg-[#f3ead7]/8 px-5 py-3 text-xs font-medium tracking-normal text-[#f3ead7] transition-colors hover:bg-[#f3ead7]/14"
           >
             See all projects
           </button>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 md:gap-6">
-          {firstProject && (
+        <div className="project-grid grid gap-5 md:grid-cols-3 md:gap-6">
+          {displayedProjects.map((project, index) => (
             <button
+              key={project.id}
               type="button"
-              onClick={() => onSelectProject(firstProject)}
-              className="work-card-left group text-left"
+              onClick={() => onSelectProject(project)}
+              className={`project-card group text-left ${index % 3 === 1 ? "md:translate-y-14" : ""}`}
             >
-              <div className="relative aspect-[1.35] w-full overflow-hidden bg-neutral-100">
+              <div className="relative aspect-[0.82] w-full overflow-hidden rounded-[22px] border border-[#f3ead7]/16 bg-[#25231f]">
                 <img
-                  src={firstProject.image}
-                  alt={firstProject.title}
-                  className="h-full w-full object-cover object-center transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
+                  src={project.image}
+                  alt={project.title}
+                  loading="lazy"
+                  className="h-full w-full object-cover object-center transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.045]"
                   referrerPolicy="no-referrer"
                 />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#191816]/88 via-[#191816]/20 to-transparent p-5">
+                  <span className="inline-flex rounded-full border border-[#f3ead7]/16 bg-[#f3ead7]/9 px-3 py-1 text-[10px] font-medium tracking-normal text-[#f3ead7] backdrop-blur-md transition-transform duration-500 group-hover:scale-[1.04]">
+                    {project.type}
+                  </span>
+                </div>
               </div>
-              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 text-[#11110f]">
-                <h3 className="text-lg font-medium leading-none tracking-[-0.018em] md:text-2xl">
-                  {firstProject.title}
+              <div className="mt-4 flex items-baseline justify-between gap-4">
+                <h3 className="text-xl font-medium leading-[1.05] tracking-normal text-[#f3ead7] md:text-2xl">
+                  {project.title}
                 </h3>
-                <p className="text-[10px] font-medium text-[#11110f]/55 md:text-xs">
-                  {firstProject.type}
-                </p>
               </div>
             </button>
-          )}
-
-          {secondProject && (
-            <button
-              type="button"
-              onClick={() => onSelectProject(secondProject)}
-              className="work-card-right group text-left"
-            >
-              <div className="relative aspect-[1.35] w-full overflow-hidden bg-neutral-100">
-                <img
-                  src={secondProject.image}
-                  alt={secondProject.title}
-                  className="h-full w-full object-cover object-center transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 text-[#11110f]">
-                <h3 className="text-lg font-medium leading-none tracking-[-0.018em] md:text-2xl">
-                  {secondProject.title}
-                </h3>
-                <p className="text-[10px] font-medium text-[#11110f]/55 md:text-xs">
-                  {secondProject.type}
-                </p>
-              </div>
-            </button>
-          )}
-
-          {featureProject && (
-            <button
-              type="button"
-              onClick={() => onSelectProject(featureProject)}
-              className="work-card-feature group relative min-h-[300px] overflow-hidden bg-[#e6e1d6] text-left md:col-span-2 md:min-h-[430px]"
-            >
-              <img
-                src={featureProject.image}
-                alt={featureProject.title}
-                className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.025]"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#f4f1e8]/82 via-[#f4f1e8]/16 to-transparent" />
-              <div className="relative flex h-full min-h-[300px] flex-col justify-end p-6 md:min-h-[430px] md:p-8">
-                <h3 className="max-w-2xl text-4xl font-medium leading-[0.98] tracking-[-0.018em] text-[#11110f] md:text-7xl">
-                  {featureProject.title}
-                </h3>
-                <p className="mt-4 text-[10px] font-medium text-[#11110f]/60 md:text-xs">
-                  {renderMeta(featureProject)}
-                </p>
-              </div>
-            </button>
-          )}
+          ))}
         </div>
       </div>
     </section>

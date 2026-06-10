@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface HeroProps {
   onWatchShowreel: () => void;
@@ -82,13 +83,13 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const timelines: gsap.core.Animation[] = [];
       let mainBeetleTimeline: gsap.core.Timeline | null = null;
       let wingTimeline: gsap.core.Timeline | null = null;
-      let cursorBeetleTicker: (() => void) | null = null;
       let currentState: "landed" | "takeoff" | "flying" | "landing" | "dragging" | "returning" = "landed";
       let currentFlowerIndex = 0;
       let dragging = false;
       let pointerDragging = false;
 
       ctx = gsap.context(() => {
+        gsap.registerPlugin(ScrollTrigger);
         gsap.ticker.lagSmoothing(1000, 16);
 
         gsap.set(stage, { opacity: 1 });
@@ -119,52 +120,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             return undefined;
           }
         };
-
-        const cursorBeetle = document.createElement("div");
-        cursorBeetle.className = "hero-cursor-beetle";
-        cursorBeetle.innerHTML = `
-          <svg viewBox="0 0 42 34" aria-hidden="true">
-            <path class="cursor-beetle-wing left" d="M18 13 C9 4 3 8 7 18 C10 25 16 24 20 18 Z" />
-            <path class="cursor-beetle-wing right" d="M24 13 C33 4 39 8 35 18 C32 25 26 24 22 18 Z" />
-            <ellipse cx="21" cy="18" rx="8.5" ry="10" fill="#f25a00" />
-            <path d="M21 8 L21 28" stroke="#201410" stroke-width="1.5" opacity=".55" />
-            <circle cx="17.5" cy="15" r="1.4" fill="#201410" />
-            <circle cx="24.5" cy="15" r="1.4" fill="#201410" />
-          </svg>
-        `;
-        stage.appendChild(cursorBeetle);
-        const cursorBeetleX = gsap.quickTo(cursorBeetle, "x", { duration: 0.75, ease: "power3.out" });
-        const cursorBeetleY = gsap.quickTo(cursorBeetle, "y", { duration: 0.75, ease: "power3.out" });
-        const cursorBeetleRot = gsap.quickTo(cursorBeetle, "rotation", { duration: 0.65, ease: "power3.out" });
-        let lastCursorMove = 0;
-
-        const moveCursorBeetle = (event: PointerEvent) => {
-          const rect = stage.getBoundingClientRect();
-          lastCursorMove = performance.now();
-          cursorBeetleX(event.clientX - rect.left + 26);
-          cursorBeetleY(event.clientY - rect.top - 18);
-          cursorBeetleRot(gsap.utils.clamp(-18, 18, ((event.clientX - rect.left) / rect.width - 0.5) * 36));
-        };
-
-        cursorBeetleTicker = () => {
-          if (performance.now() - lastCursorMove < 900) return;
-          const time = performance.now() / 1000;
-          const rect = stage.getBoundingClientRect();
-          cursorBeetleX(rect.width * 0.72 + Math.sin(time * 0.75) * 56);
-          cursorBeetleY(rect.height * 0.22 + Math.cos(time * 0.62) * 34);
-          cursorBeetleRot(Math.sin(time * 0.9) * 12);
-        };
-
-        if (!isTouch && !reduceMotion) {
-          stage.addEventListener("pointermove", moveCursorBeetle);
-          gsap.ticker.add(cursorBeetleTicker);
-          cleanupFns.push(
-            () => stage.removeEventListener("pointermove", moveCursorBeetle),
-            () => cursorBeetleTicker && gsap.ticker.remove(cursorBeetleTicker),
-          );
-        } else {
-          cursorBeetle.remove();
-        }
 
         const pointInSvg = (element: SVGGraphicsElement, x: number, y: number) => {
           const point = svgElement.createSVGPoint();
@@ -422,6 +377,85 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             );
           }
         });
+
+        const heroCopyItems = gsap.utils.toArray<HTMLElement>(".hero-copy-item");
+        const heroTags = gsap.utils.toArray<HTMLElement>(".hero-tag");
+
+        if (!reduceMotion) {
+          gsap.from(heroCopyItems, {
+            y: 28,
+            opacity: 0,
+            filter: "blur(12px)",
+            duration: 1,
+            stagger: 0.08,
+            delay: 0.18,
+            ease: "power3.out",
+          });
+
+          gsap.to(stage, {
+            yPercent: -7,
+            opacity: 0.72,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.75,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          gsap.to(".hero-copy", {
+            yPercent: -18,
+            opacity: 0.55,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.75,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        if (!isTouch) {
+          heroTags.forEach((tag) => {
+            const strength = 0.35;
+            const move = (event: MouseEvent) => {
+              const rect = tag.getBoundingClientRect();
+              const x = gsap.utils.mapRange(rect.left, rect.right, -rect.width / 2, rect.width / 2, event.clientX);
+              const y = gsap.utils.mapRange(rect.top, rect.bottom, -rect.height / 2, rect.height / 2, event.clientY);
+
+              gsap.to(tag, {
+                x: x * strength,
+                y: y * strength,
+                scale: 1.08,
+                duration: 0.35,
+                ease: "power3.out",
+                overwrite: "auto",
+              });
+            };
+
+            const leave = () => {
+              gsap.to(tag, {
+                x: 0,
+                y: 0,
+                scale: 1,
+                duration: 0.7,
+                ease: "elastic.out(1, 0.45)",
+                overwrite: "auto",
+              });
+            };
+
+            tag.addEventListener("mousemove", move);
+            tag.addEventListener("mouseleave", leave);
+            cleanupFns.push(
+              () => tag.removeEventListener("mousemove", move),
+              () => tag.removeEventListener("mouseleave", leave),
+            );
+          });
+        }
 
         const quickTo = (node: SVGGraphicsElement | null | undefined, prop: string, duration = 0.25) =>
           node ? gsap.quickTo(node, prop, { duration, ease: "power3.out" }) : null;
@@ -839,7 +873,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           timelines.forEach((timeline) => timeline.kill());
           mainBeetleTimeline?.kill();
           wingTimeline?.kill();
-          cursorBeetle.remove();
         };
       }, stage);
     };
@@ -875,25 +908,38 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
     <section
       ref={sectionRef}
       id="home"
-      className="hero relative overflow-hidden bg-[#080807]"
+      className="hero relative overflow-hidden bg-[#191816]"
     >
       <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
-        <div className="hero-content hidden">
-          <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-[-0.065em] text-white">
-            {profile?.brandName || "Sukunsh"}.
+        <div className="hero-copy pointer-events-none absolute left-6 top-[18vh] z-20 max-w-[520px] text-[#f3ead7] md:left-[7vw] md:top-[22vh]">
+          <p className="hero-copy-item mb-4 text-sm font-medium tracking-normal text-[#b8ad9b] md:text-base">
+            Visual Designer / Filmmaker / AI Films
+          </p>
+          <h1 className="hero-copy-item max-w-[11ch] font-serif text-[clamp(3.2rem,7.4vw,8.8rem)] font-normal leading-[0.9] tracking-normal">
+            Designing stories that move.
           </h1>
-          <div className="mt-6 flex items-center justify-center gap-3">
+          <p className="hero-copy-item mt-6 max-w-[420px] text-base leading-[1.45] tracking-normal text-[#b8ad9b] md:text-lg">
+            I create brand identities, motion design, cinematic visuals, and AI-powered ad concepts.
+          </p>
+          <div className="hero-copy-item mt-7 flex flex-wrap gap-2.5">
+            {["Brand", "Motion", "AI Films", "Visual Systems"].map((tag) => (
+              <span key={tag} className="hero-tag pointer-events-auto">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <div className="hero-copy-item pointer-events-auto mt-8 flex flex-wrap gap-3">
             <button
               type="button"
               onClick={onOpenProjects}
-              className="bg-white px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-black"
+              className="rounded-full border border-[#f3ead7]/18 bg-[#f3ead7] px-5 py-3 text-xs font-medium tracking-normal text-[#191816] transition-colors hover:bg-[#e6d8bd]"
             >
               View Work
             </button>
             <button
               type="button"
               onClick={onOpenAIWork}
-              className="border border-white/20 px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-white"
+              className="rounded-full border border-[#f3ead7]/18 bg-[#f3ead7]/8 px-5 py-3 text-xs font-medium tracking-normal text-[#f3ead7] backdrop-blur-md transition-colors hover:bg-[#f3ead7]/14"
             >
               AI Films
             </button>
