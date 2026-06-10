@@ -17,6 +17,8 @@ import ProjectCaseStudy from "./components/ProjectCaseStudy";
 import ProjectsExplorer from "./components/ProjectsExplorer";
 import AIWorkExplorer from "./components/AIWorkExplorer";
 import AIWorks from "./components/AIWorks";
+import ItsMe from "./components/ItsMe";
+import LetWorkTogether from "./components/LetWorkTogether";
 import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
 import Showreel from "./components/Showreel";
@@ -285,7 +287,7 @@ export default function App() {
     if (isLoading) return;
 
     const handleScroll = () => {
-      const sections = ["home", "projects", "ai-works", "showreel", "about-me", "contact"];
+      const sections = ["home", "projects", "ai-works", "showreel", "its-me", "work-together", "about-me", "contact"];
       const triggerY = window.innerHeight * 0.35; // 35% down the screen
       
       let currentSection = "home";
@@ -406,7 +408,7 @@ export default function App() {
                     onOpenExplorer={() => openPortal("projects")}
                   />
 
-                  {/* AI Works Section - Cinematic scroll animations */}
+                  {/* AI Works Section - Hero card with grid */}
                   <AIWorks
                     films={films}
                     videos={videosState}
@@ -459,6 +461,12 @@ export default function App() {
                     }
                     onOpenExplorer={() => openPortal("ai-work")}
                   />
+
+                  {/* It's Me Section - Profile intro */}
+                  <ItsMe profile={profileState} />
+
+                  {/* Let's Work Together Section - CTA */}
+                  <LetWorkTogether profile={profileState} />
 
                 </main>
 
