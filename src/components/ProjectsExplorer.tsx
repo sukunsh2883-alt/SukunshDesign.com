@@ -84,8 +84,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        data-native-scroll
-        className="fixed inset-0 z-50 h-dvh overflow-y-auto overscroll-contain bg-[#f4f1e8] select-none text-[#11110f]"
+        className="fixed inset-0 z-50 bg-white overflow-y-auto select-none"
       >
         {/* Main Content Area */}
         <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-24 pb-12 md:pt-32 md:pb-20 relative">
@@ -117,10 +116,10 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                     <button
                       key={filter.id}
                       onClick={() => setSelectedFilter(filter.id)}
-                    className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-[11px] font-sans font-medium tracking-normal transition-all cursor-pointer select-none border ${
+                      className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-[11px] font-sans font-medium tracking-normal transition-all cursor-pointer select-none border ${
                         isActive
-                          ? "bg-[#11110f] border-[#11110f] text-[#f4f1e8] shadow-sm font-semibold"
-                          : "bg-[#f9f6ee] border-neutral-200 text-neutral-500 hover:text-[#11110f] hover:border-neutral-400"
+                          ? "bg-black border-black text-white shadow-sm font-semibold"
+                          : "bg-white border-neutral-200 text-neutral-500 hover:text-black hover:border-neutral-400"
                       }`}
                     >
                       {filter.label}

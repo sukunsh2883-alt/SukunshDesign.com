@@ -40,22 +40,22 @@ export default function Navbar({ profile, onNavigate, onOpenProjects, onOpenAIWo
   };
 
   return (
-    <header className="navbar fixed inset-x-0 top-0 z-[150] bg-[#191816]/90 text-[#f3ead7] backdrop-blur-xl">
+    <header className="navbar fixed inset-x-0 top-0 z-[150] bg-[#050505] text-white">
       <nav className="mx-auto flex h-14 max-w-[1520px] items-center justify-between px-6 text-sm md:px-8">
         <button
           onClick={() => onNavigate?.("#about-me-modal")}
-          className="logo text-xl font-medium tracking-normal text-[#f3ead7]"
+          className="logo text-xl font-semibold tracking-[-0.04em] text-white"
         >
           {profile?.brandName || "Sukunsh"}.
         </button>
 
-        <div className="nav-links flex items-center gap-5 text-[#f3ead7]/86 md:gap-7">
+        <div className="nav-links flex items-center gap-5 text-white/86 md:gap-7">
           {NAV_ITEMS.map((item) => (
             <a
               key={item.label}
               href={item.href}
               onClick={(e) => handleNavClick(e, item.href)}
-              className="transition-colors hover:text-[#f3ead7]"
+              className="transition-colors hover:text-white"
             >
               {item.label}
             </a>

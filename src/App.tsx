@@ -8,7 +8,8 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import AboutIntro from "./components/AboutIntro";
+import HorizontalIntro from "./components/HorizontalIntro";
+import AboutMist from "./components/AboutMist";
 import DesignWorks from "./components/DesignWorks";
 import Footer from "./components/Footer";
 import Lightbox from "./components/Lightbox";
@@ -18,9 +19,7 @@ import ProjectsExplorer from "./components/ProjectsExplorer";
 import AIWorkExplorer from "./components/AIWorkExplorer";
 import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
-import AboutMe from "./components/AboutMe";
 import Showreel from "./components/Showreel";
-import HorizontalGallery from "./components/HorizontalGallery";
 
 // State Engines and Credentials
 import {
@@ -169,18 +168,6 @@ export default function App() {
   useEffect(() => {
     if (isLoading) return;
 
-    gsap.registerPlugin(ScrollTrigger);
-    const refresh = () => ScrollTrigger.refresh();
-    const refreshTimer = window.setTimeout(refresh, 320);
-
-    window.addEventListener("load", refresh, { once: true });
-    return () => {
-      window.clearTimeout(refreshTimer);
-      window.removeEventListener("load", refresh);
-    };
-  }, [isLoading]);
-
-  useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     const isMobile = window.innerWidth < 768;
@@ -191,16 +178,23 @@ export default function App() {
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
       smooth: 2,
+      speed: 1.2,
       effects: true,
-      normalizeScroll: true,
       smoothTouch: 0.1,
+      normalizeScroll: true,
       ignoreMobileResize: true,
     });
 
+    const refresh = () => ScrollTrigger.refresh();
+    const refreshTimer = window.setTimeout(refresh, 350);
+    window.addEventListener("load", refresh, { once: true });
+
     return () => {
+      window.clearTimeout(refreshTimer);
+      window.removeEventListener("load", refresh);
       smoother.kill();
     };
-  }, []);
+  }, [isLoading]);
 
   // Synchronize state down to localStorage so data persists securely across page refreshes
   useEffect(() => {
@@ -360,16 +354,16 @@ export default function App() {
   };
 
   return (
-    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#191816] text-[#f3ead7] transition-colors duration-300">
+    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
         ) : (
           <motion.div
             key="content"
-            initial={{ opacity: 0, y: 26, filter: "blur(12px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
             className="flex flex-col min-h-screen"
           >
             {/* Header Floating navigation bar */}
@@ -389,73 +383,61 @@ export default function App() {
               onOpenAboutMe={() => handleNavigate("#about-me-modal")}
             />
 
-            {/* Main view container */}
             <div id="smooth-wrapper">
-              <div id="smooth-content">
-            <main className="main flex-grow overflow-x-hidden overflow-y-visible">
-              
-              {/* Cinematic hero section */}
-              <Hero 
-                profile={profileState} 
-                onWatchShowreel={handleLaunchShowreel} 
-                onOpenProjects={() => openPortal("projects")}
-                onOpenAIWork={() => openPortal("ai-work")}
-              />
+              <div id="smooth-content" className="flex min-h-screen flex-col">
+                {/* Main view container */}
+                <main className="main flex-grow overflow-x-hidden overflow-y-visible">
 
-              <AboutIntro />
+                  {/* Cinematic hero section */}
+                  <Hero
+                    profile={profileState}
+                    onWatchShowreel={handleLaunchShowreel}
+                    onOpenProjects={() => openPortal("projects")}
+                    onOpenAIWork={() => openPortal("ai-work")}
+                  />
 
-              {/* Selected Design works bento grid */}
-              <DesignWorks
-                projects={designs}
-                onSelectProject={handleSelectProject}
-                onOpenExplorer={() => openPortal("projects")}
-              />
+                  <HorizontalIntro />
 
-              {/* Motion reel archive */}
-              <Showreel
-                videos={videosState}
-                films={films}
-                onSelectVideo={(video) =>
-                  setLightbox({
-                    isOpen: true,
-                    mediaType: "video",
-                    src: video.videoUrl,
-                    title: video.title,
-                    category: video.type,
-                    description: `${video.duration} motion reel / ${video.year}`
-                  })
-                }
-                onSelectFilm={(film) =>
-                  setLightbox({
-                    isOpen: true,
-                    mediaType: "video",
-                    src: film.videoUrl,
-                    title: film.title,
-                    category: film.category,
-                    description: film.description
-                  })
-                }
-                onOpenExplorer={() => openPortal("ai-work")}
-              />
+                  <AboutMist />
 
-              <HorizontalGallery
-                projects={designs}
-                videos={videosState}
-                films={films}
-              />
+                  {/* Selected Design works bento grid */}
+                  <DesignWorks
+                    projects={designs}
+                    onSelectProject={handleSelectProject}
+                    onOpenExplorer={() => openPortal("projects")}
+                  />
 
-              {/* Seamless-picture homepage About Me Section */}
-              <AboutMe
-                profile={profileState}
-                onOpenResume={() => openPortal("resume")}
-                onOpenAIWork={() => openPortal("ai-work")}
-                onOpenProjects={() => openPortal("projects")}
-              />
+                  {/* Motion reel archive */}
+                  <Showreel
+                    videos={videosState}
+                    films={films}
+                    onSelectVideo={(video) =>
+                      setLightbox({
+                        isOpen: true,
+                        mediaType: "video",
+                        src: video.videoUrl,
+                        title: video.title,
+                        category: video.type,
+                        description: `${video.duration} motion reel / ${video.year}`
+                      })
+                    }
+                    onSelectFilm={(film) =>
+                      setLightbox({
+                        isOpen: true,
+                        mediaType: "video",
+                        src: film.videoUrl,
+                        title: film.title,
+                        category: film.category,
+                        description: film.description
+                      })
+                    }
+                    onOpenExplorer={() => openPortal("ai-work")}
+                  />
 
-            </main>
+                </main>
 
-            {/* Marqueed footer section */}
-            <Footer profile={profileState} />
+                {/* Marqueed footer section */}
+                <Footer profile={profileState} />
               </div>
             </div>
 

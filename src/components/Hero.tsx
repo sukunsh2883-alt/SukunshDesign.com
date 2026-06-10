@@ -12,7 +12,7 @@ interface HeroProps {
 const SVG_URL = "/artwork/main artwork.svg";
 
 const flowerIds = Array.from({ length: 9 }, (_, index) => `flower_${index + 1}`);
-const leafIds = Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`);
+const leafIds = [...Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`), "leaf_10-2"];
 const flowerPerches: Record<string, { x: number; y: number }> = {
   flower_1: { x: 382, y: 468 },
   flower_2: { x: 315, y: 494 },
@@ -78,6 +78,22 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         svgElement.insertBefore(heroText, backgroundLayer.nextSibling);
       }
       const characterGroup = byId("character_group");
+      const wrapSvgElements = (id: string, elements: SVGGraphicsElement[]) => {
+        const filtered = elements.filter(Boolean);
+        const first = filtered[0];
+        if (!first?.parentNode) return null;
+
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.setAttribute("id", id);
+        first.parentNode.insertBefore(group, first);
+        filtered.forEach((element) => group.appendChild(element));
+        return group as SVGGElement;
+      };
+
+      const sukunshParallax = heroText ? wrapSvgElements("sukunsh_parallax_group", [heroText]) : null;
+      const characterParallax = characterGroup ? wrapSvgElements("character_parallax_group", [characterGroup]) : null;
+      const flowerParallax = wrapSvgElements("flower_parallax_group", flowers);
+      const leafParallax = wrapSvgElements("leaf_parallax_group", leaves);
 
       const cleanupFns: Array<() => void> = [];
       const timelines: gsap.core.Animation[] = [];
@@ -94,6 +110,11 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
         gsap.set(stage, { opacity: 1 });
         gsap.set(svgElement, { transformOrigin: "center bottom" });
+        gsap.set(".hero-scroll-base", { yPercent: 100 });
+        gsap.set([sukunshParallax, characterParallax, flowerParallax, leafParallax].filter(Boolean), {
+          transformBox: "fill-box",
+          transformOrigin: "50% 50%",
+        });
         gsap.set(heroText, { transformOrigin: "center center" });
         gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "50% 70%" });
         gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 95%" });
@@ -197,12 +218,29 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
         if (!reduceMotion) {
           gsap.from(svgElement, {
-            opacity: 0,
-            y: 30,
+            y: 18,
             scale: 0.985,
-            duration: 1,
+            duration: 0.9,
             ease: "power3.out",
           });
+
+          const parallaxTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          parallaxTimeline
+            .to(".hero-scroll-base", { yPercent: 0, ease: "none" }, 0)
+            .to(sukunshParallax, { yPercent: -9, scale: 1.025, opacity: 0.86, ease: "none" }, 0)
+            .to(characterParallax, { xPercent: 0.8, yPercent: -5, ease: "none" }, 0)
+            .to(flowerParallax, { xPercent: -0.9, yPercent: -10, ease: "none" }, 0)
+            .to(leafParallax, { xPercent: 1.1, yPercent: -8, ease: "none" }, 0);
+          timelines.push(parallaxTimeline);
 
           if (characterGroup) {
             timelines.push(gsap.to(characterGroup, {
@@ -377,85 +415,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             );
           }
         });
-
-        const heroCopyItems = gsap.utils.toArray<HTMLElement>(".hero-copy-item");
-        const heroTags = gsap.utils.toArray<HTMLElement>(".hero-tag");
-
-        if (!reduceMotion) {
-          gsap.from(heroCopyItems, {
-            y: 28,
-            opacity: 0,
-            filter: "blur(12px)",
-            duration: 1,
-            stagger: 0.08,
-            delay: 0.18,
-            ease: "power3.out",
-          });
-
-          gsap.to(stage, {
-            yPercent: -7,
-            opacity: 0.72,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: "bottom top",
-              scrub: 0.75,
-              invalidateOnRefresh: true,
-            },
-          });
-
-          gsap.to(".hero-copy", {
-            yPercent: -18,
-            opacity: 0.55,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: "bottom top",
-              scrub: 0.75,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        if (!isTouch) {
-          heroTags.forEach((tag) => {
-            const strength = 0.35;
-            const move = (event: MouseEvent) => {
-              const rect = tag.getBoundingClientRect();
-              const x = gsap.utils.mapRange(rect.left, rect.right, -rect.width / 2, rect.width / 2, event.clientX);
-              const y = gsap.utils.mapRange(rect.top, rect.bottom, -rect.height / 2, rect.height / 2, event.clientY);
-
-              gsap.to(tag, {
-                x: x * strength,
-                y: y * strength,
-                scale: 1.08,
-                duration: 0.35,
-                ease: "power3.out",
-                overwrite: "auto",
-              });
-            };
-
-            const leave = () => {
-              gsap.to(tag, {
-                x: 0,
-                y: 0,
-                scale: 1,
-                duration: 0.7,
-                ease: "elastic.out(1, 0.45)",
-                overwrite: "auto",
-              });
-            };
-
-            tag.addEventListener("mousemove", move);
-            tag.addEventListener("mouseleave", leave);
-            cleanupFns.push(
-              () => tag.removeEventListener("mousemove", move),
-              () => tag.removeEventListener("mouseleave", leave),
-            );
-          });
-        }
 
         const quickTo = (node: SVGGraphicsElement | null | undefined, prop: string, duration = 0.25) =>
           node ? gsap.quickTo(node, prop, { duration, ease: "power3.out" }) : null;
@@ -908,38 +867,29 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
     <section
       ref={sectionRef}
       id="home"
-      className="hero relative overflow-hidden bg-[#191816]"
+      className="hero relative overflow-hidden bg-[#050505]"
     >
+      <div className="hero-scroll-base" aria-hidden="true" />
       <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
-        <div className="hero-copy pointer-events-none absolute left-6 top-[18vh] z-20 max-w-[520px] text-[#f3ead7] md:left-[7vw] md:top-[22vh]">
-          <p className="hero-copy-item mb-4 text-sm font-medium tracking-normal text-[#b8ad9b] md:text-base">
-            Visual Designer / Filmmaker / AI Films
+        <div className="hero-content hidden">
+          <p className="text-sm font-medium tracking-[-0.025em] text-white/62">
+            Hello I'm Delhi Based Multidisciplinary Designer.
           </p>
-          <h1 className="hero-copy-item max-w-[11ch] font-serif text-[clamp(3.2rem,7.4vw,8.8rem)] font-normal leading-[0.9] tracking-normal">
-            Designing stories that move.
+          <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-[-0.065em] text-white">
+            {profile?.brandName || "Sukunsh"}.
           </h1>
-          <p className="hero-copy-item mt-6 max-w-[420px] text-base leading-[1.45] tracking-normal text-[#b8ad9b] md:text-lg">
-            I create brand identities, motion design, cinematic visuals, and AI-powered ad concepts.
-          </p>
-          <div className="hero-copy-item mt-7 flex flex-wrap gap-2.5">
-            {["Brand", "Motion", "AI Films", "Visual Systems"].map((tag) => (
-              <span key={tag} className="hero-tag pointer-events-auto">
-                {tag}
-              </span>
-            ))}
-          </div>
-          <div className="hero-copy-item pointer-events-auto mt-8 flex flex-wrap gap-3">
+          <div className="mt-6 flex items-center justify-center gap-3">
             <button
               type="button"
               onClick={onOpenProjects}
-              className="rounded-full border border-[#f3ead7]/18 bg-[#f3ead7] px-5 py-3 text-xs font-medium tracking-normal text-[#191816] transition-colors hover:bg-[#e6d8bd]"
+              className="bg-white px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-black"
             >
               View Work
             </button>
             <button
               type="button"
               onClick={onOpenAIWork}
-              className="rounded-full border border-[#f3ead7]/18 bg-[#f3ead7]/8 px-5 py-3 text-xs font-medium tracking-normal text-[#f3ead7] backdrop-blur-md transition-colors hover:bg-[#f3ead7]/14"
+              className="border border-white/20 px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-white"
             >
               AI Films
             </button>
