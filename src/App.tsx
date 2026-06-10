@@ -8,7 +8,6 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import HorizontalIntro from "./components/HorizontalIntro";
 import AboutMist from "./components/AboutMist";
 import DesignWorks from "./components/DesignWorks";
 import Footer from "./components/Footer";
@@ -396,8 +395,7 @@ export default function App() {
                     onOpenAIWork={() => openPortal("ai-work")}
                   />
 
-                  <HorizontalIntro />
-
+                
                   <AboutMist />
 
                   {/* Selected Design works bento grid */}
