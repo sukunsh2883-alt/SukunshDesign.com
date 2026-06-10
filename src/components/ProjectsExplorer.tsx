@@ -84,7 +84,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 overflow-y-auto select-none bg-[#f4f1e8] text-[#14120f]"
+        className="fixed inset-0 z-50 bg-white overflow-y-auto select-none"
       >
         {/* Main Content Area */}
         <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-24 pb-12 md:pt-32 md:pb-20 relative">
@@ -100,7 +100,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
 
           {/* Section Heading Title */}
           <div className="mb-8 md:mb-12">
-            <h1 className="text-5xl md:text-8xl font-sans font-semibold tracking-normal text-[#14120f] select-none">
+            <h1 className="text-5xl md:text-8xl font-sans font-semibold tracking-tight text-neutral-800 select-none">
               Selected Work
             </h1>
           </div>
@@ -118,8 +118,8 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                       onClick={() => setSelectedFilter(filter.id)}
                       className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-[11px] font-sans font-medium tracking-normal transition-all cursor-pointer select-none border ${
                         isActive
-                          ? "bg-[#14120f] border-[#14120f] text-[#f4f1e8] font-semibold"
-                          : "bg-[#f4f1e8] border-[#14120f]/15 text-[#14120f]/58 hover:text-[#14120f] hover:border-[#14120f]/38"
+                          ? "bg-black border-black text-white shadow-sm font-semibold"
+                          : "bg-white border-neutral-200 text-neutral-500 hover:text-black hover:border-neutral-400"
                       }`}
                     >
                       {filter.label}
@@ -153,7 +153,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                   className="group flex flex-col cursor-pointer"
                 >
                   {/* Card container carrying ONLY the image for high-end minimalistic seamless layout */}
-                  <div className="relative w-full aspect-square overflow-hidden bg-[#ddd8cb] border border-[#14120f]/10 z-0">
+                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-100 border border-neutral-150/40 shadow-sm z-0">
                     
                     <img
                       src={project.image}
@@ -163,8 +163,8 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                     />
 
                     {/* Translucent overlay matching physical artwork prints */}
-                    <div className="absolute inset-0 bg-[#14120f]/0 group-hover:bg-[#14120f]/42 transition-all duration-300 flex items-center justify-center">
-                      <div className="px-4 py-2 rounded-full bg-[#f25a00] text-[#f4f1e8] text-[10px] font-mono font-semibold tracking-normal uppercase flex items-center gap-1.5 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                      <div className="px-4 py-2 rounded-full bg-[#FF6A00] text-white text-[10px] font-mono font-extrabold tracking-widest uppercase shadow-lg shadow-[#FF6A00]/20 flex items-center gap-1.5 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                         <span>VIEW ON BEHANCE</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </div>
@@ -173,7 +173,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
 
                   {/* Heading OUT of card with clean editorial weight */}
                   <div className="mt-4 flex items-baseline flex-wrap gap-2 text-left select-none">
-                    <span className="font-medium text-[#14120f] text-sm sm:text-base tracking-normal hover:text-[#14120f]">
+                    <span className="font-medium text-neutral-800 text-sm sm:text-base tracking-normal hover:text-neutral-950">
                       {project.title}
                     </span>
                     <span className="text-neutral-300 font-light select-none">/</span>

@@ -40,7 +40,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           scale: 1,
           margin: 0,
           zIndex: 5,
-          boxShadow: "0 0 0 rgba(11, 10, 8, 0)",
+          boxShadow: "0 0 0 rgba(5, 5, 5, 0)",
           transformOrigin: "50% 50%",
         });
         loader.appendChild(tittleSource);
@@ -93,18 +93,18 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         }, "-=0.3")
         .to(tittleSource, {
           scale: 1.28,
-          boxShadow: "0 0 22px rgba(11, 10, 8, 0.16)",
-          duration: 0.46,
+          boxShadow: "0 0 18px rgba(5, 5, 5, 0.18)",
+          duration: 0.42,
           ease: "power3.out",
           transformOrigin: "50% 50%",
         })
         .call(lockTittleToItsScreenPosition)
         .to(tittleSource, {
           scale: getCoverScale,
-          backgroundColor: "#0b0a08",
-          boxShadow: "0 0 48px rgba(11, 10, 8, 0.24)",
-          duration: 1.26,
-          ease: "expo.inOut",
+          backgroundColor: "#050505",
+          boxShadow: "0 0 0 rgba(5, 5, 5, 0)",
+          duration: 1.08,
+          ease: "power4.inOut",
         })
         .to(".loader-copy", {
           scale: 1.04,
@@ -114,8 +114,8 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           ease: "power3.inOut",
         }, "-=0.72")
         .to(loader, {
-          backgroundColor: "#0b0a08",
-          duration: 0.28,
+          backgroundColor: "#050505",
+          duration: 0.18,
           ease: "power2.out",
         }, "-=0.08");
 
@@ -134,11 +134,11 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   return (
     <div
       ref={loaderRef}
-      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#f4f1e8] px-6 text-[#0b0a08]"
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#f4f1e8] px-6 text-[#050505]"
       aria-label="Loading portfolio"
     >
       <div className="loader-copy relative z-10 mx-auto max-w-[1180px] text-center">
-        <p className="loader-hint mb-6 text-xs font-medium uppercase tracking-[0.14em] text-[#0b0a08]/55">
+        <p className="loader-hint mb-6 text-xs font-medium uppercase tracking-[0.22em] text-[#050505]/55">
           Portfolio opening
         </p>
         <h1

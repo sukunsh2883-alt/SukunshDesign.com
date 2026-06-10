@@ -9,14 +9,18 @@ interface DesignWorksProps {
   onOpenExplorer: () => void;
 }
 
+const columnClasses = [
+  "project-column-left",
+  "project-column-center md:pt-16",
+  "project-column-right md:pt-8",
+];
+
 export default function DesignWorks({ projects, onSelectProject, onOpenExplorer }: DesignWorksProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const displayedProjects = projects.slice(0, 9);
-  const columns = [
-    displayedProjects.filter((_, index) => index % 3 === 1),
-    displayedProjects.filter((_, index) => index % 3 === 0),
-    displayedProjects.filter((_, index) => index % 3 === 2),
-  ];
+  const columns = [0, 1, 2].map((columnIndex) =>
+    displayedProjects.filter((_, index) => index % 3 === columnIndex),
+  );
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -29,40 +33,29 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
     const cleanupFns: Array<() => void> = [];
 
     const ctx = gsap.context(() => {
-      const grid = section.querySelector<HTMLElement>(".projects-grid");
-      const cards = gsap.utils.toArray<HTMLElement>(".project-card");
-      const leftCards = gsap.utils.toArray<HTMLElement>(".project-column-left .project-card");
-      const centerCards = gsap.utils.toArray<HTMLElement>(".project-column-center .project-card");
-      const rightCards = gsap.utils.toArray<HTMLElement>(".project-column-right .project-card");
+      gsap.from(".projects-heading", {
+        y: 34,
+        opacity: 0,
+        filter: "blur(10px)",
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 78%",
+        },
+      });
 
-      gsap.set(".projects-header", { opacity: 1, y: 0 });
-      gsap.set(".see-all-projects", { opacity: 1, y: 0, pointerEvents: "auto" });
-
-      if (reduceMotion || !grid) {
-        gsap.set(".projects-header", { opacity: 1, y: 0 });
-        gsap.set(grid, { opacity: 1, scale: 1, xPercent: 0, yPercent: 0 });
-        gsap.set(cards, { opacity: 1, scale: 1, xPercent: 0, yPercent: 0, clearProps: "zIndex" });
-        gsap.set(".see-all-projects", { opacity: 1, y: 0, pointerEvents: "auto" });
+      if (reduceMotion) {
+        gsap.set(".projects-grid, .project-card", { clearProps: "all" });
         return;
       }
 
-      gsap.set(grid, {
-        scale: isMobile || isTouch ? 1.4 : 3,
-        transformOrigin: "center top",
-      });
-
-      gsap.set(cards, {
-        opacity: isMobile || isTouch ? 0 : 1,
-        scale: 1,
-        zIndex: (index) => cards.length - index,
-      });
-
-      const tl = gsap.timeline({
+      const projectTl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: isMobile || isTouch ? "top 82%" : "top center",
-          end: isMobile || isTouch ? "bottom 78%" : "bottom bottom",
-          scrub: 1,
+          end: isMobile || isTouch ? "bottom 80%" : "bottom bottom",
+          scrub: isMobile || isTouch ? 0.6 : 1,
           invalidateOnRefresh: true,
         },
         defaults: {
@@ -70,44 +63,68 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
         },
       });
 
-      tl.add("start")
-        .to(grid, {
-          scale: 1,
-          transformOrigin: "center top",
-          ease: "power1.inOut",
-        }, "start")
-        .fromTo(leftCards, {
-          xPercent: (index) => isMobile || isTouch ? -14 : -((index + 1) * 40 + index * 80),
-          yPercent: (index) => isMobile || isTouch ? 22 : (index + 1) * 35 + index * 80,
-        }, {
-          xPercent: 0,
-          yPercent: 0,
-          duration: 0.8,
-        }, "start")
-        .fromTo(rightCards, {
-          xPercent: (index) => isMobile || isTouch ? 14 : (index + 1) * 40 + index * 80,
-          yPercent: (index) => isMobile || isTouch ? 22 : (index + 1) * 35 + index * 80,
-        }, {
-          xPercent: 0,
-          yPercent: 0,
-          duration: 0.8,
-        }, "start")
-        .fromTo(centerCards, {
-          yPercent: isMobile || isTouch ? 34 : 80,
-          opacity: 0.6,
-        }, {
-          yPercent: 0,
-          opacity: 1,
-          duration: 0.8,
-        }, "start")
-        .to(cards, {
-          zIndex: 1,
-          duration: 0.01,
-        }, 0.72);
+      projectTl
+        .fromTo(
+          ".projects-grid",
+          {
+            scale: isMobile || isTouch ? 1.4 : 3,
+            transformOrigin: "center top",
+          },
+          {
+            scale: 1,
+            transformOrigin: "center top",
+          },
+          "start",
+        )
+        .from(
+          ".project-column-left .project-card",
+          {
+            xPercent: (index) => -((index + 1) * 40 + index * 80),
+            yPercent: (index) => (index + 1) * 35 + index * 80,
+            opacity: isMobile || isTouch ? 0.72 : 1,
+            duration: 0.8,
+          },
+          "start",
+        )
+        .from(
+          ".project-column-right .project-card",
+          {
+            xPercent: (index) => ((index + 1) * 40 + index * 80),
+            yPercent: (index) => (index + 1) * 35 + index * 80,
+            opacity: isMobile || isTouch ? 0.72 : 1,
+            duration: 0.8,
+          },
+          "start",
+        )
+        .from(
+          ".project-column-center .project-card",
+          {
+            yPercent: isMobile || isTouch ? 45 : 80,
+            opacity: 0.6,
+            duration: 0.8,
+          },
+          "start",
+        )
+        .fromTo(
+          ".see-all-projects",
+          {
+            opacity: 0,
+            y: 24,
+            pointerEvents: "none",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            pointerEvents: "auto",
+            duration: 0.5,
+            ease: "power2.out",
+          },
+          0.78,
+        );
 
       const refresh = () => ScrollTrigger.refresh();
-      const images = Array.from(section.querySelectorAll("img")) as HTMLImageElement[];
-      images.forEach((image) => {
+      const media = Array.from(section.querySelectorAll("img")) as HTMLImageElement[];
+      media.forEach((image) => {
         if (image.complete) return;
         image.addEventListener("load", refresh, { once: true });
         image.addEventListener("error", refresh, { once: true });
@@ -117,7 +134,7 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
         );
       });
 
-      const refreshTimer = window.setTimeout(refresh, 320);
+      const refreshTimer = window.setTimeout(refresh, 280);
       cleanupFns.push(() => window.clearTimeout(refreshTimer));
     }, section);
 
@@ -127,14 +144,54 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
     };
   }, []);
 
+  const renderProjectCard = (project: DesignProject, index: number) => (
+    <button
+      key={project.id}
+      type="button"
+      onClick={() => onSelectProject(project)}
+      className="project-card group block w-full text-left"
+    >
+      <div className="project-card__frame relative aspect-square w-full overflow-hidden bg-[#ddd8cb]">
+        <img
+          src={project.image}
+          alt={project.title}
+          className="h-full w-full object-cover object-center"
+          loading={index > 2 ? "lazy" : "eager"}
+          referrerPolicy="no-referrer"
+        />
+      </div>
+    </button>
+  );
+
   return (
-    <section ref={sectionRef} id="projects" className="projects-section">
-      <div className="projects-pin">
-        <div className="projects-header">
+    <section
+      ref={sectionRef}
+      id="projects"
+      className="projects-section overflow-hidden bg-[#f4f1e8] px-6 py-16 text-[#14120f] md:px-8 md:py-24"
+    >
+      <div className="mx-auto max-w-[1320px]">
+        <div className="projects-heading mb-8 flex items-start justify-between gap-6">
           <div>
-            <p className="section-kicker">Selected Work</p>
-            <h2>Projects</h2>
+            <h2 className="text-3xl font-semibold tracking-[-0.02em] md:text-5xl">
+              Selected Project
+            </h2>
           </div>
+        </div>
+
+        <div className="projects-grid grid gap-5 md:grid-cols-3 md:gap-6">
+          {columns.map((columnProjects, columnIndex) => (
+            <div
+              key={columnClasses[columnIndex]}
+              className={`${columnClasses[columnIndex]} flex flex-col gap-5 md:gap-6`}
+            >
+              {columnProjects.map((project, index) =>
+                renderProjectCard(project, columnIndex + index * 3),
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-center">
           <button
             type="button"
             onClick={onOpenExplorer}
@@ -142,43 +199,6 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
           >
             See All Projects
           </button>
-        </div>
-
-        <div className="projects-grid">
-          {columns.map((columnProjects, columnIndex) => (
-            <div
-              key={columnIndex}
-              className={`project-column ${
-                columnIndex === 0
-                  ? "project-column-left"
-                  : columnIndex === 1
-                    ? "project-column-center"
-                    : "project-column-right"
-              }`}
-            >
-              {columnProjects.map((project, index) => {
-                const originalIndex = displayedProjects.findIndex((item) => item.id === project.id);
-                return (
-                  <button
-                    key={project.id}
-                    type="button"
-                    onClick={() => onSelectProject(project)}
-                    className={`project-card ${originalIndex === 0 ? "project-card--featured" : ""}`}
-                  >
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      loading={originalIndex > 2 ? "lazy" : "eager"}
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="project-card__overlay">
-                      <h3>{project.title}</h3>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          ))}
         </div>
       </div>
     </section>
