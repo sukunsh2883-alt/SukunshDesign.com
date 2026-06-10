@@ -110,7 +110,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
         gsap.set(stage, { opacity: 1 });
         gsap.set(svgElement, { transformOrigin: "center bottom" });
-        gsap.set(".hero-scroll-base", { yPercent: 100 });
+        gsap.set(".hero-scroll-base", { yPercent: 68 });
         gsap.set([sukunshParallax, characterParallax, flowerParallax, leafParallax].filter(Boolean), {
           transformBox: "fill-box",
           transformOrigin: "50% 50%",
@@ -236,10 +236,10 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
           parallaxTimeline
             .to(".hero-scroll-base", { yPercent: 0, ease: "none" }, 0)
-            .to(sukunshParallax, { yPercent: -9, scale: 1.025, opacity: 0.86, ease: "none" }, 0)
-            .to(characterParallax, { xPercent: 0.8, yPercent: -5, ease: "none" }, 0)
-            .to(flowerParallax, { xPercent: -0.9, yPercent: -10, ease: "none" }, 0)
-            .to(leafParallax, { xPercent: 1.1, yPercent: -8, ease: "none" }, 0);
+            .to(sukunshParallax, { yPercent: -7, scale: 1.018, opacity: 0.86, ease: "none" }, 0)
+            .to(characterParallax, { xPercent: 0.5, yPercent: -3.4, ease: "none" }, 0)
+            .to(flowerParallax, { xPercent: -0.5, yPercent: -6.4, ease: "none" }, 0)
+            .to(leafParallax, { xPercent: 0.7, yPercent: -5.6, ease: "none" }, 0);
           timelines.push(parallaxTimeline);
 
           if (characterGroup) {
@@ -867,29 +867,29 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
     <section
       ref={sectionRef}
       id="home"
-      className="hero relative overflow-hidden bg-[#050505]"
+      className="hero relative overflow-hidden bg-[#0b0a08]"
     >
       <div className="hero-scroll-base" aria-hidden="true" />
       <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
         <div className="hero-content hidden">
-          <p className="text-sm font-medium tracking-[-0.025em] text-white/62">
+          <p className="text-sm font-medium tracking-normal text-[#f4f1e8]/62">
             Hello I'm Delhi Based Multidisciplinary Designer.
           </p>
-          <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-[-0.065em] text-white">
+          <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-normal text-[#f4f1e8]">
             {profile?.brandName || "Sukunsh"}.
           </h1>
           <div className="mt-6 flex items-center justify-center gap-3">
             <button
               type="button"
               onClick={onOpenProjects}
-              className="bg-white px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-black"
+              className="bg-[#f4f1e8] px-5 py-3 text-xs font-semibold tracking-normal text-[#0b0a08]"
             >
               View Work
             </button>
             <button
               type="button"
               onClick={onOpenAIWork}
-              className="border border-white/20 px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-white"
+              className="border border-[#f4f1e8]/20 px-5 py-3 text-xs font-semibold tracking-normal text-[#f4f1e8]"
             >
               AI Films
             </button>

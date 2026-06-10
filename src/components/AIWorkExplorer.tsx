@@ -107,7 +107,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className={`fixed inset-0 z-50 overflow-y-auto select-none transition-colors duration-700 ${
-          activePlayingId ? "bg-neutral-950 text-white" : "bg-white text-neutral-900"
+          activePlayingId ? "bg-[#0b0a08] text-[#f4f1e8]" : "bg-[#f4f1e8] text-[#14120f]"
         }`}
       >
         {/* Main Immersive Canvas */}
@@ -119,7 +119,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
             className={`absolute top-6 right-6 md:top-12 md:right-12 p-3 rounded-full transition-all scale-95 hover:scale-100 active:scale-90 cursor-pointer border ${
               activePlayingId
                 ? "bg-neutral-900 border-neutral-800 text-neutral-200 hover:bg-neutral-800"
-                : "bg-white border-neutral-200 text-neutral-800 hover:bg-neutral-100"
+                : "bg-[#f4f1e8] border-[#14120f]/15 text-[#14120f] hover:bg-[#ebe5d8]"
             }`}
             aria-label="Close page"
           >
@@ -128,8 +128,8 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
 
           {/* Epic Hero Title Heading */}
           <div className="mb-10 text-left">
-            <h1 className={`text-5xl md:text-8xl font-sans font-semibold tracking-tight select-none transition-colors duration-500 ${
-              activePlayingId ? "text-white" : "text-neutral-800"
+            <h1 className={`text-5xl md:text-8xl font-sans font-semibold tracking-normal select-none transition-colors duration-500 ${
+              activePlayingId ? "text-[#f4f1e8]" : "text-[#14120f]"
             }`}>
               AI Archive
             </h1>
@@ -154,11 +154,11 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                       className={`px-6 py-2 rounded-full text-[11px] font-sans font-extrabold tracking-wider transition-all cursor-pointer select-none uppercase border ${
                         isActive
                           ? activePlayingId
-                            ? "bg-white border-white text-neutral-950 shadow-sm"
-                            : "bg-black border-black text-white shadow-sm"
+                            ? "bg-[#f4f1e8] border-[#f4f1e8] text-[#0b0a08]"
+                            : "bg-[#14120f] border-[#14120f] text-[#f4f1e8]"
                           : activePlayingId
-                            ? "bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
-                            : "bg-white border-neutral-200 text-neutral-500 hover:text-black hover:border-neutral-400"
+                            ? "bg-[#171512] border-[#f4f1e8]/10 text-[#f4f1e8]/55 hover:text-[#f4f1e8] hover:border-[#f4f1e8]/24"
+                            : "bg-[#f4f1e8] border-[#14120f]/15 text-[#14120f]/58 hover:text-[#14120f] hover:border-[#14120f]/38"
                       }`}
                     >
                       {tab.label}
@@ -180,15 +180,15 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`w-full border rounded-full pl-11 pr-12 py-2.5 text-xs font-sans transition-all outline-none ${
                   activePlayingId
-                    ? "bg-neutral-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-neutral-700"
-                    : "bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-black"
+                    ? "bg-[#171512] border-[#f4f1e8]/10 text-[#f4f1e8] placeholder-[#f4f1e8]/35 focus:border-[#f4f1e8]/28"
+                    : "bg-[#f7f2e8] border-[#14120f]/15 text-[#14120f] placeholder-[#14120f]/35 focus:border-[#14120f]"
                 }`}
               />
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery("")}
                   className={`absolute right-4 top-1/2 -translate-y-1/2 text-xs font-mono font-extrabold uppercase transition-colors ${
-                    activePlayingId ? "text-neutral-400 hover:text-white" : "text-neutral-400 hover:text-black"
+                    activePlayingId ? "text-[#f4f1e8]/48 hover:text-[#f4f1e8]" : "text-[#14120f]/48 hover:text-[#14120f]"
                   }`}
                 >
                   CLEAR
@@ -213,7 +213,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                           onClick={() => {
                             setActivePlayingId(film.id);
                           }}
-                          className="group relative aspect-[4/5] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 cursor-pointer"
+                          className="group relative aspect-[4/5] overflow-hidden border border-[#14120f]/12 bg-[#171512] cursor-pointer"
                         >
                           <video
                             src={film.videoUrl}
@@ -227,16 +227,16 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                           />
                           <div className="absolute inset-0 bg-linear-to-t from-black via-black/35 to-transparent" />
-                          <div className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-black">
+                          <div className="absolute left-4 top-4 rounded-full bg-[#f4f1e8] px-3 py-1 font-mono text-[9px] font-semibold uppercase tracking-normal text-[#0b0a08]">
                             AI Film
                           </div>
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="rounded-full bg-white p-4 text-black opacity-0 scale-90 transition-all group-hover:opacity-100 group-hover:scale-100">
+                            <div className="rounded-full bg-[#f4f1e8] p-4 text-[#0b0a08] opacity-0 scale-90 transition-all group-hover:opacity-100 group-hover:scale-100">
                               <Play className="h-5 w-5 translate-x-0.5 fill-black" />
                             </div>
                           </div>
                           <div className="absolute inset-x-0 bottom-0 p-5">
-                            <h2 className="font-sans text-xl font-black uppercase leading-tight text-white">
+                            <h2 className="font-sans text-xl font-semibold uppercase leading-tight text-[#f4f1e8]">
                               {film.title}
                             </h2>
                             <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-neutral-300">
@@ -268,7 +268,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                         key={video.id}
                         type="button"
                         onClick={() => onSelectVideo(video)}
-                        className="group relative aspect-[9/16] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 text-left cursor-pointer"
+                        className="group relative aspect-[9/16] overflow-hidden border border-[#14120f]/12 bg-[#171512] text-left cursor-pointer"
                       >
                         <video
                           src={video.videoUrl}
@@ -282,16 +282,16 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                           className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-black via-black/25 to-transparent" />
-                        <div className="absolute left-4 top-4 rounded-full bg-[#FF6A00] px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-white">
+                        <div className="absolute left-4 top-4 rounded-full bg-[#f25a00] px-3 py-1 font-mono text-[9px] font-semibold uppercase tracking-normal text-[#f4f1e8]">
                           AI Reel
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="rounded-full bg-white p-4 text-black opacity-0 scale-90 transition-all group-hover:opacity-100 group-hover:scale-100">
+                          <div className="rounded-full bg-[#f4f1e8] p-4 text-[#0b0a08] opacity-0 scale-90 transition-all group-hover:opacity-100 group-hover:scale-100">
                             <Play className="h-5 w-5 translate-x-0.5 fill-black" />
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 p-5">
-                          <h2 className="font-sans text-lg font-semibold leading-tight text-white">
+                          <h2 className="font-sans text-lg font-semibold leading-tight text-[#f4f1e8]">
                             {video.title}
                           </h2>
                           <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-neutral-300">
@@ -392,7 +392,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
 
             return (
               <div 
-                className="fixed inset-0 z-50 bg-black/98 flex items-center justify-center p-4 md:p-8"
+                className="fixed inset-0 z-50 bg-[#0b0a08]/98 flex items-center justify-center p-4 md:p-8"
                 onClick={() => setActivePlayingId(null)}
               >
                 {/* Immersive Cinematic Background Graphic overlay */}
@@ -400,7 +400,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
 
                 {/* Video Area Container */}
                 <div 
-                  className="w-full max-w-[95vw] md:max-w-6xl aspect-video relative flex items-center justify-center rounded-2xl overflow-hidden bg-black/70 shadow-2xl border border-white/5"
+                  className="w-full max-w-[95vw] md:max-w-6xl aspect-video relative flex items-center justify-center overflow-hidden bg-[#0b0a08]/70 border border-[#f4f1e8]/8"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <video
@@ -414,14 +414,14 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                   />
                   
                   {/* Bottom Info Bar inside container */}
-                  <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 flex flex-col text-left pointer-events-none select-none z-10 bg-black/50 backdrop-blur-md p-4 rounded-xl border border-white/5 max-w-sm sm:max-w-md hidden sm:flex">
+                  <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 flex flex-col text-left pointer-events-none select-none z-10 bg-[#0b0a08]/55 backdrop-blur-md p-4 border border-[#f4f1e8]/8 max-w-sm sm:max-w-md hidden sm:flex">
                     <p className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
                       {activeFilm.category}
                     </p>
-                    <h3 className="text-lg md:text-xl font-sans font-extrabold tracking-tight text-white uppercase mt-1 leading-tight">
+                    <h3 className="text-lg md:text-xl font-sans font-semibold tracking-normal text-[#f4f1e8] uppercase mt-1 leading-tight">
                       {activeFilm.title}
                     </h3>
-                    <p className="text-white/60 text-[10px] font-sans mt-0.5">
+                    <p className="text-[#f4f1e8]/60 text-[10px] font-sans mt-0.5">
                       {activeFilm.year} / AI FILM ARCHIVE
                     </p>
                   </div>
@@ -432,7 +432,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                   <p className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
                     {activeFilm.category}
                   </p>
-                  <h3 className="text-lg font-sans font-bold text-white uppercase mt-0.5">
+                  <h3 className="text-lg font-sans font-bold text-[#f4f1e8] uppercase mt-0.5">
                     {activeFilm.title}
                   </h3>
                 </div>
@@ -440,7 +440,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                 {/* Back / Close button */}
                 <button
                   onClick={() => setActivePlayingId(null)}
-                  className="absolute top-6 right-6 p-4 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer transition-all border border-white/10 backdrop-blur-sm hover:scale-105 active:scale-95 z-50 shadow-md"
+                  className="absolute top-6 right-6 p-4 rounded-full bg-[#f4f1e8]/10 hover:bg-[#f4f1e8]/20 text-[#f4f1e8] cursor-pointer transition-all border border-[#f4f1e8]/10 backdrop-blur-sm hover:scale-105 active:scale-95 z-50"
                   aria-label="Close video player"
                 >
                   <X className="w-5 h-5" />
@@ -450,7 +450,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                 {filteredFilms.length > 1 && (
                   <button
                     onClick={handlePrev}
-                    className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-3.5 md:p-5 rounded-full bg-black/60 sm:bg-white/5 sm:hover:bg-white/15 text-white hover:bg-neutral-800 cursor-pointer transition-all border border-white/10 backdrop-blur-md hover:scale-110 active:scale-95 z-50 group shadow-xl"
+                    className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-3.5 md:p-5 rounded-full bg-[#0b0a08]/60 sm:bg-[#f4f1e8]/5 sm:hover:bg-[#f4f1e8]/15 text-[#f4f1e8] hover:bg-[#25231f] cursor-pointer transition-all border border-[#f4f1e8]/10 backdrop-blur-md hover:scale-110 active:scale-95 z-50 group"
                     aria-label="Previous video"
                   >
                     <ChevronLeft className="w-5 h-5 md:w-8 md:h-8 group-hover:-translate-x-0.5 transition-transform" />
@@ -461,7 +461,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                 {filteredFilms.length > 1 && (
                   <button
                     onClick={handleNext}
-                    className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-3.5 md:p-5 rounded-full bg-black/60 sm:bg-white/5 sm:hover:bg-white/15 text-white hover:bg-neutral-800 cursor-pointer transition-all border border-white/10 backdrop-blur-md hover:scale-110 active:scale-95 z-50 group shadow-xl"
+                    className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-3.5 md:p-5 rounded-full bg-[#0b0a08]/60 sm:bg-[#f4f1e8]/5 sm:hover:bg-[#f4f1e8]/15 text-[#f4f1e8] hover:bg-[#25231f] cursor-pointer transition-all border border-[#f4f1e8]/10 backdrop-blur-md hover:scale-110 active:scale-95 z-50 group"
                     aria-label="Next video"
                   >
                     <ChevronRight className="w-5 h-5 md:w-8 md:h-8 group-hover:translate-x-0.5 transition-transform" />

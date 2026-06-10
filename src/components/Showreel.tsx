@@ -16,7 +16,7 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
   const sectionRef = useRef<HTMLElement | null>(null);
   const rowRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const titleRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
   const items = [
     ...videos.map((video) => ({ id: video.id, title: video.title, kind: "video" as const, source: video, image: video.thumbnail, videoUrl: video.videoUrl, meta: `${video.duration} / ${video.type}` })),
     ...films.map((film) => ({ id: film.id, title: film.title, kind: "film" as const, source: film, image: film.thumbnail, videoUrl: film.videoUrl, meta: `${film.year} / ${film.category}` })),
@@ -33,28 +33,47 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
     let removeDriftHover: (() => void) | null = null;
 
     const ctx = gsap.context(() => {
-      gsap.from(title, {
-        y: 40,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
+      const cards = gsap.utils.toArray<HTMLElement>(".ai-film-card");
+
+      const revealTl = gsap.timeline({
         scrollTrigger: {
-          trigger: title,
-          start: "top 85%",
+          trigger: section,
+          start: "top 82%",
+          end: "bottom 50%",
+          scrub: 0.9,
+          invalidateOnRefresh: true,
+        },
+        defaults: {
+          ease: "power2.out",
         },
       });
 
-      gsap.from(".ai-film-card", {
-        y: 40,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 78%",
-        },
-      });
+      revealTl
+        .fromTo(title, {
+          y: 52,
+          opacity: 0,
+          filter: "blur(12px)",
+        }, {
+          y: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          duration: 0.28,
+        }, 0)
+        .fromTo(cards, {
+          y: (index) => 110 + (index % 3) * 24,
+          x: (index) => (index % 2 === 0 ? -28 : 28),
+          rotation: (index) => (index % 2 === 0 ? -5 : 5),
+          scale: 0.9,
+          opacity: 0,
+        }, {
+          y: 0,
+          x: 0,
+          rotation: 0,
+          scale: 1,
+          opacity: 1,
+          stagger: 0.045,
+          duration: 0.72,
+        }, 0.08);
 
       if (!reduceMotion) {
         const drift = gsap.to(track, {
@@ -93,11 +112,11 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
   };
 
   return (
-    <section ref={sectionRef} id="showreel" className="bg-[#050505] px-6 py-16 text-white md:px-8 md:py-24">
+    <section ref={sectionRef} id="showreel" className="bg-[#0b0a08] px-6 py-16 text-[#f4f1e8] md:px-8 md:py-24">
       <div className="mx-auto max-w-[1520px]">
-        <div ref={titleRef} className="section-title mb-8 flex items-end justify-between gap-6">
-          <h2 className="text-3xl font-semibold tracking-[-0.06em] text-white md:text-5xl">AI films</h2>
-          <button onClick={onOpenExplorer} className="text-xs font-medium tracking-[-0.02em] text-white/60 transition-colors hover:text-white">
+        <div className="section-title mb-8 flex items-end justify-between gap-6">
+          <h2 ref={titleRef} className="text-3xl font-semibold tracking-normal text-[#f4f1e8] md:text-5xl">AI films</h2>
+          <button type="button" onClick={onOpenExplorer} className="relative z-10 text-xs font-medium tracking-normal text-[#f4f1e8]/70 transition-colors hover:text-[#f4f1e8]">
             See more
           </button>
         </div>
@@ -111,7 +130,7 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
                 onClick={() => openItem(item)}
                 className="ai-film-card group w-[175px] shrink-0 text-left md:w-[320px]"
               >
-                <div className="aspect-[0.82] overflow-hidden border border-white/8 bg-[#111] transition duration-700 group-hover:scale-[1.03] group-hover:border-white/18 group-hover:brightness-110">
+                <div className="aspect-[0.82] overflow-hidden border border-[#f4f1e8]/10 bg-[#171512] transition duration-700 group-hover:scale-[1.03] group-hover:border-[#f4f1e8]/22 group-hover:brightness-110">
                   {item.videoUrl ? (
                     <video
                       src={item.videoUrl}
@@ -132,10 +151,10 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
                     />
                   )}
                 </div>
-                <h3 className="mt-4 text-center text-[10px] font-semibold tracking-[-0.04em] text-white md:text-sm">
+                <h3 className="mt-4 text-center text-[10px] font-semibold tracking-normal text-[#f4f1e8] md:text-sm">
                   {item.title}
                 </h3>
-                <p className="mt-1 text-center text-[7px] font-medium text-white/55 md:text-[10px]">
+                <p className="mt-1 text-center text-[7px] font-medium text-[#f4f1e8]/55 md:text-[10px]">
                   {item.meta}
                 </p>
               </button>
@@ -144,10 +163,10 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
         </div>
 
         <div className="mt-4 flex items-center justify-end gap-3">
-          <button onClick={() => scroll(-360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white hover:border-white" aria-label="Scroll left">
+          <button onClick={() => scroll(-360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f4f1e8]/25 text-[#f4f1e8] hover:border-[#f4f1e8]" aria-label="Scroll left">
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <button onClick={() => scroll(360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white hover:border-white" aria-label="Scroll right">
+          <button onClick={() => scroll(360)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f4f1e8]/25 text-[#f4f1e8] hover:border-[#f4f1e8]" aria-label="Scroll right">
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>

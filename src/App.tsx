@@ -249,6 +249,35 @@ export default function App() {
     description: ""
   });
 
+  useEffect(() => {
+    if (isLoading) return;
+
+    const hasOpenPortal =
+      isProjectsExplorerOpen ||
+      isAIWorkExplorerOpen ||
+      isResumeOpen ||
+      isAboutMeOpen ||
+      selectedDesignProject !== null ||
+      lightbox.isOpen;
+    const smoother = ScrollSmoother.get();
+
+    smoother?.paused(hasOpenPortal);
+    document.body.style.overflow = hasOpenPortal ? "hidden" : "";
+
+    return () => {
+      smoother?.paused(false);
+      document.body.style.overflow = "";
+    };
+  }, [
+    isLoading,
+    isProjectsExplorerOpen,
+    isAIWorkExplorerOpen,
+    isResumeOpen,
+    isAboutMeOpen,
+    selectedDesignProject,
+    lightbox.isOpen,
+  ]);
+
   // Seamless unified portal-to-portal navigation switcher
   const handleNavigate = (targetId: string) => {
     const id = targetId.replace("#", "");
@@ -356,7 +385,7 @@ export default function App() {
   };
 
   return (
-    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300">
+    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#0b0a08] text-neutral-900 transition-colors duration-300">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
@@ -398,7 +427,6 @@ export default function App() {
                     onOpenAIWork={() => openPortal("ai-work")}
                   />
 
-                
                   <AboutMist />
 
                   {/* Selected Design works bento grid */}
