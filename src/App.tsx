@@ -16,6 +16,7 @@ import AdminPanel from "./components/AdminPanel";
 import ProjectCaseStudy from "./components/ProjectCaseStudy";
 import ProjectsExplorer from "./components/ProjectsExplorer";
 import AIWorkExplorer from "./components/AIWorkExplorer";
+import AIWorks from "./components/AIWorks";
 import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
 import Showreel from "./components/Showreel";
@@ -284,7 +285,7 @@ export default function App() {
     if (isLoading) return;
 
     const handleScroll = () => {
-      const sections = ["home", "projects", "showreel", "about-me", "contact"];
+      const sections = ["home", "projects", "ai-works", "showreel", "about-me", "contact"];
       const triggerY = window.innerHeight * 0.35; // 35% down the screen
       
       let currentSection = "home";
@@ -403,6 +404,33 @@ export default function App() {
                     projects={designs}
                     onSelectProject={handleSelectProject}
                     onOpenExplorer={() => openPortal("projects")}
+                  />
+
+                  {/* AI Works Section - Cinematic scroll animations */}
+                  <AIWorks
+                    films={films}
+                    videos={videosState}
+                    onSelectFilm={(film) =>
+                      setLightbox({
+                        isOpen: true,
+                        mediaType: "video",
+                        src: film.videoUrl,
+                        title: film.title,
+                        category: film.category,
+                        description: film.description
+                      })
+                    }
+                    onSelectVideo={(video) =>
+                      setLightbox({
+                        isOpen: true,
+                        mediaType: "video",
+                        src: video.videoUrl,
+                        title: video.title,
+                        category: video.type,
+                        description: `${video.duration} motion reel / ${video.year}`
+                      })
+                    }
+                    onOpenExplorer={() => openPortal("ai-work")}
                   />
 
                   {/* Motion reel archive */}
