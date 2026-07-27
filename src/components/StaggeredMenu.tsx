@@ -56,7 +56,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   onMenuClose
 }) => {
   const [open, setOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const openRef = useRef(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const preLayersRef = useRef<HTMLDivElement>(null);
@@ -311,21 +310,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
 
-  React.useEffect(() => {
-    const updateScrollState = () => {
-      setIsScrolled(window.scrollY > 18);
-    };
-
-    updateScrollState();
-    window.addEventListener('scroll', updateScrollState, { passive: true });
-    window.addEventListener('resize', updateScrollState);
-
-    return () => {
-      window.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('resize', updateScrollState);
-    };
-  }, []);
-
   const animateText = useCallback((opening: boolean) => {
     const inner = textInnerRef.current;
     if (!inner) return;
@@ -407,7 +391,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
       style={accentColor ? ({ '--sm-accent': accentColor } as React.CSSProperties) : undefined}
       data-position={position}
-      data-scrolled={isScrolled || undefined}
       data-open={open || undefined}
     >
       <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
@@ -421,7 +404,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
         })()}
       </div>
-      <header className="staggered-menu-header" aria-label="Main navigation header" data-scrolled={isScrolled || undefined}>
+      <header className="staggered-menu-header" aria-label="Main navigation header">
         <div
           className="sm-logo cursor-pointer flex items-center gap-1"
           aria-label="Logo"
@@ -491,7 +474,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               }}
               className="text-white/80 hover:text-white transition-colors"
             >
-              Let's Talk
+              Connect me
             </a>
           </nav>
 
