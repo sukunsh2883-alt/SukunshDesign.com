@@ -132,8 +132,8 @@ export default function ScrollShowcase({
         scrollTrigger: {
           trigger: aiFilmSectionRef.current || ".ai-film-section",
           start: "top top",
-          end: "+=110%",
-          scrub: 0.8,
+          end: "+=180%",
+          scrub: 1.6,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -141,27 +141,34 @@ export default function ScrollShowcase({
       });
 
       filmTimeline
-        .fromTo(
+        .to(
           aiFilmCardRef.current,
           {
             width: "100vw",
             height: "100svh",
             borderRadius: 0,
             transformOrigin: "center center",
-          },
-          {
-            width: () => (window.innerWidth < 768 ? "calc(100vw - 2rem)" : "min(1180px, calc(100vw - 7rem))"),
-            height: () => (window.innerWidth < 768 ? "58svh" : "min(68svh, 720px)"),
-            borderRadius: () => (window.innerWidth < 768 ? 16 : 28),
+            duration: 0.18,
             ease: "none",
           },
           0,
         )
+        .to(
+          aiFilmCardRef.current,
+          {
+            width: () => (window.innerWidth < 768 ? window.innerWidth - 20 : Math.min(1240, window.innerWidth - 48)),
+            height: () => (window.innerWidth < 768 ? window.innerHeight * 0.7 : Math.min(window.innerHeight * 0.78, 780)),
+            borderRadius: () => (window.innerWidth < 768 ? 16 : 28),
+            duration: 0.82,
+            ease: "none",
+          },
+          0.18,
+        )
         .fromTo(
           [aiFilmHeadingRef.current, aiFilmDetailsRef.current],
           { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.25, ease: "none" },
-          0.68,
+          { opacity: 1, y: 0, duration: 0.22, ease: "none" },
+          0.76,
         );
 
       return () => media.revert();
@@ -412,7 +419,7 @@ export default function ScrollShowcase({
             </div>
           </div>
 
-          <div className="folio-reveal flex min-h-screen w-full items-center justify-center">
+          <div className="flex min-h-screen w-full items-center justify-center">
             <button
               ref={aiFilmCardRef}
               type="button"
