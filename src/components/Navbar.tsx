@@ -1,4 +1,5 @@
 import React from "react";
+import StaggeredMenu from "./StaggeredMenu";
 
 interface NavbarProps {
   activeSection: string;
@@ -7,25 +8,18 @@ interface NavbarProps {
   onOpenAIWork?: () => void;
   onOpenResume?: () => void;
   onOpenAboutMe?: () => void;
+  onOpenGitHub?: () => void;
   onNavigate?: (targetId: string) => void;
 }
 
-const NAV_ITEMS = [
-  { label: "Home", href: "#home" },
-  { label: "Projects", href: "#projects" },
-  { label: "AI Films", href: "#showreel" },
-  { label: "Hire me", href: "#contact" },
-];
-
-export default function Navbar({ profile, onNavigate, onOpenProjects, onOpenAIWork }: NavbarProps) {
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-
-    if (onNavigate) {
-      onNavigate(href);
-      return;
-    }
-
+export default function Navbar({
+  profile,
+  onNavigate,
+  onOpenProjects,
+  onOpenAIWork,
+  onOpenGitHub,
+}: NavbarProps) {
+  const handleNavClick = (href: string) => {
     if (href === "#projects" && onOpenProjects) {
       onOpenProjects();
       return;
@@ -36,32 +30,102 @@ export default function Navbar({ profile, onNavigate, onOpenProjects, onOpenAIWo
       return;
     }
 
+    if (href === "#github" && onOpenGitHub) {
+      onOpenGitHub();
+      return;
+    }
+
+    if (href === "#about-me-modal" && onNavigate) {
+      onNavigate("#about-me-modal");
+      return;
+    }
+
+    if (onNavigate) {
+      onNavigate(href);
+      return;
+    }
+
     document.getElementById(href.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
   };
 
-  return (
-    <header className="navbar fixed inset-x-0 top-0 z-[150] bg-[#050505] text-white">
-      <nav className="mx-auto flex h-14 max-w-[1520px] items-center justify-between px-6 text-sm md:px-8">
-        <button
-          onClick={() => onNavigate?.("#about-me-modal")}
-          className="logo text-xl font-semibold tracking-[-0.04em] text-white"
-        >
-          {profile?.brandName || "Sukunsh"}.
-        </button>
+  const menuItems = [
+    {
+      label: "Home",
+      ariaLabel: "Go to home section",
+      link: "#home",
+      onClick: () => handleNavClick("#home"),
+    },
+    {
+      label: "Showcase",
+      ariaLabel: "View interactive showcase",
+      link: "#scroll-demo",
+      onClick: () => handleNavClick("#scroll-demo"),
+    },
+    {
+      label: "Design Projects",
+      ariaLabel: "Open design projects explorer",
+      link: "#projects",
+      onClick: () => handleNavClick("#projects"),
+    },
+    {
+      label: "AI Short Films",
+      ariaLabel: "Open AI work explorer",
+      link: "#showreel",
+      onClick: () => handleNavClick("#showreel"),
+    },
+    {
+      label: "GitHub Code",
+      ariaLabel: "Open GitHub repository explorer",
+      link: "#github",
+      onClick: () => handleNavClick("#github"),
+    },
+    {
+      label: "About Me",
+      ariaLabel: "About Sukunsh",
+      link: "#about-me-modal",
+      onClick: () => handleNavClick("#about-me-modal"),
+    },
+    {
+      label: "Hire me",
+      ariaLabel: "Go to contact section",
+      link: "#contact",
+      onClick: () => handleNavClick("#contact"),
+    },
+  ];
 
-        <div className="nav-links flex items-center gap-5 text-white/86 md:gap-7">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => handleNavClick(e, item.href)}
-              className="transition-colors hover:text-white"
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </nav>
-    </header>
+  const socialItems = [
+    {
+      label: "LinkedIn",
+      link: profile?.linkedin || "https://www.linkedin.com/in/sukunsh",
+    },
+    {
+      label: "Behance",
+      link: profile?.behance || "https://www.behance.net/sukunshsharma",
+    },
+    {
+      label: "Email",
+      link: `mailto:${profile?.email || "sukunsh2883@gmail.com"}`,
+    },
+  ];
+
+  return (
+    <div className="navbar fixed inset-x-0 top-0 z-[150] pointer-events-none">
+      <StaggeredMenu
+        position="right"
+        isFixed={true}
+        logoText={`${profile?.brandName || "Sukunsh"}.`}
+        onLogoClick={() => onNavigate?.("#about-me-modal")}
+        items={menuItems}
+        socialItems={socialItems}
+        displaySocials={true}
+        displayItemNumbering={true}
+        menuButtonColor="#ffffff"
+        openMenuButtonColor="#ffffff"
+        changeMenuColorOnOpen={true}
+        colors={["#0c0c0e", "#18181b", "#27272a"]}
+        accentColor="#f97316"
+      />
+    </div>
   );
 }
+

@@ -191,20 +191,20 @@ export const aiFilms: AIFilm[] = [
 // Selected Design Works List
 export const designProjects: DesignProject[] = [
   {
-    id: "design-photography",
-    title: "Action Photography",
-    type: "Fine Art Photography",
-    year: "2021",
+    id: "AI film",
+    title: "Ai short Film",
+    type: "Film",
+    year: "2026",
     description: "Academic photo communication study capturing extreme body elasticity, suspension leaps, and somatic contour lighting.",
-    image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=1200&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
     tools: ["Studio Spotlight Rigging", "Motion Capture", "Contrast Optimization", "Academic Layouts"],
     link: "mailto:sukunsh3882@gmail.com",
     client: "College of Art, Delhi University",
     aboutProject: "Action photography is an incredibly exciting genre to shoot. Under the guidance of Mr. Parveen Kumar, the study explores body contouring using high-density side lighting and extreme raw athleticism. It illustrates suspension, equilibrium, and spatial trajectory transitions in darkness.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1508215891331-9f11d4007551?q=80&w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=1200&auto=format&fit=crop"
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png"
     ]
   },
   {
@@ -213,13 +213,13 @@ export const designProjects: DesignProject[] = [
     type: "Illustration / Print",
     year: "2025",
     description: "Designed, layered, and printed welcome cards and children's book illustrations using tactile Risography duplicators.",
-    image: "https://images.unsplash.com/photo-1541462608141-ad4979e408c9?q=80&w=1200&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_41_knefoc.png",
     tools: ["Riso Print", "Sourcing Ink", "Figma", "Illustrator"],
     link: "https://www.behance.net/sukunshsharma",
     client: "IDC, IIT Bombay",
     aboutProject: "A physical illustration study. We crafted layered stencil assets which were processed straight via screen-printing mechanics on natural-toned cardstocks using botanical ink bases.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1541462608141-ad4979e408c9?q=80&w=1200&auto=format&fit=crop",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_41_knefoc.png",
       "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=800&auto=format&fit=crop"
     ]
   },
@@ -229,13 +229,13 @@ export const designProjects: DesignProject[] = [
     type: "Motion Design / Video",
     year: "2026",
     description: "Branded after-effects motion sequence showcasing complex layout transformations and typography transitions.",
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056274/image_36_hyojxm.png",
     tools: ["After Effects", "Illustrator", "Premiere Pro"],
     link: "https://www.behance.net/sukunshsharma",
     client: "ShareChat Creative Lab",
     aboutProject: "Creating continuous loops that demonstrate fluid transformation of flat geometric assets into 3D isometric typography configurations in line with modern marketing trends.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056274/image_36_hyojxm.png",
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop"
     ]
   },
@@ -245,13 +245,13 @@ export const designProjects: DesignProject[] = [
     type: "Branding",
     year: "2026",
     description: "Visual identity system with strong typography, color accent schemes, and cinematic brand guidelines.",
-    image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1200&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_33_lku3qb.png",
     tools: ["Photoshop", "Illustrator", "Figma"],
     link: "https://www.behance.net/sukunshsharma",
     client: "Sukunsh Labs Inc.",
     aboutProject: "A comprehensive core visual identity structure created to bridge corporate architecture with premium cinematic brand directives. The design relies heavily on grid alignment systems, technical display spacing, and fluid ink-based textures.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1200&auto=format&fit=crop",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_33_lku3qb.png",
       "https://images.unsplash.com/photo-1581291518655-9523c932dedf?q=80&w=800&auto=format&fit=crop"
     ]
   },
@@ -261,13 +261,13 @@ export const designProjects: DesignProject[] = [
     type: "Logo Design",
     year: "2025",
     description: "Fusing geometric monolith layouts with elegant calligraphy forms to compile responsive, modern corporate logo designs.",
-    image: "https://images.unsplash.com/photo-1542744094-3a31f103e35f?q=80&w=1200&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_37_mqlouw.png",
     tools: ["Illustrator", "Grids", "Inking"],
     link: "https://www.behance.net/sukunshsharma",
     client: "Sukunsh Design Studio",
     aboutProject: "An exploration into logo responsiveness. The mono-line grid is fully optimized to stay perfectly visible at massive billboard sizes or tiny 16px digital screen corners.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1542744094-3a31f103e35f?q=80&w=1200&auto=format&fit=crop"
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_37_mqlouw.png"
     ]
   },
   {
@@ -276,13 +276,13 @@ export const designProjects: DesignProject[] = [
     type: "Infographic Design",
     year: "2025",
     description: "High-density evacuation map illustrating structural weak zones and safe evacuation vectors through clear infographics.",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_34_xopufv.png",
     tools: ["Figma", "Illustrator", "Evagenerate"],
     link: "https://www.behance.net/sukunshsharma",
     client: "National Earthquake Society",
     aboutProject: "Developing clear directions and easy-to-digest symbols representing structural threats, exit pathways, and response coordinates.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop"
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_34_xopufv.png"
     ]
   },
   {
@@ -291,13 +291,13 @@ export const designProjects: DesignProject[] = [
     type: "Animation",
     year: "2025",
     description: "A frame-by-frame 2D hand-drawn character run-cycle highlighting fluid action, clothes inertia, and wind drag.",
-    image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_35_st0j6w.png",
     tools: ["Animate CC", "Photoshop", "Procreate"],
     link: "https://www.behance.net/sukunshsharma",
     client: "Freelance Editorial Study",
     aboutProject: "Studying weight and balance in keyframes, drafting timing charts, and tracking joint markers to make the overall character motion feel deeply realistic and smooth.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop"
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_35_st0j6w.png"
     ]
   },
   {
@@ -646,5 +646,6 @@ export const profile = {
   accentGradient: "linear-gradient(90deg, #FF6A00 0%, #FFB000 100%)",
   logoFontFamily: "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
   heroVideoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1779644211/make_give_bit_loop_motion_202605242304_vd4fkj.mp4",
-  aboutImage: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1780485999/Screenshot_2026-06-03_165617_seilm1.png"
+  aboutImage: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_39_obkaf2.png",
+  aboutImageSecondary: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_42_z0hjbd.png"
 };

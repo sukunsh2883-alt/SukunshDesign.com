@@ -31,6 +31,17 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
   const [activePlayingId, setActivePlayingId] = useState<string | null>(null);
   const [selectedImgUrl, setSelectedImgUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      window.scrollTo(0, 0);
+      if (containerRef.current) {
+        containerRef.current.scrollTop = 0;
+      }
+    }
+  }, [isOpen]);
+
   const [archiveImages] = useState<ArchiveImageItem[]>(() => {
     try {
       const saved = localStorage.getItem("portfolio_ai_archive_images");
@@ -103,6 +114,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
   return (
     <AnimatePresence>
       <motion.div
+        ref={containerRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

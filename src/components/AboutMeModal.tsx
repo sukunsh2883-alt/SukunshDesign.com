@@ -1,35 +1,29 @@
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { 
-  X, Mail, Linkedin, Globe, GraduationCap, Sparkles, 
-  ArrowRight, Award, MapPin, Briefcase
-} from "lucide-react";
+import { X, ArrowUpRight } from "lucide-react";
 
 interface AboutMeProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: {
-    fullName: string;
-    brandName: string;
-    roles: string[];
-    bio: string;
-    email: string;
-    linkedin: string;
-    behance: string;
+  profile?: {
+    fullName?: string;
+    brandName?: string;
+    roles?: string[];
+    bio?: string;
+    email?: string;
+    linkedin?: string;
+    behance?: string;
     aboutImage?: string;
+    aboutImageSecondary?: string;
   };
 }
 
 export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps) {
-  const aboutImg = profile.aboutImage || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop";
-  const formattedRoles = profile.roles || [
-    "Visual Designer",
-    "AI Creative Designer",
-    "Motion Designer",
-    "Storyboard Artist"
-  ];
-
   if (!isOpen) return null;
+
+  const portraitImage =
+    profile?.aboutImage ||
+    "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_39_obkaf2.png";
 
   return (
     <AnimatePresence>
@@ -38,159 +32,188 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[110] flex items-center justify-center bg-neutral-950/90 backdrop-blur-lg p-4 md:p-6"
+        className="fixed inset-0 z-[120] bg-[#FBFBFC] text-neutral-900 font-sans overflow-y-auto"
       >
-        <motion.div
-          id="about-me-container"
-          initial={{ scale: 0.95, y: 30 }}
-          animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.95, y: 30 }}
-          transition={{ type: "spring", stiffness: 300, damping: 28 }}
-          className="w-full max-w-5xl bg-neutral-900 rounded-3xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,0.8)] relative text-white border border-white/10 flex flex-col md:flex-row min-h-[500px] md:h-[620px]"
+        {/* Close Button */}
+        <button
+          id="close-about-btn"
+          onClick={onClose}
+          className="fixed top-6 right-6 sm:top-8 sm:right-8 z-[130] p-3 rounded-full bg-neutral-900 text-white hover:bg-neutral-800 transition-all shadow-lg cursor-pointer hover:scale-105 active:scale-95 flex items-center justify-center group"
+          aria-label="Close About Section"
         >
-          {/* Close Button */}
-          <button
-            id="close-about-btn"
-            onClick={onClose}
-            className="absolute top-5 right-5 z-20 p-2.5 rounded-full bg-black/60 hover:bg-white/10 text-white border border-white/10 transition-all backdrop-blur-md cursor-pointer"
-            aria-label="Close About Section"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <X className="h-5 w-5 transition-transform group-hover:rotate-90" />
+        </button>
 
-          {/* Left Column: Portrait and Big Title decoration */}
-          <div className="w-full md:w-[40%] bg-neutral-950 relative overflow-hidden flex flex-col justify-between p-8 border-b md:border-b-0 md:border-r border-white/10">
-            {/* Background image preview */}
-            <div className="absolute inset-0 z-0 opacity-40">
-              <img
-                src={aboutImg}
-                alt={profile.fullName}
-                className="w-full h-full object-cover object-center grayscale"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/80 to-transparent" />
-            </div>
+        {/* Section Container with Light Grey Grid */}
+        <div className="relative min-h-screen w-full flex items-center justify-center py-12 sm:py-20 px-6 sm:px-12 md:px-16 overflow-hidden">
+          {/* Subtle Light-Grey Grid Background */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-60"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, #E2E2E8 1px, transparent 1px),
+                linear-gradient(to bottom, #E2E2E8 1px, transparent 1px)
+              `,
+              backgroundSize: "36px 36px",
+            }}
+          />
 
-            <div className="relative z-10">
-              <span className="text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-[#FF6A00] bg-[#FF6A00]/10 px-2.5 py-1 rounded-full border border-[#FF6A00]/20 inline-block">
-                PROFILE CARD
-              </span>
-            </div>
+          {/* Main Wide Desktop Composition */}
+          <div className="relative z-10 w-full max-w-[1240px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Zone: Introduction, Education & Experience */}
+            <div className="lg:col-span-7 flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12">
+              
+              {/* Top-left label */}
+              <div>
+                <div className="w-12 h-[1.5px] bg-neutral-900 mb-2.5" />
+                <div className="inline-flex items-center gap-1 text-xs font-sans font-medium tracking-wide text-neutral-900">
+                  <span>About me</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-neutral-900 stroke-[2]" />
+                </div>
+              </div>
 
-            <div className="relative z-10 space-y-2 mt-auto">
-              <h3 className="text-4xl font-black font-sans uppercase tracking-tight leading-none text-white">
-                Suraj Kumar
-              </h3>
-              <p className="text-sm font-sans tracking-widest uppercase text-neutral-400 font-bold">
-                {profile.brandName}
+              {/* Main Heading */}
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-sans font-normal leading-[1.06] tracking-[-0.035em] text-neutral-950 select-none">
+                I’m a Delhi-based<br />
+                Visual Designer.
+              </h1>
+
+              {/* Intro Paragraph */}
+              <p className="text-neutral-600 text-base sm:text-lg md:text-[21px] font-normal leading-relaxed max-w-xl">
+                Rooted in Bihar’s rich cultural heritage,<br className="hidden sm:inline" />
+                with a background in fine art,<br className="hidden sm:inline" />
+                visual communication and design.
               </p>
-              <div className="flex items-center gap-2 text-xs text-neutral-300 pt-1 font-mono">
-                <MapPin className="h-3.5 w-3.5 text-neutral-500" />
-                <span>New Delhi, India</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Right Column: Narrative Biography, Roles & Credentials */}
-          <div className="w-full md:w-[60%] p-6 sm:p-10 md:p-12 overflow-y-auto flex flex-col justify-between space-y-8">
-            <div className="space-y-6">
-              {/* Badge */}
-              <div className="flex items-center gap-1.5 text-[#FF6A00]">
-                <Sparkles className="h-4 w-4" />
-                <span className="text-[10px] uppercase font-sans tracking-[0.25em] font-bold text-neutral-300">
-                  CREATIVE WORKFLOWS & PROFILE
-                </span>
-              </div>
+              {/* Education and Experience Section */}
+              <div className="pt-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-stretch gap-8 sm:gap-0">
+                  
+                  {/* Left Column: Education */}
+                  <div className="flex-1 sm:pr-8 md:pr-10">
+                    <div className="text-[11px] sm:text-xs font-semibold tracking-[0.2em] text-neutral-900 uppercase">
+                      EDUCATION
+                    </div>
+                    <div className="w-6 h-[1.5px] bg-neutral-900 mt-1.5 mb-5" />
 
-              {/* Tagline */}
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight font-sans">
-                Visual Designer & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6A00] to-[#FFB000]">AI Creative Director</span>
-              </h2>
+                    <div className="space-y-5">
+                      <div>
+                        <div className="text-sm sm:text-[15px] font-medium text-neutral-900 leading-snug">
+                          M.Des — IDC School of Design
+                        </div>
+                        <div className="text-xs sm:text-sm text-neutral-500 mt-0.5 font-normal">
+                          IIT Bombay
+                        </div>
+                      </div>
 
-              {/* Biography Paragraph (Inside modal as requested) */}
-              <div className="space-y-4 text-neutral-300 text-sm sm:text-base leading-relaxed font-sans font-light tracking-wide">
-                <p>{profile.bio}</p>
-              </div>
+                      <div className="w-full h-[1px] bg-neutral-200/80" />
 
-              {/* Expanded Roles Caps */}
-              <div className="space-y-2">
-                <h4 className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">Core Capabilities</h4>
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {formattedRoles.map((role) => (
-                    <span
-                      key={role}
-                      className="px-3 py-1 bg-white/5 text-neutral-200 hover:bg-white/10 text-[9px] font-sans font-medium uppercase tracking-widest rounded-full transition-all border border-white/10"
-                    >
-                      {role}
-                    </span>
-                  ))}
+                      <div>
+                        <div className="text-sm sm:text-[15px] font-medium text-neutral-900 leading-snug">
+                          BFA, Visual Communication
+                        </div>
+                        <div className="text-xs sm:text-sm text-neutral-500 mt-0.5 font-normal">
+                          College of Art, Delhi
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Vertical Divider with subtle center dot */}
+                  <div className="hidden sm:flex flex-col items-center justify-center relative w-[1px] bg-neutral-200 shrink-0 self-stretch my-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-neutral-900 absolute top-1/2 -translate-y-1/2 -left-[2.5px]" />
+                  </div>
+
+                  {/* Right Column: Experience */}
+                  <div className="flex-1 sm:pl-8 md:pl-10">
+                    <div className="text-[11px] sm:text-xs font-semibold tracking-[0.2em] text-neutral-900 uppercase">
+                      EXPERIENCE
+                    </div>
+                    <div className="w-6 h-[1.5px] bg-neutral-900 mt-1.5 mb-5" />
+
+                    <div>
+                      <div className="text-sm sm:text-[15px] font-medium text-neutral-900 leading-snug">
+                        Visual Designer
+                      </div>
+                      <div className="text-xs sm:text-sm text-neutral-500 mt-0.5 font-normal">
+                        ShareChat
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
-              {/* Education Snippet */}
-              <div className="space-y-2">
-                <h4 className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">Education Context</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex gap-2.5 items-start p-3 rounded-xl bg-white/5 border border-white/5">
-                    <GraduationCap className="h-5 w-5 text-[#FF6A00] shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-xs font-bold text-neutral-200">M.Des. Communication</h4>
-                      <p className="text-[10px] text-neutral-400">IDC, IIT Bombay</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2.5 items-start p-3 rounded-xl bg-white/5 border border-white/5">
-                    <GraduationCap className="h-5 w-5 text-[#FFB000] shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-xs font-bold text-neutral-200">B.F.A. Visual Comm</h4>
-                      <p className="text-[10px] text-neutral-400">College of Art, Delhi University</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* Modal Bottom: Close Button and Social Links */}
-            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <a
-                  href={`mailto:${profile.email}`}
-                  className="p-2 border border-white/15 rounded-full bg-white/5 hover:bg-[#FF6A00]/20 hover:border-[#FF6A00] text-neutral-300 hover:text-white transition-all hover:scale-105"
-                  title="Send Mail"
-                >
-                  <Mail className="h-4 w-4" />
-                </a>
-                <a
-                  href={profile.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 border border-white/15 rounded-full bg-white/5 hover:bg-[#FF6A00]/20 hover:border-[#FF6A00] text-neutral-300 hover:text-white transition-all hover:scale-105"
-                  title="LinkedIn"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </a>
-                <a
-                  href={profile.behance}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 border border-white/15 rounded-full bg-white/5 hover:bg-[#FF6A00]/20 hover:border-[#FF6A00] text-neutral-300 hover:text-white transition-all hover:scale-105"
-                  title="Behance"
-                >
-                  <Globe className="h-4 w-4" />
-                </a>
-              </div>
-
-              <button
-                id="modal-close-action-btn"
-                onClick={onClose}
-                className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-[10px] uppercase font-sans font-bold tracking-widest flex items-center justify-center gap-1.5 cursor-pointer transition-all scale-100 active:scale-95 shadow-lg"
+            {/* Right Zone: Hanging ID-card Portrait */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-start relative pt-6 lg:pt-0">
+              
+              {/* Lanyard + Badge Sway Group */}
+              <motion.div
+                className="relative flex flex-col items-center origin-top select-none"
+                animate={{ rotate: [-1.5, 1.5, -1.5] }}
+                transition={{
+                  duration: 7,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                }}
               >
-                <span>Close Window</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+                {/* Lanyard Fabric Strap entering from top */}
+                <div className="w-7 sm:w-8 h-28 sm:h-36 bg-neutral-950 relative shadow-sm flex flex-col items-center justify-around py-3 rounded-t-sm z-10 overflow-hidden">
+                  {/* Subtle fabric texture line */}
+                  <div className="absolute inset-y-0 left-1 w-[1px] bg-white/10" />
+                  <div className="absolute inset-y-0 right-1 w-[1px] bg-white/10" />
+                  
+                  {/* Small repeating white logo symbols printed on lanyard */}
+                  <span className="text-white text-[10px] opacity-90">✿</span>
+                  <span className="text-white text-[10px] opacity-90">✿</span>
+                  <span className="text-white text-[10px] opacity-90">✿</span>
+                </div>
+
+                {/* Black Metal Ring & Buckle Assembly */}
+                <div className="relative z-20 flex flex-col items-center -mt-0.5">
+                  <div className="w-8 sm:w-9 h-4 bg-neutral-900 rounded-sm border border-neutral-700 flex items-center justify-center shadow-md">
+                    <div className="w-4 h-1 bg-neutral-800 rounded-full" />
+                  </div>
+                  {/* Metal Ring & Short Hook */}
+                  <div className="w-6 h-6 border-[3px] border-neutral-900 rounded-full bg-transparent flex items-center justify-center -mt-1">
+                    <div className="w-2.5 h-4 bg-neutral-900 rounded-b-sm" />
+                  </div>
+                </div>
+
+                {/* White Rounded Rectangular ID Badge */}
+                <div className="relative z-10 -mt-2 w-[250px] sm:w-[280px] md:w-[300px] bg-white rounded-2xl sm:rounded-[22px] border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] p-4 sm:p-5 flex flex-col items-center text-center">
+                  
+                  {/* Small Circular Hole at top center */}
+                  <div className="w-3.5 h-3.5 rounded-full bg-neutral-900 border-2 border-neutral-300 mb-3 shadow-inner flex items-center justify-center">
+                    <div className="w-1 h-1 rounded-full bg-neutral-700" />
+                  </div>
+
+                  {/* B&W Portrait Photograph */}
+                  <div className="w-full aspect-[4/5] overflow-hidden rounded-xl bg-neutral-100 shadow-sm border border-neutral-200/60">
+                    <img
+                      src={portraitImage}
+                      alt="SUKANSH Portrait"
+                      className="w-full h-full object-cover filter grayscale contrast-110"
+                    />
+                  </div>
+
+                  {/* Name SUKANSH in bold uppercase */}
+                  <div className="mt-4 sm:mt-5 font-sans font-bold tracking-[0.25em] text-sm sm:text-base text-neutral-950 uppercase">
+                    SUKANSH
+                  </div>
+                </div>
+
+              </motion.div>
+
             </div>
+
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </AnimatePresence>
   );
 }
+

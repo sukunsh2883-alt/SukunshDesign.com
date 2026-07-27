@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,20 +8,16 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import AboutMist from "./components/AboutMist";
-import DesignWorks from "./components/DesignWorks";
 import Footer from "./components/Footer";
 import Lightbox from "./components/Lightbox";
 import AdminPanel from "./components/AdminPanel";
 import ProjectCaseStudy from "./components/ProjectCaseStudy";
 import ProjectsExplorer from "./components/ProjectsExplorer";
 import AIWorkExplorer from "./components/AIWorkExplorer";
-import AIWorks from "./components/AIWorks";
-import ItsMe from "./components/ItsMe";
-import LetWorkTogether from "./components/LetWorkTogether";
 import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
-import Showreel from "./components/Showreel";
+import ScrollShowcase from "./components/ScrollShowcase";
+import GitHubExplorer from "./components/GitHubExplorer";
 
 // State Engines and Credentials
 import {
@@ -48,13 +44,15 @@ export default function App() {
 
       const savedProfile = JSON.parse(saved);
       const legacyPortrait = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop";
+      const hasOldImage = !savedProfile.aboutImage || 
+                          savedProfile.aboutImage === legacyPortrait || 
+                          savedProfile.aboutImage.includes("Screenshot_2026-06-03_165617_seilm1");
 
       return {
         ...profile,
         ...savedProfile,
-        aboutImage: !savedProfile.aboutImage || savedProfile.aboutImage === legacyPortrait
-          ? profile.aboutImage
-          : savedProfile.aboutImage,
+        aboutImage: hasOldImage ? profile.aboutImage : savedProfile.aboutImage,
+        aboutImageSecondary: savedProfile.aboutImageSecondary || profile.aboutImageSecondary,
       };
     } catch (e) {
       return profile;
@@ -84,7 +82,21 @@ export default function App() {
   const [designs, setDesigns] = useState<DesignProject[]>(() => {
     try {
       const saved = localStorage.getItem("portfolio_designs");
-      return saved ? JSON.parse(saved) : initialDesigns;
+      if (saved) {
+        const savedDesigns = JSON.parse(saved);
+        return savedDesigns.map((d: DesignProject) => {
+          const matchInitial = initialDesigns.find(init => init.id === d.id);
+          if (matchInitial && (d.image.includes("unsplash.com") || d.image.includes("images.unsplash.com"))) {
+            return {
+              ...d,
+              image: matchInitial.image,
+              galleryImages: matchInitial.galleryImages || d.galleryImages
+            };
+          }
+          return d;
+        });
+      }
+      return initialDesigns;
     } catch (e) {
       return initialDesigns;
     }
@@ -126,15 +138,29 @@ export default function App() {
   const [isAIWorkExplorerOpen, setIsAIWorkExplorerOpen] = useState(false);
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [isAboutMeOpen, setIsAboutMeOpen] = useState(false);
+  const [isScrollShowcaseOpen, setIsScrollShowcaseOpen] = useState(false);
+  const [isGitHubExplorerOpen, setIsGitHubExplorerOpen] = useState(false);
+
+  const smootherRef = useRef<any>(null);
+
+  const isAnyPortalOpen = 
+    isProjectsExplorerOpen || 
+    isAIWorkExplorerOpen || 
+    isResumeOpen || 
+    isAboutMeOpen || 
+    isGitHubExplorerOpen || 
+    !!selectedDesignProject;
 
   const closePortals = () => {
     setIsProjectsExplorerOpen(false);
     setIsAIWorkExplorerOpen(false);
     setIsResumeOpen(false);
     setIsAboutMeOpen(false);
+    setIsScrollShowcaseOpen(false);
+    setIsGitHubExplorerOpen(false);
   };
 
-  const openPortal = (portal: "projects" | "ai-work" | "resume" | "about") => {
+  const openPortal = (portal: "projects" | "ai-work" | "resume" | "about" | "scroll-demo" | "github") => {
     closePortals();
 
     if (portal === "projects") {
@@ -143,6 +169,10 @@ export default function App() {
       setIsAIWorkExplorerOpen(true);
     } else if (portal === "resume") {
       setIsResumeOpen(true);
+    } else if (portal === "scroll-demo") {
+      setIsScrollShowcaseOpen(true);
+    } else if (portal === "github") {
+      setIsGitHubExplorerOpen(true);
     } else {
       setIsAboutMeOpen(true);
     }
@@ -180,12 +210,14 @@ export default function App() {
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
       smooth: 2,
-      speed: 1.2,
+      speed: isScrollShowcaseOpen ? 2 : 1.2,
       effects: true,
       smoothTouch: 0.1,
-      normalizeScroll: true,
+      normalizeScroll: false,
       ignoreMobileResize: true,
     });
+
+    smootherRef.current = smoother;
 
     const refresh = () => ScrollTrigger.refresh();
     const refreshTimer = window.setTimeout(refresh, 350);
@@ -195,8 +227,31 @@ export default function App() {
       window.clearTimeout(refreshTimer);
       window.removeEventListener("load", refresh);
       smoother.kill();
+      smootherRef.current = null;
     };
-  }, [isLoading]);
+  }, [isLoading, isScrollShowcaseOpen]);
+
+  // Handle scroll lock and smoother pause when overlays are active
+  useEffect(() => {
+    if (smootherRef.current) {
+      if (isAnyPortalOpen) {
+        smootherRef.current.paused(true);
+        document.body.style.overflow = "hidden";
+      } else {
+        smootherRef.current.paused(false);
+        document.body.style.overflow = "";
+      }
+    } else {
+      if (isAnyPortalOpen) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isAnyPortalOpen]);
 
   // Synchronize state down to localStorage so data persists securely across page refreshes
   useEffect(() => {
@@ -256,14 +311,24 @@ export default function App() {
     // Close all active portal view states
     closePortals();
 
-    if (targetId === "#projects") {
-      openPortal("projects");
-    } else if (targetId === "#ai-work" || targetId === "#showreel") {
-      openPortal("ai-work");
+    if (targetId === "#projects" || targetId === "#scroll-demo") {
+      setTimeout(() => {
+        const element = document.getElementById("scroll-demo");
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - 80;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }
+      }, 50);
     } else if (targetId === "#full-resume") {
       openPortal("resume");
     } else if (targetId === "#about-me-modal") {
       openPortal("about");
+    } else if (targetId === "#github") {
+      openPortal("github");
     } else {
       // Small delay to allow any transition state to settle, then scroll to section
       setTimeout(() => {
@@ -287,7 +352,7 @@ export default function App() {
     if (isLoading) return;
 
     const handleScroll = () => {
-      const sections = ["home", "projects", "ai-works", "showreel", "its-me", "work-together", "about-me", "contact"];
+      const sections = ["home", "scroll-demo", "contact"];
       const triggerY = window.innerHeight * 0.35; // 35% down the screen
       
       let currentSection = "home";
@@ -336,11 +401,7 @@ export default function App() {
   };
 
   const handleSelectProject = (project: DesignProject) => {
-    if (project.link) {
-      window.open(project.link, "_blank", "noopener,noreferrer");
-    } else {
-      setSelectedDesignProject(project);
-    }
+    setSelectedDesignProject(project);
   };
 
   const handleAddFilm = (newFilm: AIFilm) => {
@@ -369,109 +430,84 @@ export default function App() {
             className="flex flex-col min-h-screen"
           >
             {/* Header Floating navigation bar */}
-            <Navbar 
-              profile={profileState}
-              activeSection={
-                isAboutMeOpen ? "about-me" :
-                isResumeOpen ? "full-resume" :
-                isAIWorkExplorerOpen ? "ai-work" :
-                isProjectsExplorerOpen ? "projects" :
-                activeSection
-              }
-              onNavigate={handleNavigate}
-              onOpenProjects={() => handleNavigate("#projects")}
-              onOpenAIWork={() => handleNavigate("#ai-work")}
-              onOpenResume={() => handleNavigate("#full-resume")}
-              onOpenAboutMe={() => handleNavigate("#about-me-modal")}
-            />
+            {!isScrollShowcaseOpen && (
+              <Navbar 
+                profile={profileState}
+                activeSection={
+                  isAboutMeOpen ? "about-me" :
+                  isResumeOpen ? "full-resume" :
+                  isAIWorkExplorerOpen ? "ai-work" :
+                  isProjectsExplorerOpen ? "projects" :
+                  isGitHubExplorerOpen ? "github" :
+                  activeSection
+                }
+                onNavigate={handleNavigate}
+                onOpenProjects={() => handleNavigate("#projects")}
+                onOpenAIWork={() => handleNavigate("#ai-work")}
+                onOpenResume={() => handleNavigate("#full-resume")}
+                onOpenAboutMe={() => handleNavigate("#about-me-modal")}
+                onOpenGitHub={() => handleNavigate("#github")}
+              />
+            )}
 
             <div id="smooth-wrapper">
               <div id="smooth-content" className="flex min-h-screen flex-col">
                 {/* Main view container */}
                 <main className="main flex-grow overflow-x-hidden overflow-y-visible">
 
-                  {/* Cinematic hero section */}
-                  <Hero
-                    profile={profileState}
-                    onWatchShowreel={handleLaunchShowreel}
-                    onOpenProjects={() => openPortal("projects")}
-                    onOpenAIWork={() => openPortal("ai-work")}
-                  />
+                   {isScrollShowcaseOpen ? (
+                    <ScrollShowcase
+                      onClose={() => setIsScrollShowcaseOpen(false)}
+                      onOpenProjects={() => openPortal("projects")}
+                      designs={designs}
+                      onSelectProject={handleSelectProject}
+                      onOpenVideo={(videoUrl, title) => {
+                        setLightbox({
+                          isOpen: true,
+                          mediaType: "video",
+                          src: videoUrl,
+                          title: title,
+                          category: "AI Film",
+                          description: "Cinematic commercial design production"
+                        });
+                      }}
+                    />
+                  ) : (
+                    <>
+                      {/* Cinematic hero section */}
+                      <Hero
+                        profile={profileState}
+                        onWatchShowreel={handleLaunchShowreel}
+                        onOpenProjects={() => handleNavigate("#scroll-demo")}
+                        onOpenAIWork={() => handleNavigate("#scroll-demo")}
+                      />
 
-                
-                  <AboutMist />
-
-                  {/* Selected Design works bento grid */}
-                  <DesignWorks
-                    projects={designs}
-                    onSelectProject={handleSelectProject}
-                    onOpenExplorer={() => openPortal("projects")}
-                  />
-
-                  {/* AI Works Section - Hero card with grid */}
-                  <AIWorks
-                    films={films}
-                    videos={videosState}
-                    onSelectFilm={(film) =>
-                      setLightbox({
-                        isOpen: true,
-                        mediaType: "video",
-                        src: film.videoUrl,
-                        title: film.title,
-                        category: film.category,
-                        description: film.description
-                      })
-                    }
-                    onSelectVideo={(video) =>
-                      setLightbox({
-                        isOpen: true,
-                        mediaType: "video",
-                        src: video.videoUrl,
-                        title: video.title,
-                        category: video.type,
-                        description: `${video.duration} motion reel / ${video.year}`
-                      })
-                    }
-                    onOpenExplorer={() => openPortal("ai-work")}
-                  />
-
-                  {/* Motion reel archive */}
-                  <Showreel
-                    videos={videosState}
-                    films={films}
-                    onSelectVideo={(video) =>
-                      setLightbox({
-                        isOpen: true,
-                        mediaType: "video",
-                        src: video.videoUrl,
-                        title: video.title,
-                        category: video.type,
-                        description: `${video.duration} motion reel / ${video.year}`
-                      })
-                    }
-                    onSelectFilm={(film) =>
-                      setLightbox({
-                        isOpen: true,
-                        mediaType: "video",
-                        src: film.videoUrl,
-                        title: film.title,
-                        category: film.category,
-                        description: film.description
-                      })
-                    }
-                    onOpenExplorer={() => openPortal("ai-work")}
-                  />
-
-                  {/* It's Me Section - Profile intro */}
-                  <ItsMe profile={profileState} />
-
-                  {/* Let's Work Together Section - CTA */}
-                  <LetWorkTogether profile={profileState} />
+                      {/* Dynamic GSAP Scroll Showcase Section */}
+                      <div id="scroll-demo">
+                        <ScrollShowcase
+                          isInline={true}
+                          designs={designs}
+                          onSelectProject={handleSelectProject}
+                          onOpenProjects={() => openPortal("projects")}
+                          onOpenVideo={(videoUrl, title) => {
+                            setLightbox({
+                              isOpen: true,
+                              mediaType: "video",
+                              src: videoUrl,
+                              title: title,
+                              category: "AI Film",
+                              description: "Cinematic commercial design production"
+                            });
+                          }}
+                        />
+                      </div>
+                    </>
+                  )}
 
                 </main>
 
                 {/* Marqueed footer section */}
-                <Footer profile={profileState} />
+                {!isScrollShowcaseOpen && <Footer profile={profileState} onNavigate={handleNavigate} />}
               </div>
             </div>
 
@@ -569,11 +605,21 @@ export default function App() {
               )}
             </AnimatePresence>
 
+            <AnimatePresence>
+              {isGitHubExplorerOpen && (
+                <GitHubExplorer
+                  isOpen={isGitHubExplorerOpen}
+                  onClose={closePortalWithHistory}
+                />
+              )}
+            </AnimatePresence>
+
             {/* Dynamic Fullscreen Case Study Overlay */}
             <AnimatePresence>
               {selectedDesignProject && (
                 <ProjectCaseStudy
                   project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
+                  allProjects={designs}
                   onClose={() => setSelectedDesignProject(null)}
                   onUpdateProject={(updatedProj) => {
                     setDesigns((prev) => prev.map(p => p.id === updatedProj.id ? updatedProj : p));

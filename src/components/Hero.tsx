@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -40,6 +40,19 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
 
+  const [stageScale] = useState<number>(() => {
+    const saved = localStorage.getItem("sukunsh_stage_scale_v2");
+    return saved ? parseFloat(saved) : 1.15;
+  });
+  const [stageY] = useState<number>(() => {
+    const saved = localStorage.getItem("sukunsh_stage_y");
+    return saved ? parseFloat(saved) : 4;
+  });
+  const [sukunshScale] = useState<number>(() => {
+    const saved = localStorage.getItem("sukunsh_sukunsh_scale");
+    return saved ? parseFloat(saved) : 0.88;
+  });
+
   useEffect(() => {
     let cancelled = false;
     let ctx: gsap.Context | null = null;
@@ -70,8 +83,42 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const rightWing = byId("beetal_right_wing-2");
       const flowers = flowerIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
       const leaves = leafIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
-      const tagRects = Array.from(svgElement.querySelectorAll("#Layer_147 rect")) as SVGGraphicsElement[];
+      const tagRects = Array.from(svgElement.querySelectorAll("#Layer_147 rect, #Layer_147 path")) as SVGGraphicsElement[];
       const tagTexts = Array.from(svgElement.querySelectorAll("#Layer_148 text")) as SVGGraphicsElement[];
+
+      if (heroText) {
+        heroText.innerHTML = `
+          <text x="65" y="325" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', 'Syne', sans-serif" font-weight="bold" font-size="280" style="font-weight: bold; font-size: 280px; line-height: 318.5px;" letter-spacing="0.03em" class="select-none font-bold">
+            PORT<tspan class="font-bold" font-weight="bold" fill="#FFFFFF" letter-spacing="0.03em">FOLIO</tspan>
+          </text>
+        `;
+      }
+
+      if (svgElement && !svgElement.querySelector("#extra_hero_labels")) {
+        const extraLabelsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        extraLabelsGroup.setAttribute("id", "extra_hero_labels");
+        extraLabelsGroup.innerHTML = `
+          <!-- Floating Plain Text Labels -->
+          <text x="140" y="425" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">Illustration</text>
+          <text x="265" y="480" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">Typographic</text>
+          <text x="1400" y="465" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">UI/UX</text>
+          <text x="1440" y="525" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">Cinematography</text>
+
+          <!-- Arrow and 2026 -->
+          <g transform="translate(1350, 368)">
+            <path d="M 0,0 L 90,0 M 76,-6 L 90,0 L 76,6" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="115" y="7" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="400" font-size="28" letter-spacing="0.05em">2026</text>
+          </g>
+
+          <!-- Left side vertical scroll indicator -->
+          <g transform="translate(55, 480)">
+            <circle cx="0" cy="-110" r="4" fill="#FFFFFF" />
+            <line x1="0" y1="-95" x2="0" y2="105" stroke="#FFFFFF" stroke-width="1.2" stroke-opacity="0.4" />
+            <text transform="rotate(-90)" x="-40" y="-14" fill="#A1A1AA" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="12" letter-spacing="0.25em">SCROLL TO EXPLORE</text>
+          </g>
+        `;
+        svgElement.appendChild(extraLabelsGroup);
+      }
 
       const backgroundLayer = byId("Layer_38");
       if (heroText?.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
@@ -101,6 +148,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       let wingTimeline: gsap.core.Timeline | null = null;
       let currentState: "landed" | "takeoff" | "flying" | "landing" | "dragging" | "returning" = "landed";
       let currentFlowerIndex = 0;
+      let activeFooterFlowerId: string | null = null;
       let dragging = false;
       let pointerDragging = false;
 
@@ -650,162 +698,401 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         };
 
         const beetleTicker = () => {
-          if (currentState !== "landed" || dragging) return;
-          alignSitToFlower(currentFlowerIndex);
+          // No automatic ticker needed for direct cursor follow, but we keep the empty function in case of any external dependency
         };
 
-        const flyTo = (index: number) => {
-          if (!flyPose) return;
-          switchToFly(currentFlowerIndex, () => {
-            currentState = "flying";
-            const start = getPosePosition(flyPose);
-            const end = flowerPoint(index, flyBase);
-            const dx = end.x - start.x;
-            const dy = end.y - start.y;
-            const rotation = gsap.utils.clamp(-45, 45, Math.atan2(dy, dx) * (180 / Math.PI) + 90);
-            const mid = {
-              x: (start.x + end.x) / 2 + gsap.utils.random(-35, 35),
-              y: Math.min(start.y, end.y) - gsap.utils.random(55, 90),
-            };
+        // -------------------------------------------------------------
+        // Global Beetle setup (enables flying across the entire page!)
+        // -------------------------------------------------------------
+        let globalSvg = document.getElementById("global-beetle-svg") as unknown as SVGSVGElement | null;
+        if (!globalSvg) {
+          globalSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg") as unknown as SVGSVGElement;
+          globalSvg.setAttribute("id", "global-beetle-svg");
+          globalSvg.setAttribute("viewBox", "0 0 1358.17 730.78");
+          globalSvg.setAttribute("class", "fixed inset-0 w-screen h-screen pointer-events-none z-[99999] overflow-visible");
+          document.body.appendChild(globalSvg);
+        }
 
-            gsap
-              .timeline({
-                onComplete: () => {
-                  currentFlowerIndex = index;
-                  switchToSit(index);
-                },
-              })
-              .to(flyPose, {
-                x: mid.x,
-                y: mid.y,
-                rotation,
-                scaleX: 1,
-                scaleY: 1,
-                duration: 0.72,
-                ease: "power2.out",
-                overwrite: "auto",
-              })
-              .to(flyPose, {
-                x: end.x,
-                y: end.y,
+        // Copy styles to make sure classes render perfectly
+        const styleNode = svgElement.querySelector("style");
+        if (styleNode) {
+          let globalStyle = globalSvg.querySelector("style") as unknown as SVGStyleElement | null;
+          if (!globalStyle) {
+            globalStyle = document.createElementNS("http://www.w3.org/2000/svg", "style") as unknown as SVGStyleElement;
+            globalSvg.appendChild(globalStyle);
+          }
+          globalStyle.textContent = styleNode.textContent;
+        }
+
+        // Copy defs so gradients and filters are available locally
+        const defsNode = svgElement.querySelector("defs");
+        if (defsNode) {
+          let globalDefs = globalSvg.querySelector("defs");
+          if (!globalDefs) {
+            globalDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            globalSvg.appendChild(globalDefs);
+          }
+          globalDefs.innerHTML = defsNode.innerHTML;
+        }
+
+        if (sitPose && flyPose) {
+          globalSvg.appendChild(sitPose);
+          globalSvg.appendChild(flyPose);
+          gsap.set([sitPose, flyPose], {
+            transformOrigin: "50% 50%",
+            pointerEvents: "none",
+          });
+        }
+
+        const pointerSvgPointFromCoords = (clientX: number, clientY: number) => {
+          if (!globalSvg) return null;
+          const point = globalSvg.createSVGPoint();
+          point.x = clientX;
+          point.y = clientY;
+
+          const screen = globalSvg.getScreenCTM();
+          if (!screen) return null;
+          return point.matrixTransform(screen.inverse());
+        };
+
+        const updateLandedBeetlePosition = () => {
+          if (currentState !== "landed") return;
+
+          let targetFlower: HTMLElement | null = null;
+          let isFooter = false;
+
+          if (currentFlowerIndex !== -1 && flowers[currentFlowerIndex]) {
+            targetFlower = flowers[currentFlowerIndex] as unknown as HTMLElement;
+          } else if (activeFooterFlowerId) {
+            targetFlower = document.getElementById(activeFooterFlowerId);
+            isFooter = true;
+          }
+
+          if (targetFlower && globalSvg && sitPose) {
+            const rect = targetFlower.getBoundingClientRect();
+            const screenX = rect.left + rect.width / 2;
+            const screenY = isFooter ? (rect.top + rect.height * 0.5) : (rect.top + rect.height * 0.28);
+
+            const pt = pointerSvgPointFromCoords(screenX, screenY);
+            if (pt) {
+              const rot = Number(gsap.getProperty(targetFlower, "rotation")) || 0;
+              gsap.set(sitPose, {
+                x: pt.x - sitBase.x,
+                y: pt.y - sitBase.y,
+                rotation: rot,
+              });
+            }
+          }
+        };
+
+        gsap.ticker.add(updateLandedBeetlePosition);
+        cleanupFns.push(() => {
+          gsap.ticker.remove(updateLandedBeetlePosition);
+        });
+
+        let mouseMoveTimeout: any = null;
+        let flyToFlowerTimeline: gsap.core.Timeline | null = null;
+        let currentMouseSvgX = 0;
+        let currentMouseSvgY = 0;
+
+        const flyToFlowerAndSit = (flowerIndex: number) => {
+          if (!flyPose || !sitPose || !globalSvg) return;
+          currentState = "flying";
+
+          const flower = flowers[flowerIndex];
+          if (!flower) return;
+
+          const rect = flower.getBoundingClientRect();
+          const screenX = rect.left + rect.width / 2;
+          const screenY = rect.top + rect.height * 0.28;
+
+          const pt = pointerSvgPointFromCoords(screenX, screenY);
+          if (!pt) return;
+
+          const endFlyX = pt.x - flyBase.x;
+          const endFlyY = pt.y - flyBase.y;
+          const endSitX = pt.x - sitBase.x;
+          const endSitY = pt.y - sitBase.y;
+
+          const startFlyX = gsap.getProperty(flyPose, "x") as number || 0;
+          const startFlyY = gsap.getProperty(flyPose, "y") as number || 0;
+
+          const dx = endFlyX - startFlyX;
+          const dy = endFlyY - startFlyY;
+          const rotation = gsap.utils.clamp(-45, 45, Math.atan2(dy, dx) * (180 / Math.PI) + 90);
+
+          const mid = {
+            x: (startFlyX + endFlyX) / 2 + gsap.utils.random(-25, 25),
+            y: Math.min(startFlyY, endFlyY) - gsap.utils.random(35, 60),
+          };
+
+          if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
+
+          flyToFlowerTimeline = gsap.timeline({
+            onComplete: () => {
+              currentFlowerIndex = flowerIndex;
+              currentState = "landed";
+              stopFlyWingFlutter();
+              showPose(sitPose);
+              hidePose(flyPose);
+              
+              gsap.set(sitPose, {
+                x: endSitX,
+                y: endSitY,
                 rotation: 0,
                 scaleX: 1,
-                scaleY: 1,
-                duration: 0.72,
-                ease: "power2.inOut",
-                overwrite: "auto",
+                scaleY: 1
               });
+            },
           });
+
+          flyToFlowerTimeline
+            .to(flyPose, {
+              x: mid.x,
+              y: mid.y,
+              rotation,
+              duration: 0.5,
+              ease: "power2.out",
+              overwrite: "auto",
+            })
+            .to(flyPose, {
+              x: endFlyX,
+              y: endFlyY,
+              rotation: 0,
+              duration: 0.5,
+              ease: "power2.inOut",
+              overwrite: "auto",
+            });
         };
 
-        const nearestFlowerFromPoint = (x: number, y: number) => {
-          let nearest = 0;
-          let best = Infinity;
+        const landOnNearestAvailableFlower = () => {
+          if (!flyPose || !sitPose || !globalSvg) return;
+          currentState = "flying";
 
-          flowers.forEach((_, index) => {
-            const point = flowerPoint(index, flyBase);
-            const distance = Math.hypot(x - point.x, y - point.y);
-            if (distance < best) {
-              best = distance;
-              nearest = index;
+          const startFlyX = gsap.getProperty(flyPose, "x") as number || 0;
+          const startFlyY = gsap.getProperty(flyPose, "y") as number || 0;
+
+          const footerFlowerIds = ["yellow-flower", "red-flower", "white-flower-1"];
+          const footerFlowers = footerFlowerIds
+            .map((id) => document.getElementById(id))
+            .filter(Boolean) as HTMLElement[];
+
+          let bestFlowerPt: { x: number; y: number } | null = null;
+          let bestDist = Infinity;
+          let isFooterFlower = false;
+          let bestFlowerIndex = -1;
+          let bestFooterFlowerId: string | null = null;
+
+          // Check hero flowers
+          flowers.forEach((flower, index) => {
+            const rect = flower.getBoundingClientRect();
+            const screenX = rect.left + rect.width / 2;
+            const screenY = rect.top + rect.height * 0.28;
+            const pt = pointerSvgPointFromCoords(screenX, screenY);
+            if (pt) {
+              const fx = pt.x - flyBase.x;
+              const fy = pt.y - flyBase.y;
+              const dist = Math.hypot(fx - startFlyX, fy - startFlyY);
+              if (dist < bestDist) {
+                bestDist = dist;
+                bestFlowerPt = pt;
+                bestFlowerIndex = index;
+                isFooterFlower = false;
+                bestFooterFlowerId = null;
+              }
             }
           });
 
-          return nearest;
-        };
-
-        const moveManualDrag = (event: PointerEvent) => {
-          if (!pointerDragging || !flyPose) return;
-          const point = pointerSvgPoint(event);
-          gsap.set(flyPose, {
-            x: point.x - flyBase.x,
-            y: point.y - flyBase.y,
-            scaleX: 1,
-          });
-        };
-
-        const stopManualDrag = () => {
-          if (!flyPose) return;
-          pointerDragging = false;
-          dragging = false;
-          currentState = "returning";
-          window.removeEventListener("pointermove", moveManualDrag);
-          window.removeEventListener("pointerup", stopManualDrag);
-
-          const position = getPosePosition(flyPose);
-          const nearest = nearestFlowerFromPoint(position.x, position.y);
-          const point = flowerPoint(nearest, flyBase);
-
-          gsap.to(flyPose, {
-            x: point.x,
-            y: point.y,
-            rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
-            duration: 0.8,
-            ease: "elastic.out(1, 0.45)",
-            overwrite: "auto",
-            onComplete: () => {
-              currentFlowerIndex = nearest;
-              switchToSit(nearest);
-              mainBeetleTimeline?.resume();
-            },
-          });
-        };
-
-        const startManualDrag = (event: PointerEvent) => {
-          if (!sitPose || !flyPose) return;
-          event.preventDefault();
-          dragging = true;
-          pointerDragging = true;
-          currentState = "dragging";
-          mainBeetleTimeline?.pause();
-
-          const currentSit = getPosePosition(sitPose);
-          gsap.set(flyPose, {
-            x: currentSit.x,
-            y: currentSit.y,
-            rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
+          // Check footer flowers
+          footerFlowers.forEach((flower) => {
+            const rect = flower.getBoundingClientRect();
+            const screenX = rect.left + rect.width / 2;
+            const screenY = rect.top + rect.height * 0.5;
+            const pt = pointerSvgPointFromCoords(screenX, screenY);
+            if (pt) {
+              const fx = pt.x - flyBase.x;
+              const fy = pt.y - flyBase.y;
+              const dist = Math.hypot(fx - startFlyX, fy - startFlyY);
+              if (dist < bestDist) {
+                bestDist = dist;
+                bestFlowerPt = pt;
+                bestFlowerIndex = -1;
+                isFooterFlower = true;
+                bestFooterFlowerId = flower.id;
+              }
+            }
           });
 
-          showPose(flyPose);
-          hidePose(sitPose);
-          startFlyWingFlutter();
-          moveManualDrag(event);
-          window.addEventListener("pointermove", moveManualDrag);
-          window.addEventListener("pointerup", stopManualDrag);
+          if (bestFlowerPt) {
+            const endFlyX = bestFlowerPt.x - flyBase.x;
+            const endFlyY = bestFlowerPt.y - flyBase.y;
+            const endSitX = bestFlowerPt.x - sitBase.x;
+            const endSitY = bestFlowerPt.y - sitBase.y;
+
+            const dx = endFlyX - startFlyX;
+            const dy = endFlyY - startFlyY;
+            const rotation = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+            if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
+
+            flyToFlowerTimeline = gsap.timeline({
+              onComplete: () => {
+                currentState = "landed";
+                stopFlyWingFlutter();
+                showPose(sitPose);
+                hidePose(flyPose);
+                if (!isFooterFlower) {
+                  currentFlowerIndex = bestFlowerIndex;
+                  activeFooterFlowerId = null;
+                } else {
+                  currentFlowerIndex = -1;
+                  activeFooterFlowerId = bestFooterFlowerId;
+                }
+                gsap.set(sitPose, {
+                  x: endSitX,
+                  y: endSitY,
+                  rotation: 0,
+                  scaleX: 1,
+                  scaleY: 1,
+                });
+              },
+            });
+
+            startFlyWingFlutter();
+
+            flyToFlowerTimeline.to(flyPose, {
+              x: endFlyX,
+              y: endFlyY,
+              rotation: rotation,
+              duration: 0.9,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          } else {
+            currentState = "landed";
+            stopFlyWingFlutter();
+            showPose(sitPose);
+            hidePose(flyPose);
+          }
         };
 
-        if (sitPose && flyPose && flowers.length) {
-          alignSitToFlower(0);
-          currentFlowerIndex = 0;
+        const handleFollowCursor = (event: PointerEvent) => {
+          if (flyToFlowerTimeline) {
+            flyToFlowerTimeline.kill();
+            flyToFlowerTimeline = null;
+          }
+
+          const elementUnderCursor = document.elementFromPoint(event.clientX, event.clientY);
+          const isInHero = elementUnderCursor ? !!elementUnderCursor.closest("#home") : false;
+          const isInFooter = elementUnderCursor ? !!elementUnderCursor.closest("#contact") : false;
+
+          if (!isInHero && !isInFooter) {
+            if (currentState === "flying") {
+              landOnNearestAvailableFlower();
+            }
+            return;
+          }
+
+          const pt = pointerSvgPointFromCoords(event.clientX, event.clientY);
+          if (!pt) return;
+
+          currentMouseSvgX = pt.x;
+          currentMouseSvgY = pt.y;
+
+          const targetFlyX = pt.x - flyBase.x;
+          const targetFlyY = pt.y - flyBase.y;
+          const targetSitX = pt.x - sitBase.x;
+          const targetSitY = pt.y - sitBase.y;
+
+          const currentX = gsap.getProperty(flyPose, "x") as number || 0;
+          const currentY = gsap.getProperty(flyPose, "y") as number || 0;
+          const dx = targetFlyX - currentX;
+          const dy = targetFlyY - currentY;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist > 1.0) {
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+            if (currentState !== "flying") {
+              currentState = "flying";
+              showPose(flyPose);
+              hidePose(sitPose);
+              startFlyWingFlutter();
+            }
+
+            gsap.to(flyPose, {
+              x: targetFlyX,
+              y: targetFlyY,
+              rotation: angle,
+              duration: 1.8,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+
+            gsap.to(sitPose, {
+              x: targetSitX,
+              y: targetSitY,
+              rotation: angle,
+              duration: 1.8,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          }
+
+          if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
+          mouseMoveTimeout = setTimeout(() => {
+            if (currentState === "flying") {
+              landOnNearestAvailableFlower();
+            }
+          }, 800);
+        };
+
+        const handlePointerLeave = () => {
+          if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
+          if (currentState === "flying") {
+            landOnNearestAvailableFlower();
+          }
+        };
+
+        if (sitPose && flyPose && flowers.length && section) {
           currentState = "landed";
           showPose(sitPose);
           hidePose(flyPose);
 
-          if (!reduceMotion) {
-            mainBeetleTimeline = gsap.timeline({ repeat: -1 });
-            for (let index = 1; index <= flowers.length; index += 1) {
-              const next = index % flowers.length;
-              mainBeetleTimeline
-                .to({}, { duration: 1.5 })
-                .call(() => {
-                  if (!dragging && currentState === "landed") flyTo(next);
-                })
-                .to({}, { duration: 2.45 });
+          setTimeout(() => {
+            const flower = flowers[0];
+            if (flower) {
+              const rect = flower.getBoundingClientRect();
+              const screenX = rect.left + rect.width / 2;
+              const screenY = rect.top + rect.height * 0.28;
+              const pt = pointerSvgPointFromCoords(screenX, screenY);
+              if (pt) {
+                gsap.set(sitPose, {
+                  x: pt.x - sitBase.x,
+                  y: pt.y - sitBase.y,
+                  rotation: 0,
+                  scaleX: 1,
+                  scaleY: 1
+                });
+              }
             }
-          }
+          }, 100);
 
-          sitPose.addEventListener("pointerdown", startManualDrag);
-          flyPose.addEventListener("pointerdown", startManualDrag);
-          cleanupFns.push(
-            () => sitPose.removeEventListener("pointerdown", startManualDrag),
-            () => flyPose.removeEventListener("pointerdown", startManualDrag),
-          );
-          gsap.ticker.add(beetleTicker);
-          cleanupFns.push(() => gsap.ticker.remove(beetleTicker));
+          window.addEventListener("pointermove", handleFollowCursor);
+          window.addEventListener("pointerleave", handlePointerLeave);
+          cleanupFns.push(() => {
+            window.removeEventListener("pointermove", handleFollowCursor);
+            window.removeEventListener("pointerleave", handlePointerLeave);
+            if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
+            if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
+
+            if (sitPose && sitPose.parentNode) sitPose.parentNode.removeChild(sitPose);
+            if (flyPose && flyPose.parentNode) flyPose.parentNode.removeChild(flyPose);
+            const gSvg = document.getElementById("global-beetle-svg");
+            if (gSvg && gSvg.parentNode && !gSvg.querySelector("g")) {
+              gSvg.parentNode.removeChild(gSvg);
+            }
+          });
         }
 
         const resumeHeroAnimations = () => {
@@ -823,8 +1110,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
           () => window.removeEventListener("focus", resumeHeroAnimations),
           () => window.removeEventListener("pageshow", resumeHeroAnimations),
           () => document.removeEventListener("visibilitychange", resumeHeroAnimations),
-          () => window.removeEventListener("pointermove", moveManualDrag),
-          () => window.removeEventListener("pointerup", stopManualDrag),
         );
 
         cleanupHero = () => {
@@ -870,36 +1155,17 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       className="hero relative overflow-hidden bg-[#050505]"
     >
       <div className="hero-scroll-base" aria-hidden="true" />
-      <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
-        <div className="hero-content hidden">
-          <p className="text-sm font-medium tracking-[-0.025em] text-white/62">
-            Hello I'm Delhi Based Multidisciplinary Designer.
-          </p>
-          <h1 className="mt-2 text-5xl font-semibold leading-[0.9] tracking-[-0.065em] text-white">
-            {profile?.brandName || "Sukunsh"}.
-          </h1>
-          <div className="mt-6 flex items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={onOpenProjects}
-              className="bg-white px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-black"
-            >
-              View Work
-            </button>
-            <button
-              type="button"
-              onClick={onOpenAIWork}
-              className="border border-white/20 px-5 py-3 text-xs font-semibold tracking-[-0.02em] text-white"
-            >
-              AI Films
-            </button>
-          </div>
-        </div>
 
-        <div className="hero-art relative flex justify-center">
+      <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
+        <div className="hero-art relative flex justify-center w-full">
           <div
             ref={stageRef}
             className="svg-stage relative mb-0 aspect-[1358.17/730.78] origin-center overflow-visible"
+            style={{
+              "--svg-scale-multiplier": stageScale,
+              "--svg-y-offset": `${stageY}vh`,
+              "--sukunsh-scale": sukunshScale,
+            } as React.CSSProperties}
           />
         </div>
       </div>

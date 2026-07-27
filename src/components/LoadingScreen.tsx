@@ -25,7 +25,6 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     const ctx = gsap.context(() => {
       const words = gsap.utils.toArray<HTMLElement>(".loader-word");
       const letters = gsap.utils.toArray<HTMLElement>(".loader-letter");
-      const hint = loader.querySelector<HTMLElement>(".loader-hint");
 
       const lockTittleToItsScreenPosition = () => {
         const sourceBox = tittleSource.getBoundingClientRect();
@@ -54,7 +53,6 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       gsap.set(words, { y: 28, opacity: 0, filter: "blur(10px)" });
       gsap.set(letters, { y: 12, opacity: 0, scale: 0.96, filter: "blur(6px)" });
-      gsap.set(hint, { opacity: 0, y: 12 });
 
       const getCoverScale = () => {
         const sourceBox = tittleSource.getBoundingClientRect();
@@ -85,12 +83,6 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           stagger: 0.012,
           ease: "expo.out",
         }, "-=0.5")
-        .to(hint, {
-          opacity: 0.72,
-          y: 0,
-          duration: 0.48,
-          ease: "power2.out",
-        }, "-=0.3")
         .to(tittleSource, {
           scale: 1.28,
           boxShadow: "0 0 18px rgba(5, 5, 5, 0.18)",
@@ -138,9 +130,6 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       aria-label="Loading portfolio"
     >
       <div className="loader-copy relative z-10 mx-auto max-w-[1180px] text-center">
-        <p className="loader-hint mb-6 text-xs font-medium uppercase tracking-[0.22em] text-[#050505]/55">
-          Portfolio opening
-        </p>
         <h1
           className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[clamp(2.4rem,7vw,7rem)] font-semibold leading-[0.98] tracking-normal"
           aria-label="Hello, I’m Sukunsh welcome to my visual world."

@@ -5,9 +5,14 @@ import {defineConfig} from 'vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  assetsInclude: ['**/*.glb'],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
     },
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
   },
 });

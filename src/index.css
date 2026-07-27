@@ -37,7 +37,7 @@
 
 @font-face {
   font-family: "Clash Display Local";
-  src: url("/fonts/ClashDisplay-Semibold.otf") format("opentype");
+  src: url("/fonts/ClashDisplay-Regular.otf") format("opentype");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -45,7 +45,7 @@
 
 @font-face {
   font-family: "Clash Display Local";
-  src: url("/fonts/ClashDisplay-Bold.otf") format("opentype");
+  src: url("/fonts/ClashDisplay-Regular.otf") format("opentype");
   font-weight: 700 900;
   font-style: normal;
   font-display: swap;
@@ -118,6 +118,12 @@
   --font-francois: "Francois One Local", "Arial Narrow", Impact, sans-serif;
   --font-shoulders: "Big Shoulders Display", sans-serif;
 
+  --font-weight-medium: 400;
+  --font-weight-semibold: 400;
+  --font-weight-bold: 400;
+  --font-weight-extrabold: 400;
+  --font-weight-black: 400;
+
   /* Restore standard neutral scale in Tailwind v4 for instant clean white tone styling */
   --color-neutral-50: #fafafa;
   --color-neutral-100: #f4f4f5;
@@ -184,8 +190,14 @@ html {
 h1,
 h2,
 h3,
-h4 {
+h4,
+h5,
+h6,
+strong,
+b,
+th {
   text-transform: none !important;
+  font-weight: 400 !important;
 }
 
 .main,
@@ -271,13 +283,13 @@ header *,
 
 .loader-tittle-source {
   background: #050505;
-  border-radius: 0.015em;
+  border-radius: 0px;
   display: block;
   height: 0.125em;
   left: 50%;
   pointer-events: none;
   position: absolute;
-  top: 0.12em;
+  top: 0.13em;
   transform: translate(-50%, -50%);
   width: 0.125em;
   z-index: 2;
@@ -285,14 +297,14 @@ header *,
 
 .loader-i-stem {
   background: currentColor;
-  border-radius: 999px;
+  border-radius: 0px;
   bottom: 0.05em;
   display: block;
-  height: 0.56em;
+  height: 0.565em;
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
-  width: 0.115em;
+  width: 0.122em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -489,7 +501,7 @@ header *,
 
 .svg-stage {
   align-items: center;
-  background: #050505;
+  background: transparent;
   display: flex;
   aspect-ratio: 1358.17 / 730.78;
   height: auto;
@@ -497,8 +509,8 @@ header *,
   min-height: 0;
   overflow: visible;
   position: relative;
-  transform: translateY(4vh);
-  width: min(146vw, 1960px, calc((100svh - 8px) * 2.05));
+  transform: translateY(var(--svg-y-offset, 4vh));
+  width: calc(min(185vw, 2480px, calc((100svh - 64px) * 1.858)) * var(--svg-scale-multiplier, 1.15));
 }
 
 .hero-scroll-base {
@@ -532,7 +544,7 @@ header *,
 .horizontal-intro__text {
   display: flex;
   font-size: clamp(3rem, 10vw, 12rem);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.05;
   margin: 0;
   padding-left: 100vw;
@@ -548,9 +560,9 @@ header *,
 }
 
 .about-mist {
-  background: #f4f1e8;
-  color: #14120f;
-  min-height: 100svh;
+  background: #ffffff;
+  color: #000000;
+  min-height: 90svh;
   overflow: hidden;
   position: relative;
 }
@@ -566,7 +578,7 @@ header *,
 .about-mist__eyebrow {
   color: rgba(20, 18, 15, 0.54);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.12em;
   margin: 0 0 22px;
   text-transform: none;
@@ -576,7 +588,7 @@ header *,
   display: flex;
   flex-wrap: wrap;
   font-size: clamp(2.5rem, 7vw, 8.4rem);
-  font-weight: 600;
+  font-weight: 400;
   gap: 0.12em 0.24em;
   letter-spacing: -0.02em;
   line-height: 0.98;
@@ -666,7 +678,13 @@ header *,
 }
 
 .svg-stage #Layer_38 rect {
-  fill: #050505 !important;
+  fill: none !important;
+}
+
+.svg-stage #Sukunsh {
+  transform: scale(var(--sukunsh-scale, 0.88));
+  transform-box: fill-box;
+  transform-origin: center center;
 }
 
 .svg-stage text,
@@ -685,7 +703,7 @@ header *,
 .svg-stage #Layer_148 text,
 .svg-stage #Layer_148 tspan {
   fill: rgba(255, 255, 255, 0.96) !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
 }
 
 .beetle-wrap {
@@ -730,7 +748,7 @@ header *,
   transform-origin: center center;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .svg-stage {
     align-items: center;
     display: flex;
@@ -739,8 +757,8 @@ header *,
     justify-content: center;
     margin-bottom: 0 !important;
     overflow: visible;
-    transform: translateY(4vh);
-    width: min(140vw, calc((100svh - 16px) * 1.98)) !important;
+    transform: translateY(calc(8vh + var(--svg-y-offset, 4vh))) !important;
+    width: calc(min(162vw, calc((100svh - 40px) * 1.858)) * var(--svg-scale-multiplier, 1.15)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
@@ -761,7 +779,7 @@ header *,
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   html,
   body {
     overflow-x: hidden;
@@ -801,35 +819,32 @@ header *,
 
   .hero-art {
     margin: 0 auto;
-    max-width: 460px;
+    max-width: none;
     position: relative;
     bottom: auto;
     left: auto;
     transform: none;
-    width: 90vw;
+    width: 100%;
     z-index: 2;
   }
 
   .svg-stage {
-    aspect-ratio: auto !important;
+    aspect-ratio: 1358.17 / 730.78 !important;
     height: auto;
     min-height: 0;
     margin-bottom: 0 !important;
     overflow: visible;
-    transform: none;
-    width: 100% !important;
+    transform: translateY(calc(6vh + var(--svg-y-offset, 4vh))) !important;
+    width: calc(min(175vw, calc((100svh - 40px) * 1.858)) * var(--svg-scale-multiplier, 1.15)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
     height: auto !important;
-    max-width: 460px;
-    transform: none;
-    transform-origin: center center;
-    width: 96vw !important;
+    max-width: none;
+    width: 100% !important;
   }
 
   .svg-stage #Sukunsh {
-    opacity: 0.16;
     transform-box: fill-box;
     transform-origin: center center;
   }
@@ -842,11 +857,6 @@ header *,
   .svg-stage #Layer_148 text,
   .svg-stage #Layer_148 tspan {
     font-size: 10px !important;
-  }
-
-  .svg-stage #Layer_147,
-  .svg-stage #Layer_148 {
-    display: none;
   }
 
   .beetle-wrap {
@@ -926,9 +936,9 @@ header *,
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .svg-stage > svg:not(.beetle-svg) {
-    max-width: 430px;
+    max-width: 540px;
     width: 98vw !important;
   }
 
@@ -942,9 +952,175 @@ header *,
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 480px) {
   .svg-stage > svg:not(.beetle-svg) {
-    max-width: 390px;
+    max-width: 480px;
     width: 98vw !important;
   }
 }
+
+/* Verbatim CSS applied for focus element matching selector 3 in Focus Mode */
+div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div#smooth-wrapper:nth-of-type(1) > div#smooth-content:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1) > g#Layer_38:nth-of-type(1) > rect:nth-of-type(1) {
+  height: 785.8px;
+  margin-right: 5px;
+  margin-left: 5px;
+  padding-right: 4px;
+  font-size: 15px;
+  width: 1730.2px;
+}
+
+/* ==========================================
+   GSAP ScrollSmoother Demo Styles
+   ========================================== */
+
+@font-face {
+  font-display: block;
+  font-family: "Mori";
+  font-style: normal;
+  font-weight: 400;
+  src: url("https://assets.codepen.io/16327/PPMori-Regular.woff") format("woff");
+}
+
+.scroll-showcase {
+  font-family: "Mori", sans-serif;
+  color: rgb(255, 252, 225);
+  background: #111;
+  font-size: 24px;
+}
+
+.scroll-showcase svg {
+  overflow: visible !important;
+}
+
+.scroll-showcase .parallax-section {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  top: 0;
+  padding: 0 1rem;
+  transform-origin: center top;
+}
+
+.scroll-showcase .parallax-image {
+  height: 200vh;
+  width: 100%;
+  object-fit: cover;
+  will-change: transform;  
+}
+
+.scroll-showcase .logo-section {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+}
+
+.scroll-showcase .logo-section svg {
+  width: 60%;
+}
+
+.scroll-showcase .grid-section {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.scroll-showcase .grid-layout {
+  display: flex;
+  display: grid;
+  height: 100%;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 1rem;
+  transform-origin: center top;
+}
+
+.scroll-showcase .column {
+  height: 100%;
+}
+
+.scroll-showcase .column-content {
+  display: grid;
+  grid-template-rows: 45vh 45vh 45vh;
+  grid-gap: 1rem;
+  height: 100%;
+}
+
+.scroll-showcase .grid-image {
+  width: 100%;
+  position: relative;
+  display: block;
+}
+
+.scroll-showcase .grid-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scroll-showcase .pin-section {
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-row-gap: 1.5rem;
+  grid-template-rows: 1fr 1fr;
+  padding: 2.5rem 0;
+}
+
+.scroll-showcase .pin-content {
+  display: flex !important;
+  gap: 1.5rem;
+  width: max-content;
+  height: 100%;
+  will-change: transform;
+  padding: 0 1.5rem;
+}
+
+.scroll-showcase .pin-box {
+  height: 100%;
+  aspect-ratio: 9 / 16;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.scroll-showcase .pin-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scroll-showcase .spacer {
+  height: 25vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-showcase .scroll-letter {
+  fill: #fff !important;
+}
+
+.scroll-showcase .smoother-letter,
+.scroll-showcase #mouse-wheel {
+  fill: #88ce02 !important;
+}
+
+.scroll-showcase .by-greensock-letter {
+  fill: #fff !important;
+  opacity: 0.6;
+}
+
+.scroll-showcase #mouse-outline {
+  fill: none !important;
+  stroke: #fff !important;
+  stroke-miterlimit: 10;
+  stroke-width: 13px !important;
+}
+
