@@ -1124,3 +1124,25 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
   stroke-width: 13px !important;
 }
 
+.footer-artwork svg {
+  display: block;
+  height: 100%;
+  overflow: visible;
+  width: 100%;
+}
+
+.footer-artwork .botanical-piece {
+  transform-box: fill-box;
+  transition: transform 180ms ease-out;
+  will-change: transform;
+}
+
+.footer-artwork .botanical-stem {
+  transform-origin: 50% 100%;
+}
+
+.footer-artwork .botanical-leaf,
+.footer-artwork .botanical-flower {
+  transform-origin: 50% 100%;
+}
+
