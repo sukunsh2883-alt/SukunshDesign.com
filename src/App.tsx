@@ -148,8 +148,7 @@ export default function App() {
     isAIWorkExplorerOpen || 
     isResumeOpen || 
     isAboutMeOpen || 
-    isGitHubExplorerOpen || 
-    !!selectedDesignProject;
+    isGitHubExplorerOpen;
 
   const closePortals = () => {
     setIsProjectsExplorerOpen(false);
@@ -158,6 +157,7 @@ export default function App() {
     setIsAboutMeOpen(false);
     setIsScrollShowcaseOpen(false);
     setIsGitHubExplorerOpen(false);
+    setSelectedDesignProject(null);
   };
 
   const openPortal = (portal: "projects" | "ai-work" | "resume" | "about" | "scroll-demo" | "github") => {
@@ -190,12 +190,44 @@ export default function App() {
 
   useEffect(() => {
     const handlePopState = () => {
+      const match = window.location.pathname.match(/^\/project\/(.+)$/);
+      if (match) {
+        const projectId = decodeURIComponent(match[1]);
+        const matchedProject = designs.find((item) => item.id === projectId);
+        if (matchedProject) {
+          setSelectedDesignProject(matchedProject);
+          setIsProjectsExplorerOpen(false);
+          setIsAIWorkExplorerOpen(false);
+          setIsResumeOpen(false);
+          setIsAboutMeOpen(false);
+          setIsScrollShowcaseOpen(false);
+          setIsGitHubExplorerOpen(false);
+          return;
+        }
+      }
       closePortals();
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [designs]);
+
+  useEffect(() => {
+    const match = window.location.pathname.match(/^\/project\/(.+)$/);
+    if (!match) return;
+
+    const projectId = decodeURIComponent(match[1]);
+    const matchedProject = designs.find((item) => item.id === projectId);
+    if (matchedProject) {
+      setSelectedDesignProject(matchedProject);
+      setIsProjectsExplorerOpen(false);
+      setIsAIWorkExplorerOpen(false);
+      setIsResumeOpen(false);
+      setIsAboutMeOpen(false);
+      setIsScrollShowcaseOpen(false);
+      setIsGitHubExplorerOpen(false);
+    }
+  }, [designs]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -203,16 +235,16 @@ export default function App() {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     const isMobile = window.innerWidth < 768;
-    if (reduceMotion || isTouch || isMobile) return;
+    if (reduceMotion || isTouch || isMobile || selectedDesignProject) return;
 
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
     const smoother = ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
-      smooth: 2,
-      speed: isScrollShowcaseOpen ? 2 : 1.2,
+      smooth: 1.65,
+      speed: isScrollShowcaseOpen ? 1.35 : 1,
       effects: true,
-      smoothTouch: 0.1,
+      smoothTouch: 0.35,
       normalizeScroll: false,
       ignoreMobileResize: true,
     });
@@ -229,7 +261,7 @@ export default function App() {
       smoother.kill();
       smootherRef.current = null;
     };
-  }, [isLoading, isScrollShowcaseOpen]);
+  }, [isLoading, isScrollShowcaseOpen, selectedDesignProject]);
 
   // Handle scroll lock and smoother pause when overlays are active
   useEffect(() => {
@@ -329,6 +361,8 @@ export default function App() {
       openPortal("about");
     } else if (targetId === "#github") {
       openPortal("github");
+    } else if (targetId === "#ai-work" || targetId === "#showreel") {
+      openPortal("ai-work");
     } else {
       // Small delay to allow any transition state to settle, then scroll to section
       setTimeout(() => {
@@ -402,6 +436,14 @@ export default function App() {
 
   const handleSelectProject = (project: DesignProject) => {
     setSelectedDesignProject(project);
+    setIsProjectsExplorerOpen(false);
+    setIsAIWorkExplorerOpen(false);
+    setIsResumeOpen(false);
+    setIsAboutMeOpen(false);
+    setIsScrollShowcaseOpen(false);
+    setIsGitHubExplorerOpen(false);
+    window.history.pushState({ projectId: project.id }, "", `/project/${encodeURIComponent(project.id)}`);
+    window.scrollTo({ top: 0 });
   };
 
   const handleAddFilm = (newFilm: AIFilm) => {
@@ -429,6 +471,21 @@ export default function App() {
             transition={{ duration: 0.8 }}
             className="flex flex-col min-h-screen"
           >
+            {selectedDesignProject ? (
+              <ProjectCaseStudy
+                project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
+                allProjects={designs}
+                onClose={() => {
+                  setSelectedDesignProject(null);
+                  window.history.pushState({}, "", "/");
+                  window.setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 0);
+                }}
+                onUpdateProject={(updatedProj) => {
+                  setDesigns((prev) => prev.map(p => p.id === updatedProj.id ? updatedProj : p));
+                }}
+              />
+            ) : (
+            <>
             {/* Header Floating navigation bar */}
             {!isScrollShowcaseOpen && (
               <Navbar 
@@ -459,7 +516,9 @@ export default function App() {
                     <ScrollShowcase
                       onClose={() => setIsScrollShowcaseOpen(false)}
                       onOpenProjects={() => openPortal("projects")}
+                      onOpenAIWork={() => openPortal("ai-work")}
                       designs={designs}
+                      profile={profileState}
                       onSelectProject={handleSelectProject}
                       onOpenVideo={(videoUrl, title) => {
                         setLightbox({
@@ -487,8 +546,10 @@ export default function App() {
                         <ScrollShowcase
                           isInline={true}
                           designs={designs}
+                          profile={profileState}
                           onSelectProject={handleSelectProject}
                           onOpenProjects={() => openPortal("projects")}
+                          onOpenAIWork={() => openPortal("ai-work")}
                           onOpenVideo={(videoUrl, title) => {
                             setLightbox({
                               isOpen: true,
@@ -614,19 +675,8 @@ export default function App() {
               )}
             </AnimatePresence>
 
-            {/* Dynamic Fullscreen Case Study Overlay */}
-            <AnimatePresence>
-              {selectedDesignProject && (
-                <ProjectCaseStudy
-                  project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
-                  allProjects={designs}
-                  onClose={() => setSelectedDesignProject(null)}
-                  onUpdateProject={(updatedProj) => {
-                    setDesigns((prev) => prev.map(p => p.id === updatedProj.id ? updatedProj : p));
-                  }}
-                />
-              )}
-            </AnimatePresence>
+            </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

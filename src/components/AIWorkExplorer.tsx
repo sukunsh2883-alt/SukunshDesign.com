@@ -217,15 +217,19 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
             {selectedTab === "film" && (
               <div className="w-full">
                 {filteredFilms.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="space-y-10">
                     {filteredFilms.map((film) => {
                       return (
-                        <div
+                        <motion.article
                           key={film.id}
+                          initial={{ opacity: 0, y: 90, scale: 0.96 }}
+                          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                          viewport={{ once: false, amount: 0.45 }}
+                          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
                           onClick={() => {
                             setActivePlayingId(film.id);
                           }}
-                          className="group relative aspect-[4/5] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 cursor-pointer"
+                          className="group relative flex min-h-[86vh] cursor-pointer items-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950"
                         >
                           <video
                             src={film.videoUrl}
@@ -236,10 +240,10 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                             playsInline
                             preload="auto"
                             aria-label={film.title}
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
                           />
-                          <div className="absolute inset-0 bg-linear-to-t from-black via-black/35 to-transparent" />
-                          <div className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-black">
+                          <div className="absolute inset-0 bg-linear-to-r from-black via-black/45 to-transparent" />
+                          <div className="absolute left-6 top-6 rounded-full bg-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-black">
                             AI Film
                           </div>
                           <div className="absolute inset-0 flex items-center justify-center">
@@ -247,15 +251,18 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                               <Play className="h-5 w-5 translate-x-0.5 fill-black" />
                             </div>
                           </div>
-                          <div className="absolute inset-x-0 bottom-0 p-5">
-                            <h2 className="font-sans text-xl font-black uppercase leading-tight text-white">
-                              {film.title}
-                            </h2>
-                            <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-neutral-300">
+                          <div className="relative z-10 max-w-2xl p-7 md:p-12">
+                            <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.35em] text-neutral-300">
                               {film.year} / {film.category}
                             </p>
+                            <h2 className="font-sans text-4xl font-black uppercase leading-[0.95] text-white md:text-7xl">
+                              {film.title}
+                            </h2>
+                            <p className="mt-6 max-w-md text-base leading-relaxed text-neutral-200">
+                              {film.description}
+                            </p>
                           </div>
-                        </div>
+                        </motion.article>
                       );
                     })}
                   </div>

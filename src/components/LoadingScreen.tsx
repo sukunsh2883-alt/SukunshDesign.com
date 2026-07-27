@@ -16,9 +16,19 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const tittleSourceRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
+    let completed = false;
+    const finish = () => {
+      if (completed) return;
+      completed = true;
+      onComplete();
+    };
+    const fallbackTimer = window.setTimeout(finish, 4200);
+
     const loader = loaderRef.current;
     const tittleSource = tittleSourceRef.current;
-    if (!loader || !tittleSource) return;
+    if (!loader || !tittleSource) {
+      return () => window.clearTimeout(fallbackTimer);
+    }
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -46,7 +56,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       };
 
       if (reduceMotion) {
-        gsap.timeline({ onComplete })
+        gsap.timeline({ onComplete: finish })
           .to(loader, { opacity: 0, duration: 0.5, ease: "power2.out" });
         return;
       }
@@ -63,7 +73,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       const timeline = gsap.timeline({
         defaults: { ease: "power3.out" },
-        onComplete,
+        onComplete: finish,
       });
 
       timeline
@@ -120,7 +130,10 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       return () => window.removeEventListener("resize", handleResize);
     }, loader);
 
-    return () => ctx.revert();
+    return () => {
+      window.clearTimeout(fallbackTimer);
+      ctx.revert();
+    };
   }, [onComplete]);
 
   return (
