@@ -142,6 +142,10 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#f4f1e8] px-6 text-[#050505]"
       aria-label="Loading portfolio"
     >
+      <div className="loader-frame" aria-hidden="true">
+        <div className="loader-liquid-border" />
+        <div className="loader-side-fill" />
+      </div>
       <div className="loader-copy relative z-10 mx-auto max-w-[1180px] text-center">
         <h1
           className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[clamp(2.4rem,7vw,7rem)] font-semibold leading-[0.98] tracking-normal"
@@ -175,6 +179,9 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             </span>
           ))}
         </h1>
+      </div>
+      <div className="loader-status" aria-hidden="true">
+        Loading portfolio
       </div>
     </div>
   );

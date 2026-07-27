@@ -293,7 +293,7 @@ export default function ScrollShowcase({
 
           <div
             ref={aboutStageRef}
-            className="folio-reveal relative h-[560px] min-h-[70vh] w-full touch-none lg:col-span-5 lg:h-[720px] lg:min-h-0"
+            className="folio-reveal relative h-[560px] min-h-[70vh] w-full touch-none lg:absolute lg:inset-0 lg:z-20 lg:h-full lg:min-h-0"
             aria-label="Interactive Sukunsh identity card"
           >
             <Lanyard
@@ -303,11 +303,11 @@ export default function ScrollShowcase({
               frontImage={portraitImage}
               backImage={portraitImage}
               imageFit="cover"
-              lanyardWidth={1}
-              anchorX={0}
-              strapLength={1}
-              damping={4}
-              cardWeight={0.9}
+              lanyardWidth={0.86}
+              strapLength={0.74}
+              springStrength={0.86}
+              damping={2.8}
+              cardWeight={0.68}
             />
           </div>
         </div>

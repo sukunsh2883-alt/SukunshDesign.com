@@ -684,9 +684,9 @@ function Band({
     () =>
       new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 4.2, 0),
-        new THREE.Vector3(0, 3.1, 0),
-        new THREE.Vector3(0, 2.0, 0),
-        new THREE.Vector3(0, 0.9, 0),
+        new THREE.Vector3(0, 4.2 - strapLength, 0),
+        new THREE.Vector3(0, 4.2 - strapLength * 2, 0),
+        new THREE.Vector3(0, 4.2 - strapLength * 3, 0),
       ])
   );
   const [dragged, drag] = useState<THREE.Vector3 | false>(false);
@@ -779,9 +779,9 @@ function Band({
 
       // Construct continuous single vertical strap line
       const fixedP = fixed.current?.translation() || new THREE.Vector3(anchorX, 4.2, 0);
-      const j1P = j1.current?.lerped || j1.current?.translation() || new THREE.Vector3(anchorX, 3.1, 0);
-      const j2P = j2.current?.lerped || j2.current?.translation() || new THREE.Vector3(anchorX, 2.0, 0);
-      const j3P = j3.current?.translation() || new THREE.Vector3(anchorX, 0.9, 0);
+      const j1P = j1.current?.lerped || j1.current?.translation() || new THREE.Vector3(anchorX, 4.2 - strapLength, 0);
+      const j2P = j2.current?.lerped || j2.current?.translation() || new THREE.Vector3(anchorX, 4.2 - strapLength * 2, 0);
+      const j3P = j3.current?.translation() || new THREE.Vector3(anchorX, 4.2 - strapLength * 3, 0);
 
       curve.points[0].copy(fixedP);
       curve.points[1].copy(j1P);
@@ -860,16 +860,16 @@ function Band({
           <meshStandardMaterial color="#d4d4d8" metalness={0.95} roughness={0.15} />
         </mesh>
 
-        <RigidBody position={[0, -1.1, 0]} ref={j1} {...segmentProps}>
+        <RigidBody position={[0, -strapLength, 0]} ref={j1} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -2.2, 0]} ref={j2} {...segmentProps}>
+        <RigidBody position={[0, -strapLength * 2, 0]} ref={j2} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -3.3, 0]} ref={j3} {...segmentProps}>
+        <RigidBody position={[0, -strapLength * 3, 0]} ref={j3} {...segmentProps}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[0, -4.58, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
+        <RigidBody position={[0, -(strapLength * 3 + 1.28), 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
           <CuboidCollider args={[0.65, 0.98, 0.015]} />
           <group
             position={[0, 0, 0]}
