@@ -90,8 +90,8 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
       el.style.pointerEvents = "auto";
 
       const phase = index * 0.41;
-      const speed = role === "stem" ? 0.65 : role === "flower" ? 0.82 : 0.74;
-      const strength = role === "stem" ? 0.65 : role === "flower" ? 1 : 0.82;
+      const speed = role === "stem" ? 0.72 : role === "flower" ? 0.95 : 0.84;
+      const strength = role === "stem" ? 0.78 : role === "flower" ? 1.18 : 0.96;
 
       const hoverIn = () => hoveredPieces.add(el);
       const hoverOut = () => hoveredPieces.delete(el);
@@ -146,42 +146,42 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
 
       for (let i = 0; i < pieces.length; i += 1) {
         const piece = pieces[i];
-        const drift = Math.sin(time * 0.32 + piece.phase * 0.58);
+        const drift = Math.sin(time * 0.3 + piece.phase * 0.58);
         const flutter = Math.sin(time * piece.speed + piece.phase);
-        const lift = Math.cos(time * (piece.speed * 0.9) + piece.phase * 1.35);
-        const twist = Math.sin(time * (piece.speed * 0.72) + piece.phase * 0.88);
+        const lift = Math.cos(time * (piece.speed * 0.88) + piece.phase * 1.35);
+        const twist = Math.sin(time * (piece.speed * 0.7) + piece.phase * 0.88);
 
-        const waveX = drift * (2.4 + piece.strength * 1.9) + flutter * (2.2 + piece.strength * 1.8);
+        const waveX = drift * (3.2 + piece.strength * 2.7) + flutter * (2.8 + piece.strength * 2.1);
         const waveY =
-          lift * (1.6 + piece.strength * 1.5) + Math.sin(time * 0.44 + piece.phase) * (0.7 + piece.strength * 0.5);
-        const waveR = twist * (2.8 + piece.strength * 3.2);
+          lift * (2.2 + piece.strength * 1.7) + Math.sin(time * 0.44 + piece.phase) * (1.1 + piece.strength * 0.65);
+        const waveR = twist * (4.2 + piece.strength * 3.8);
 
         let tx = waveX;
         let ty = waveY;
         let rot = waveR;
-        let scale = 1 + Math.sin(time * 0.4 + piece.phase * 0.7) * 0.008;
+        let scale = 1 + Math.sin(time * 0.4 + piece.phase * 0.7) * 0.012;
 
         if (pointer) {
           const dx = piece.cx - pointer.x;
           const dy = piece.cy - pointer.y;
           const distance = Math.max(1, Math.hypot(dx, dy));
-          const influence = Math.max(0, 1 - distance / 190);
+          const influence = Math.max(0, 1 - distance / 200);
 
           if (influence > 0) {
-            const awayX = (dx / distance) * influence * (9 + piece.strength * 4.5);
-            const awayY = (dy / distance) * influence * (7 + piece.strength * 3.4);
+            const awayX = (dx / distance) * influence * (11 + piece.strength * 5.5);
+            const awayY = (dy / distance) * influence * (8 + piece.strength * 4.2);
             tx += awayX;
             ty += awayY;
-            rot += (dx / distance) * influence * (5.2 + piece.strength * 2.1);
-            scale += influence * 0.03;
+            rot += (dx / distance) * influence * (6.4 + piece.strength * 2.6);
+            scale += influence * 0.04;
           }
         }
 
         if (hoveredPieces.has(piece.el)) {
           const pulse = 1 + Math.sin(time * 3.2 + piece.phase) * 0.015;
-          tx += Math.sin(time * 1.8 + piece.phase) * (1.6 + piece.strength * 1.2);
-          ty += Math.cos(time * 1.5 + piece.phase) * (1.2 + piece.strength * 1.1);
-          rot += Math.sin(time * 1.6 + piece.phase) * (2.4 + piece.strength * 0.9);
+          tx += Math.sin(time * 1.8 + piece.phase) * (2 + piece.strength * 1.6);
+          ty += Math.cos(time * 1.5 + piece.phase) * (1.8 + piece.strength * 1.3);
+          rot += Math.sin(time * 1.6 + piece.phase) * (3.4 + piece.strength * 1.1);
           scale *= pulse;
         }
 
@@ -219,6 +219,18 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
       <div className="absolute inset-0 bg-[#111111]" />
       <div ref={artworkRef} className="footer-artwork absolute inset-0 z-10 overflow-hidden" aria-hidden="true">
         {artworkMarkup ? <div className="h-full w-full" dangerouslySetInnerHTML={{ __html: artworkMarkup }} /> : null}
+      </div>
+
+      <div className="absolute left-1/2 top-[24%] z-20 -translate-x-1/2 text-center">
+        <div className="text-[clamp(2.5rem,4vw,4.25rem)] font-normal leading-none text-[#f3f4f4]">
+          Let&apos;s Talk
+        </div>
+        <a
+          href={`mailto:${profile?.email || "Sukunsh2883@gmail.com"}`}
+          className="mt-4 inline-flex text-sm font-medium tracking-[0.18em] text-[#cfcfcf] transition-colors hover:text-white sm:text-base"
+        >
+          {profile?.email || "Sukunsh2883@gmail.com"}
+        </a>
       </div>
 
       <button
