@@ -35,11 +35,6 @@ export default function Navbar({
       return;
     }
 
-    if (href === "#about-me-modal" && onNavigate) {
-      onNavigate("#about-me-modal");
-      return;
-    }
-
     if (onNavigate) {
       onNavigate(href);
       return;
@@ -82,8 +77,8 @@ export default function Navbar({
     {
       label: "About Me",
       ariaLabel: "About Sukunsh",
-      link: "#about-me-modal",
-      onClick: () => handleNavClick("#about-me-modal"),
+      link: "#about",
+      onClick: () => handleNavClick("#about"),
     },
     {
       label: "Hire me",
@@ -114,7 +109,7 @@ export default function Navbar({
         position="right"
         isFixed={true}
         logoText={`${profile?.brandName || "Sukunsh"}.`}
-        onLogoClick={() => onNavigate?.("#about-me-modal")}
+        onLogoClick={() => handleNavClick("#home")}
         items={menuItems}
         socialItems={socialItems}
         displaySocials={true}

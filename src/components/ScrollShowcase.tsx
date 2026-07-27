@@ -211,7 +211,7 @@ export default function ScrollShowcase({
         </nav>
       )}
 
-      <section className="relative min-h-screen overflow-hidden border-b border-neutral-100 bg-white px-5 py-16 sm:px-8 md:px-14 md:py-20">
+      <section id="about" className="relative min-h-screen overflow-hidden border-b border-neutral-100 bg-white px-5 py-16 sm:px-8 md:px-14 md:py-20">
         <div className="absolute inset-x-6 top-14 bottom-14 z-0 hidden md:block">
           <ShapeGrid
             direction="diagonal"

@@ -441,12 +441,12 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               Home
             </a>
             <a
-              href="#about-me-modal"
+              href="#about"
               onClick={(e) => {
                 e.preventDefault();
-                const aboutItem = items.find((i) => i.link === "#about-me-modal");
+                const aboutItem = items.find((i) => i.link === "#about");
                 if (aboutItem?.onClick) aboutItem.onClick();
-                else document.getElementById("about-me-modal")?.scrollIntoView({ behavior: "smooth" });
+                else document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
               }}
               className="text-white/80 hover:text-white transition-colors"
             >
@@ -468,7 +468,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               href="#contact"
               onClick={(e) => {
                 e.preventDefault();
-                const contactItem = items.find((i) => i.link === "#contact") || items.find((i) => i.link === "#about-me-modal");
+                const contactItem = items.find((i) => i.link === "#contact");
                 if (contactItem?.onClick) contactItem.onClick();
                 else document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
               }}

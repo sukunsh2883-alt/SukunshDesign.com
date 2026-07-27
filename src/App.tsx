@@ -343,6 +343,10 @@ export default function App() {
     // Close all active portal view states
     closePortals();
 
+    if (targetId === "#about" && window.location.hash !== targetId) {
+      window.history.pushState(null, "", targetId);
+    }
+
     if (targetId === "#projects" || targetId === "#scroll-demo") {
       setTimeout(() => {
         const element = document.getElementById("scroll-demo");
@@ -381,12 +385,22 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    if (isLoading || window.location.hash !== "#about") return;
+
+    const timeout = window.setTimeout(() => {
+      document.getElementById("about")?.scrollIntoView({ behavior: "auto", block: "start" });
+    }, 100);
+
+    return () => window.clearTimeout(timeout);
+  }, [isLoading]);
+
   // Track active visual section via scroll listener
   useEffect(() => {
     if (isLoading) return;
 
     const handleScroll = () => {
-      const sections = ["home", "scroll-demo", "contact"];
+      const sections = ["home", "about", "scroll-demo", "contact"];
       const triggerY = window.innerHeight * 0.35; // 35% down the screen
       
       let currentSection = "home";
@@ -502,7 +516,7 @@ export default function App() {
                 onOpenProjects={() => handleNavigate("#projects")}
                 onOpenAIWork={() => handleNavigate("#ai-work")}
                 onOpenResume={() => handleNavigate("#full-resume")}
-                onOpenAboutMe={() => handleNavigate("#about-me-modal")}
+                onOpenAboutMe={() => handleNavigate("#about")}
                 onOpenGitHub={() => handleNavigate("#github")}
               />
             )}
