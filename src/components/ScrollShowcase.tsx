@@ -50,8 +50,6 @@ export default function ScrollShowcase({
   const film = aiFilms[filmIndex % aiFilms.length];
   const reelItems = Array.from({ length: 10 }, (_, index) => aiFilms[index % aiFilms.length]);
   const portraitImage =
-    profile?.aboutImageSecondary ||
-    profile?.aboutImage ||
     "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
   useEffect(() => {
@@ -299,7 +297,7 @@ export default function ScrollShowcase({
             aria-label="Interactive Sukunsh identity card"
           >
             <Lanyard
-              position={[0, 0, 16]}
+              position={[0, 0, 13.5]}
               gravity={[0, -40, 0]}
               fov={22}
               frontImage={portraitImage}

@@ -31,14 +31,14 @@ function createDefaultLanyardTexture(): string {
   ctx.lineWidth = 6;
   ctx.strokeRect(0, 8, 2048, 240);
 
-  // Repeating white "SUKANSH ✦" pattern along the strap
+  // Repeating white "SUKUNSH" pattern along the strap
   ctx.font = '900 44px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   for (let x = 140; x < 2048; x += 360) {
     ctx.fillStyle = '#f4f4f5';
-    ctx.fillText('SUKANSH', x, 128);
+    ctx.fillText('SUKUNSH', x, 128);
 
     ctx.fillStyle = '#71717a';
     ctx.fillText('✦', x + 180, 128);
@@ -135,7 +135,7 @@ function createDefaultFrontCard(): string {
   ctx.fillStyle = flare;
   ctx.fillRect(px, py, pw, ph);
 
-  // Stylized Portrait Illustration (Sukansh - Visual Designer)
+  // Stylized Portrait Illustration (Sukunsh - Visual Designer)
   const cx = px + pw / 2;
   const cy = py + ph / 2;
 
@@ -213,7 +213,7 @@ function createDefaultFrontCard(): string {
   ctx.fillStyle = '#0a0a0c';
   ctx.font = '900 42px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('SUKANSH', 300, 605);
+  ctx.fillText('SUKUNSH', 300, 605);
 
   ctx.fillStyle = '#71717a';
   ctx.font = '700 18px sans-serif';
@@ -238,7 +238,7 @@ function createDefaultFrontCard(): string {
 
   ctx.fillStyle = '#a1a1aa';
   ctx.font = '600 13px monospace';
-  ctx.fillText('ID-982026 • SUKANSH.DESIGN', 300, 775);
+  ctx.fillText('ID-982026 • SUKUNSH.DESIGN', 300, 775);
 
   return canvas.toDataURL();
 }
@@ -258,7 +258,7 @@ function createDefaultBackCard(): string {
   ctx.fillStyle = '#0a0a0c';
   ctx.font = '900 52px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('SUKANSH', 300, 430);
+  ctx.fillText('SUKUNSH', 300, 430);
 
   ctx.fillStyle = '#71717a';
   ctx.font = '700 20px sans-serif';
@@ -581,7 +581,7 @@ function Band({
     const fW = W / 2; // 1024
     const fH = H;     // 2048
 
-    // Helper to draw written sequence background ("Sukansh")
+    // Helper to draw written sequence background ("Sukunsh")
     const drawWrittenSequence = (startX: number, width: number, height: number) => {
       ctx.save();
       ctx.fillStyle = '#e5e5eb';
@@ -592,7 +592,7 @@ function Band({
       for (let y = 100; y < height; y += 140) {
         const shift = (Math.floor(y / 140) % 2) * 120;
         for (let x = startX - 80 + shift; x < startX + width + 160; x += 320) {
-          ctx.fillText('Sukansh', x, y);
+          ctx.fillText('Sukunsh', x, y);
         }
       }
       ctx.restore();
@@ -646,7 +646,7 @@ function Band({
         ctx.font = '900 88px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('SUKANSH', fW / 2, 1780);
+        ctx.fillText('SUKUNSH', fW / 2, 1780);
       } else {
         ctx.drawImage(frontTex.image as HTMLImageElement, 0, 0, fW, fH);
       }
@@ -663,7 +663,7 @@ function Band({
     ctx.font = '900 110px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('SUKANSH', fW + fW / 2, fH / 2);
+    ctx.fillText('SUKUNSH', fW + fW / 2, fH / 2);
 
     if (backTex?.image && !frontImage) {
       ctx.drawImage(backTex.image as HTMLImageElement, fW, 0, fW, fH);
@@ -935,4 +935,3 @@ function Band({
     </>
   );
 }
-
