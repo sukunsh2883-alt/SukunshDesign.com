@@ -37,6 +37,11 @@ export default function ScrollShowcase({
   profile,
 }: ScrollShowcaseProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const aboutStageRef = useRef<HTMLDivElement | null>(null);
+  const projectSectionRef = useRef<HTMLElement | null>(null);
+  const projectTrackRef = useRef<HTMLDivElement | null>(null);
+  const aiFilmSectionRef = useRef<HTMLElement | null>(null);
+  const aiFilmCardRef = useRef<HTMLButtonElement | null>(null);
   const [filmIndex, setFilmIndex] = useState(0);
   const selectedProjects = (designs.length ? designs : []).slice(0, 3);
   const rollingProjects = [...selectedProjects, ...selectedProjects];
@@ -88,34 +93,49 @@ export default function ScrollShowcase({
       });
 
       gsap.fromTo(
-        ".project-roll-track",
-        { xPercent: 0 },
+        projectTrackRef.current,
+        { x: 0 },
         {
-          xPercent: -50,
+          x: () => {
+            const track = projectTrackRef.current;
+            const section = projectSectionRef.current;
+            if (!track || !section) return 0;
+            return -(track.scrollWidth - section.clientWidth);
+          },
           ease: "none",
           scrollTrigger: {
-            trigger: ".project-roll-section",
-            start: "top 75%",
-            end: "bottom 20%",
+            trigger: projectSectionRef.current || ".project-roll-section",
+            start: "top top",
+            end: () => {
+              const track = projectTrackRef.current;
+              const section = projectSectionRef.current;
+              if (!track || !section) return "+=1200";
+              return `+=${Math.max(track.scrollWidth - section.clientWidth + window.innerWidth * 0.8, 1200)}`;
+            },
             scrub: 1,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
           },
         },
       );
 
       gsap.fromTo(
-        ".ai-film-card",
-        { width: "100vw", maxWidth: "100vw", borderRadius: 0, xPercent: -8 },
+        aiFilmCardRef.current,
+        { scale: 1.18, y: 0, borderRadius: 0, transformOrigin: "center center" },
         {
-          width: "100%",
-          maxWidth: 900,
-          borderRadius: 0,
-          xPercent: 0,
+          scale: 1,
+          y: 0,
+          borderRadius: 28,
           ease: "none",
           scrollTrigger: {
-            trigger: ".ai-film-section",
-            start: "top 80%",
-            end: "top 10%",
+            trigger: aiFilmSectionRef.current || ".ai-film-section",
+            start: "top top",
+            end: "+=120%",
             scrub: 1,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
           },
         },
       );
@@ -240,19 +260,28 @@ export default function ScrollShowcase({
             </div>
           </div>
 
-          <div className="folio-reveal relative flex flex-col items-center justify-start pt-6 lg:col-span-5 lg:pt-0">
+          <div ref={aboutStageRef} className="folio-reveal relative flex flex-col items-center justify-start pt-6 lg:col-span-5 lg:pt-0">
             <motion.div
               className="relative flex origin-top select-none flex-col items-center"
-              animate={{ rotate: [-1.5, 1.5, -1.5] }}
-              transition={{ duration: 7, ease: "easeInOut", repeat: Infinity }}
+              animate={{ rotate: [-2, 2, -2], y: [0, -8, 0] }}
+              transition={{ duration: 8, ease: "easeInOut", repeat: Infinity }}
+              drag="y"
+              dragConstraints={aboutStageRef}
+              dragElastic={0.2}
+              whileDrag={{ scale: 1.03 }}
             >
-              <div className="relative z-10 flex h-28 w-7 flex-col items-center justify-around overflow-hidden rounded-t-sm bg-neutral-950 py-3 shadow-sm sm:h-36 sm:w-8">
+              <motion.div
+                className="relative z-10 flex h-[clamp(11rem,34vh,18rem)] w-8 flex-col items-center justify-around overflow-hidden rounded-t-sm bg-neutral-950 py-3 shadow-sm sm:w-9"
+                style={{ transformOrigin: "top center" }}
+                animate={{ scaleY: [1, 1.08, 1], scaleX: [1, 1.02, 1] }}
+                transition={{ duration: 5.5, ease: "easeInOut", repeat: Infinity }}
+              >
                 <div className="absolute inset-y-0 left-1 w-px bg-white/10" />
                 <div className="absolute inset-y-0 right-1 w-px bg-white/10" />
                 <span className="text-[10px] text-white opacity-90">✿</span>
                 <span className="text-[10px] text-white opacity-90">✿</span>
                 <span className="text-[10px] text-white opacity-90">✿</span>
-              </div>
+              </motion.div>
               <div className="relative z-20 -mt-0.5 flex flex-col items-center">
                 <div className="flex h-4 w-8 items-center justify-center rounded-sm border border-neutral-700 bg-neutral-900 shadow-md sm:w-9">
                   <div className="h-1 w-4 rounded-full bg-neutral-800" />
@@ -291,7 +320,7 @@ export default function ScrollShowcase({
         </div>
       </section>
 
-      <section className="project-roll-section min-h-[78vh] overflow-hidden bg-white px-4 py-12 sm:px-6 md:px-8 md:py-16">
+      <section ref={projectSectionRef} className="project-roll-section min-h-screen overflow-hidden bg-white px-4 py-12 sm:px-6 md:px-8 md:py-16">
         <div className="folio-reveal mb-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 text-2xl font-normal tracking-normal text-[#1f1f1e]">
           <span>Selected</span>
@@ -308,7 +337,7 @@ export default function ScrollShowcase({
           </button>
         </div>
 
-        <div className="project-roll-track flex w-max gap-4">
+        <div ref={projectTrackRef} className="project-roll-track flex w-max gap-4 will-change-transform">
           {rollingProjects.map((project, index) => {
             const item = getProject(index % Math.max(selectedProjects.length, 1));
             return (
@@ -346,7 +375,7 @@ export default function ScrollShowcase({
         </div>
       </section>
 
-      <section className="ai-film-section relative min-h-[118vh] bg-white px-5 py-8 sm:px-8 md:px-14 md:py-10">
+      <section ref={aiFilmSectionRef} className="ai-film-section relative min-h-[150vh] bg-white px-5 py-8 sm:px-8 md:px-14 md:py-10">
         <div className="sticky top-0 grid min-h-screen grid-cols-1 gap-10 py-10 md:grid-cols-[0.75fr_2fr] md:items-center">
           <div className="folio-reveal">
             <div className="h-px w-36 bg-neutral-700" />
@@ -358,9 +387,10 @@ export default function ScrollShowcase({
 
           <div className="folio-reveal w-full">
             <button
+              ref={aiFilmCardRef}
               type="button"
               onClick={openFilm}
-              className="ai-film-card group relative block aspect-[2.22] w-full max-w-[900px] overflow-hidden bg-neutral-200"
+              className="ai-film-card group relative block aspect-[2.22] w-full max-w-[900px] overflow-hidden rounded-[28px] bg-neutral-200"
             >
               <video
                 key={film?.id}
