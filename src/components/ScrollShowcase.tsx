@@ -375,9 +375,9 @@ export default function ScrollShowcase({
         </div>
       </section>
 
-      <section ref={aiFilmSectionRef} className="ai-film-section relative min-h-[150vh] bg-white px-5 py-8 sm:px-8 md:px-14 md:py-10">
-        <div className="sticky top-0 grid min-h-screen grid-cols-1 gap-10 py-10 md:grid-cols-[0.75fr_2fr] md:items-center">
-          <div className="folio-reveal">
+      <section ref={aiFilmSectionRef} className="ai-film-section relative min-h-[106vh] overflow-hidden bg-white px-5 py-0 sm:px-8 md:px-14">
+        <div className="sticky top-0 min-h-screen py-4 md:py-6">
+          <div className="absolute left-5 top-4 z-20 sm:left-8 md:left-14 md:top-6">
             <div className="h-px w-36 bg-neutral-700" />
             <div className="mt-2 flex items-center gap-1.5 text-3xl font-normal text-[#1f1f1e]">
               <span>AI Film</span>
@@ -385,12 +385,12 @@ export default function ScrollShowcase({
             </div>
           </div>
 
-          <div className="folio-reveal w-full">
+          <div className="folio-reveal flex min-h-[72vh] items-start justify-center pt-14 md:min-h-[68vh] md:pt-16">
             <button
               ref={aiFilmCardRef}
               type="button"
               onClick={openFilm}
-              className="ai-film-card group relative block aspect-[2.22] w-full max-w-[900px] overflow-hidden rounded-[28px] bg-neutral-200"
+              className="ai-film-card group relative block h-[100svh] w-[100vw] overflow-hidden rounded-none bg-neutral-200 md:h-[calc(100svh-5rem)] md:w-[calc(100vw-7rem)] md:max-w-[1180px] md:rounded-[28px]"
             >
               <video
                 key={film?.id}
@@ -401,7 +401,7 @@ export default function ScrollShowcase({
                 playsInline
                 autoPlay
                 preload="auto"
-                className="h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-90"
+                className="h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-90"
               />
               <span className="absolute inset-0 flex items-center justify-center">
                 <span className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-500 bg-white/25">
@@ -409,34 +409,34 @@ export default function ScrollShowcase({
                 </span>
               </span>
             </button>
+          </div>
 
-            <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-              <div className="max-w-[250px]">
-                <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
-                <p className="mt-2 text-[15px] leading-tight text-neutral-600">
-                  Background in Fine Art
-                  <br />
-                  and Design.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setFilmIndex((value) => (value + 1) % aiFilms.length)}
-                  className="mt-5 flex w-full items-center justify-between border-t border-neutral-500 pt-2 text-sm text-[#878787]"
-                >
-                  <span>Next film</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-
+          <div className="relative z-20 mt-3 flex flex-col gap-8 pb-8 md:mt-4 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-[250px]">
+              <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
+              <p className="mt-2 text-[15px] leading-tight text-neutral-600">
+                Background in Fine Art
+                <br />
+                and Design.
+              </p>
               <button
                 type="button"
-                onClick={onOpenAIWork}
-                className="inline-flex w-fit items-center gap-8 rounded-full border border-neutral-200 px-7 py-3 text-sm text-[#878787] hover:border-neutral-900"
+                onClick={() => setFilmIndex((value) => (value + 1) % aiFilms.length)}
+                className="mt-5 flex w-full items-center justify-between border-t border-neutral-500 pt-2 text-sm text-[#878787]"
               >
-                <span>View All</span>
-                <ChevronRight className="h-4 w-4" />
+                <span>Next film</span>
+                <ArrowRight className="h-4 w-4" />
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={onOpenAIWork}
+              className="inline-flex w-fit items-center gap-8 rounded-full border border-neutral-200 px-7 py-3 text-sm text-[#878787] hover:border-neutral-900"
+            >
+              <span>View All</span>
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </section>
