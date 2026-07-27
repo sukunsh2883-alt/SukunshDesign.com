@@ -21,7 +21,7 @@ interface AboutMeProps {
 export default function AboutMe({ profile }: AboutMeProps) {
   const portraitImage =
     profile?.aboutImage ||
-    "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_39_obkaf2.png";
+    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
   return (
     <section id="about-me" className="relative w-full bg-[#FBFBFC] text-neutral-900 font-sans overflow-hidden py-16 sm:py-24 px-6 sm:px-12 md:px-16 border-t border-neutral-200/60">

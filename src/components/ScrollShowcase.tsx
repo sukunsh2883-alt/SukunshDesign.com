@@ -50,7 +50,7 @@ export default function ScrollShowcase({
   const portraitImage =
     profile?.aboutImageSecondary ||
     profile?.aboutImage ||
-    "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_42_z0hjbd.png";
+    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

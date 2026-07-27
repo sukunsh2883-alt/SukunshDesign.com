@@ -23,7 +23,7 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
 
   const portraitImage =
     profile?.aboutImage ||
-    "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_39_obkaf2.png";
+    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
   return (
     <AnimatePresence>
@@ -216,4 +216,3 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
     </AnimatePresence>
   );
 }
-
