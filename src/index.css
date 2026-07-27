@@ -470,7 +470,7 @@ header *,
 /* Inline SVG hero stage and JS-created beetle layer. */
 .hero {
   background: #050505;
-  min-height: 100svh;
+  min-height: 108svh;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -480,8 +480,8 @@ header *,
   align-items: flex-end;
   display: flex;
   justify-content: center;
-  min-height: 100svh;
-  padding: 56px 0 0;
+  min-height: 108svh;
+  padding: 44px 0 0;
   position: relative;
   z-index: 2;
 }
@@ -493,7 +493,7 @@ header *,
   left: 50%;
   pointer-events: auto;
   position: absolute;
-  bottom: 0;
+  bottom: -7vh;
   transform: translateX(-50%);
   width: 100%;
   z-index: 3;
@@ -510,7 +510,7 @@ header *,
   overflow: visible;
   position: relative;
   transform: translateY(var(--svg-y-offset, 4vh));
-  width: calc(min(185vw, 2480px, calc((100svh - 64px) * 1.858)) * var(--svg-scale-multiplier, 1.15));
+  width: calc(min(194vw, 2620px, calc((100svh - 54px) * 1.86)) * var(--svg-scale-multiplier, 1.15));
 }
 
 .hero-scroll-base {
@@ -796,7 +796,7 @@ header *,
     height: auto;
     min-height: auto;
     overflow: visible;
-    padding: 110px 20px 56px !important;
+    padding: 92px 20px 32px !important;
   }
 
   .hero-inner {
@@ -824,6 +824,7 @@ header *,
     bottom: auto;
     left: auto;
     transform: none;
+    margin-bottom: -5vh;
     width: 100%;
     z-index: 2;
   }
@@ -834,8 +835,8 @@ header *,
     min-height: 0;
     margin-bottom: 0 !important;
     overflow: visible;
-    transform: translateY(calc(6vh + var(--svg-y-offset, 4vh))) !important;
-    width: calc(min(175vw, calc((100svh - 40px) * 1.858)) * var(--svg-scale-multiplier, 1.15)) !important;
+    transform: translateY(calc(2vh + var(--svg-y-offset, 4vh))) !important;
+    width: calc(min(186vw, calc((100svh - 24px) * 1.86)) * var(--svg-scale-multiplier, 1.15)) !important;
   }
 
   .svg-stage > svg:not(.beetle-svg) {
@@ -1144,5 +1145,37 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
 .footer-artwork .botanical-leaf,
 .footer-artwork .botanical-flower {
   transform-origin: 50% 100%;
+}
+
+.footer-link {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.82rem;
+  text-align: left;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  border-color: rgba(255, 255, 255, 0.75);
+  color: #fff;
+  outline: none;
+}
+
+.project-roll-track {
+  scrollbar-width: none;
+}
+
+.project-roll-track::-webkit-scrollbar {
+  display: none;
+}
+
+.wave-reel-card {
+  border-radius: 28px !important;
 }
 

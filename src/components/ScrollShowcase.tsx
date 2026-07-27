@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import gsap from "gsap";
@@ -42,6 +42,8 @@ export default function ScrollShowcase({
   const projectTrackRef = useRef<HTMLDivElement | null>(null);
   const aiFilmSectionRef = useRef<HTMLElement | null>(null);
   const aiFilmCardRef = useRef<HTMLButtonElement | null>(null);
+  const aiFilmHeadingRef = useRef<HTMLDivElement | null>(null);
+  const aiFilmDetailsRef = useRef<HTMLDivElement | null>(null);
   const [filmIndex, setFilmIndex] = useState(0);
   const selectedProjects = (designs.length ? designs : []).slice(0, 3);
   const rollingProjects = [...selectedProjects, ...selectedProjects];
@@ -57,22 +59,24 @@ export default function ScrollShowcase({
     if (reduceMotion || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".folio-reveal",
-        { opacity: 0, y: 42 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.9,
-          ease: "power3.out",
-          stagger: 0.08,
-          scrollTrigger: {
-            trigger: ".folio-reveal",
-            start: "top 82%",
-            toggleActions: "play none none reverse",
+      gsap.utils.toArray<HTMLElement>(".folio-reveal").forEach((element) => {
+        gsap.fromTo(
+          element,
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: element,
+              start: "top 88%",
+              toggleActions: "play none none none",
+              once: true,
+            },
           },
-        },
-      );
+        );
+      });
 
       gsap.to(".wave-reel-card", {
         y: (index) => Math.sin(index * 0.9) * 24,
@@ -92,53 +96,75 @@ export default function ScrollShowcase({
         ease: "sine.inOut",
       });
 
-      gsap.fromTo(
-        projectTrackRef.current,
-        { x: 0 },
-        {
-          x: () => {
-            const track = projectTrackRef.current;
-            const section = projectSectionRef.current;
-            if (!track || !section) return 0;
-            return -(track.scrollWidth - section.clientWidth);
-          },
-          ease: "none",
-          scrollTrigger: {
-            trigger: projectSectionRef.current || ".project-roll-section",
-            start: "top top",
-            end: () => {
+      const media = gsap.matchMedia();
+
+      media.add("(min-width: 768px)", () => {
+        gsap.fromTo(
+          projectTrackRef.current,
+          { x: 0 },
+          {
+            x: () => {
               const track = projectTrackRef.current;
               const section = projectSectionRef.current;
-              if (!track || !section) return "+=1200";
-              return `+=${Math.max(track.scrollWidth - section.clientWidth + window.innerWidth * 0.8, 1200)}`;
+              if (!track || !section) return 0;
+              return -(track.scrollWidth - section.clientWidth);
             },
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
+            ease: "none",
+            scrollTrigger: {
+              trigger: projectSectionRef.current || ".project-roll-section",
+              start: "top top",
+              end: () => {
+                const track = projectTrackRef.current;
+                const section = projectSectionRef.current;
+                if (!track || !section) return "+=1100";
+                return `+=${Math.max(track.scrollWidth - section.clientWidth + window.innerWidth * 0.65, 1100)}`;
+              },
+              scrub: 0.8,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
           },
-        },
-      );
+        );
+      });
 
-      gsap.fromTo(
-        aiFilmCardRef.current,
-        { scale: 1.18, y: 0, borderRadius: 0, transformOrigin: "center center" },
-        {
-          scale: 1,
-          y: 0,
-          borderRadius: 28,
-          ease: "none",
-          scrollTrigger: {
-            trigger: aiFilmSectionRef.current || ".ai-film-section",
-            start: "top top",
-            end: "+=120%",
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
+      const filmTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: aiFilmSectionRef.current || ".ai-film-section",
+          start: "top top",
+          end: "+=110%",
+          scrub: 0.8,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
         },
-      );
+      });
+
+      filmTimeline
+        .fromTo(
+          aiFilmCardRef.current,
+          {
+            width: "100vw",
+            height: "100svh",
+            borderRadius: 0,
+            transformOrigin: "center center",
+          },
+          {
+            width: () => (window.innerWidth < 768 ? "calc(100vw - 2rem)" : "min(1180px, calc(100vw - 7rem))"),
+            height: () => (window.innerWidth < 768 ? "58svh" : "min(68svh, 720px)"),
+            borderRadius: () => (window.innerWidth < 768 ? 16 : 28),
+            ease: "none",
+          },
+          0,
+        )
+        .fromTo(
+          [aiFilmHeadingRef.current, aiFilmDetailsRef.current],
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.25, ease: "none" },
+          0.68,
+        );
+
+      return () => media.revert();
     }, containerRef);
 
     return () => ctx.revert();
@@ -200,12 +226,12 @@ export default function ScrollShowcase({
               </div>
             </div>
             <h2 className="select-none text-4xl font-normal leading-[1.06] tracking-normal text-neutral-950 sm:text-6xl md:text-7xl lg:text-[76px]">
-              I’m a Delhi-based
+              I'm a Delhi-based
               <br />
               Visual Designer.
             </h2>
             <p className="max-w-xl text-base font-normal leading-relaxed text-neutral-600 sm:text-lg md:text-[21px]">
-              Rooted in Bihar’s rich cultural heritage,
+              Rooted in Bihar's rich cultural heritage,
               <br className="hidden sm:inline" />
               with a background in fine art,
               <br className="hidden sm:inline" />
@@ -222,7 +248,7 @@ export default function ScrollShowcase({
                   <div className="space-y-5">
                     <div>
                       <div className="text-sm font-medium leading-snug text-neutral-900 sm:text-[15px]">
-                        M.Des — IDC School of Design
+                        M.Des - IDC School of Design
                       </div>
                       <div className="mt-0.5 text-xs font-normal text-neutral-500 sm:text-sm">
                         IIT Bombay
@@ -260,14 +286,15 @@ export default function ScrollShowcase({
             </div>
           </div>
 
-          <div ref={aboutStageRef} className="folio-reveal relative flex flex-col items-center justify-start pt-6 lg:col-span-5 lg:pt-0">
+          <div ref={aboutStageRef} className="folio-reveal relative flex flex-col items-center justify-start pt-10 lg:col-span-5 lg:pt-0">
             <motion.div
               className="relative flex origin-top select-none flex-col items-center"
               animate={{ rotate: [-2, 2, -2], y: [0, -8, 0] }}
               transition={{ duration: 8, ease: "easeInOut", repeat: Infinity }}
-              drag="y"
+              drag
               dragConstraints={aboutStageRef}
-              dragElastic={0.2}
+              dragElastic={0.28}
+              dragMomentum={false}
               whileDrag={{ scale: 1.03 }}
             >
               <motion.div
@@ -337,11 +364,11 @@ export default function ScrollShowcase({
           </button>
         </div>
 
-        <div ref={projectTrackRef} className="project-roll-track flex w-max gap-4 will-change-transform">
+        <div ref={projectTrackRef} className="project-roll-track flex w-max max-w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-5 will-change-transform md:max-w-none md:overflow-visible">
           {rollingProjects.map((project, index) => {
             const item = getProject(index % Math.max(selectedProjects.length, 1));
             return (
-              <article key={`${project?.id || "fallback"}-${index}`} className="folio-reveal group w-[320px] shrink-0 md:w-[420px]">
+              <article key={`${project?.id || "fallback"}-${index}`} className="folio-reveal group w-[82vw] max-w-[360px] shrink-0 snap-start md:w-[420px] md:max-w-none">
                 <button
                   type="button"
                   onClick={() => item.project && onSelectProject?.(item.project)}
@@ -375,9 +402,9 @@ export default function ScrollShowcase({
         </div>
       </section>
 
-      <section ref={aiFilmSectionRef} className="ai-film-section relative min-h-[106vh] overflow-hidden bg-white px-5 py-0 sm:px-8 md:px-14">
-        <div className="sticky top-0 min-h-screen py-4 md:py-6">
-          <div className="absolute left-5 top-4 z-20 sm:left-8 md:left-14 md:top-6">
+      <section ref={aiFilmSectionRef} className="ai-film-section relative min-h-screen overflow-hidden bg-white">
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <div ref={aiFilmHeadingRef} className="pointer-events-none absolute left-5 top-6 z-20 opacity-0 sm:left-8 md:left-14">
             <div className="h-px w-36 bg-neutral-700" />
             <div className="mt-2 flex items-center gap-1.5 text-3xl font-normal text-[#1f1f1e]">
               <span>AI Film</span>
@@ -385,12 +412,12 @@ export default function ScrollShowcase({
             </div>
           </div>
 
-          <div className="folio-reveal flex min-h-[72vh] items-start justify-center pt-14 md:min-h-[68vh] md:pt-16">
+          <div className="folio-reveal flex min-h-screen w-full items-center justify-center">
             <button
               ref={aiFilmCardRef}
               type="button"
               onClick={openFilm}
-              className="ai-film-card group relative block h-[100svh] w-[100vw] overflow-hidden rounded-none bg-neutral-200 md:h-[calc(100svh-5rem)] md:w-[calc(100vw-7rem)] md:max-w-[1180px] md:rounded-[28px]"
+              className="ai-film-card group relative block h-[100svh] w-[100vw] shrink-0 overflow-hidden rounded-none bg-neutral-200"
             >
               <video
                 key={film?.id}
@@ -411,7 +438,7 @@ export default function ScrollShowcase({
             </button>
           </div>
 
-          <div className="relative z-20 mt-3 flex flex-col gap-8 pb-8 md:mt-4 md:flex-row md:items-end md:justify-between">
+          <div ref={aiFilmDetailsRef} className="absolute bottom-5 left-5 right-5 z-20 flex flex-col gap-5 opacity-0 sm:left-8 sm:right-8 md:bottom-7 md:left-14 md:right-14 md:flex-row md:items-end md:justify-between">
             <div className="max-w-[250px]">
               <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
               <p className="mt-2 text-[15px] leading-tight text-neutral-600">
@@ -493,3 +520,6 @@ export default function ScrollShowcase({
     </div>
   );
 }
+
+
+

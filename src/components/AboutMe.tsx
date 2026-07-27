@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 
@@ -54,13 +54,13 @@ export default function AboutMe({ profile }: AboutMeProps) {
 
           {/* Main Heading */}
           <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-sans font-normal leading-[1.06] tracking-[-0.035em] text-neutral-950 select-none">
-            I’m a Delhi-based<br />
+            I'm a Delhi-based<br />
             Visual Designer.
           </h1>
 
           {/* Intro Paragraph */}
           <p className="text-neutral-600 text-base sm:text-lg md:text-[21px] font-normal leading-relaxed max-w-xl">
-            Rooted in Bihar’s rich cultural heritage,<br className="hidden sm:inline" />
+            Rooted in Bihar's rich cultural heritage,<br className="hidden sm:inline" />
             with a background in fine art,<br className="hidden sm:inline" />
             visual communication and design.
           </p>
@@ -79,7 +79,7 @@ export default function AboutMe({ profile }: AboutMeProps) {
                 <div className="space-y-5">
                   <div>
                     <div className="text-sm sm:text-[15px] font-medium text-neutral-900 leading-snug">
-                      M.Des — IDC School of Design
+                      M.Des - IDC School of Design
                     </div>
                     <div className="text-xs sm:text-sm text-neutral-500 mt-0.5 font-normal">
                       IIT Bombay
@@ -131,7 +131,7 @@ export default function AboutMe({ profile }: AboutMeProps) {
           
           {/* Lanyard + Badge Sway Group */}
           <motion.div
-            className="relative flex flex-col items-center origin-top select-none"
+            className="relative flex flex-col items-center origin-top select-none scale-[0.92] sm:scale-100"
             animate={{ rotate: [-1.5, 1.5, -1.5] }}
             transition={{
               duration: 7,
@@ -163,7 +163,7 @@ export default function AboutMe({ profile }: AboutMeProps) {
             </div>
 
             {/* White Rounded Rectangular ID Badge */}
-            <div className="relative z-10 -mt-2 w-[250px] sm:w-[280px] md:w-[300px] bg-white rounded-2xl sm:rounded-[22px] border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] p-4 sm:p-5 flex flex-col items-center text-center">
+            <div className="relative z-10 -mt-2 w-full max-w-[300px] bg-white rounded-2xl sm:rounded-[22px] border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] p-4 sm:p-5 flex flex-col items-center text-center">
               
               {/* Small Circular Hole at top center */}
               <div className="w-3.5 h-3.5 rounded-full bg-neutral-900 border-2 border-neutral-300 mb-3 shadow-inner flex items-center justify-center">
@@ -193,5 +193,7 @@ export default function AboutMe({ profile }: AboutMeProps) {
     </section>
   );
 }
+
+
 
 

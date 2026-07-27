@@ -11,6 +11,12 @@ interface HeroProps {
 
 const SVG_URL = "/artwork/main artwork.svg";
 
+type HeroMetrics = {
+  stageScale: number;
+  stageY: number;
+  sukunshScale: number;
+};
+
 const flowerIds = Array.from({ length: 9 }, (_, index) => `flower_${index + 1}`);
 const leafIds = [...Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`), "leaf_10-2"];
 const flowerPerches: Record<string, { x: number; y: number }> = {
@@ -36,22 +42,36 @@ function findSvgElement<T extends Element>(svg: SVGSVGElement | null, id: string
   return Array.from(svg.querySelectorAll<T>("[id]")).find((element) => element.id === id) || null;
 }
 
+function getHeroMetrics(): HeroMetrics {
+  const width = typeof window !== "undefined" ? window.innerWidth : 1440;
+
+  if (width < 640) {
+    return { stageScale: 0.94, stageY: 0, sukunshScale: 0.78 };
+  }
+
+  if (width < 1024) {
+    return { stageScale: 1.04, stageY: 3, sukunshScale: 0.82 };
+  }
+
+  if (width < 1440) {
+    return { stageScale: 1.16, stageY: 7, sukunshScale: 0.88 };
+  }
+
+  return { stageScale: 1.24, stageY: 9, sukunshScale: 0.92 };
+}
+
 export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
 
-  const [stageScale] = useState<number>(() => {
-    const saved = localStorage.getItem("sukunsh_stage_scale_v2");
-    return saved ? parseFloat(saved) : 1.15;
-  });
-  const [stageY] = useState<number>(() => {
-    const saved = localStorage.getItem("sukunsh_stage_y");
-    return saved ? parseFloat(saved) : 4;
-  });
-  const [sukunshScale] = useState<number>(() => {
-    const saved = localStorage.getItem("sukunsh_sukunsh_scale");
-    return saved ? parseFloat(saved) : 0.88;
-  });
+  const [heroMetrics, setHeroMetrics] = useState<HeroMetrics>(() => getHeroMetrics());
+
+  useEffect(() => {
+    const updateHeroMetrics = () => setHeroMetrics(getHeroMetrics());
+    updateHeroMetrics();
+    window.addEventListener("resize", updateHeroMetrics);
+    return () => window.removeEventListener("resize", updateHeroMetrics);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,7 +108,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
       if (heroText) {
         heroText.innerHTML = `
-          <text x="65" y="325" fill="#FFFFFF" font-family="'Arial Black', 'Clash Display', 'Plus Jakarta Sans', 'Syne', sans-serif" font-weight="900" font-size="300" style="font-weight: 900; font-size: 300px; line-height: 318.5px;" letter-spacing="0.03em" class="select-none font-black">
+          <text x="65" y="315" fill="#FFFFFF" font-family="'Arial Black', 'Clash Display', 'Plus Jakarta Sans', 'Syne', sans-serif" font-weight="900" font-size="clamp(260px, 25vw, 440px)" style="font-weight: 900; font-size: clamp(260px, 25vw, 440px); line-height: 1;" letter-spacing="0.03em" class="select-none font-black">
             PORT<tspan class="font-black" font-weight="900" fill="#FFFFFF" letter-spacing="0.03em">FOLIO</tspan>
           </text>
         `;
@@ -1162,9 +1182,9 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
             ref={stageRef}
             className="svg-stage relative mb-0 aspect-[1358.17/730.78] origin-center overflow-visible"
             style={{
-              "--svg-scale-multiplier": stageScale,
-              "--svg-y-offset": `${stageY}vh`,
-              "--sukunsh-scale": sukunshScale,
+              "--svg-scale-multiplier": heroMetrics.stageScale,
+              "--svg-y-offset": `${heroMetrics.stageY}vh`,
+              "--sukunsh-scale": heroMetrics.sukunshScale,
             } as React.CSSProperties}
           />
         </div>

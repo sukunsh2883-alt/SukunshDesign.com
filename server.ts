@@ -314,6 +314,7 @@ if (!process.env.VERCEL) {
   async function startServer() {
     if (process.env.NODE_ENV !== "production") {
       const vite = await createViteServer({
+        configLoader: "runner",
         server: { middlewareMode: true },
         appType: "spa",
       });

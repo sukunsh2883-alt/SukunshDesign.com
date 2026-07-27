@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
 
 interface FooterProps {
   profile: any;
@@ -216,68 +218,60 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
   }, [artworkMarkup]);
 
   return (
-    <footer id="contact" className="relative min-h-[620px] overflow-hidden bg-[#111111] text-[#f3f4f4] select-none md:min-h-[680px]">
+    <footer id="contact" className="relative min-h-[720px] overflow-hidden bg-[#111111] text-[#f3f4f4] select-none md:min-h-[680px]">
       <div className="absolute inset-0 bg-[#111111]" />
       <div ref={artworkRef} className="footer-artwork absolute inset-0 z-10 overflow-hidden" aria-hidden="true">
         {artworkMarkup ? <div className="h-full w-full" dangerouslySetInnerHTML={{ __html: artworkMarkup }} /> : null}
       </div>
 
-      <div className="absolute left-1/2 top-[24%] z-20 -translate-x-1/2 text-center">
-        <div className="text-[clamp(2.5rem,4vw,4.25rem)] font-normal leading-none text-[#f3f4f4]">
-          Let&apos;s Talk
-        </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute left-1/2 top-[14%] z-20 flex w-[min(560px,86vw)] -translate-x-1/2 flex-col sm:top-[17%] lg:left-[54%] lg:top-[25%] lg:w-[42vw] lg:translate-x-0"
+      >
+        <h2 className="text-[clamp(2.5rem,5vw,4.7rem)] font-normal leading-none tracking-[-0.04em] text-[#f3f4f4]">
+          Let's Talk
+        </h2>
         <a
-          href="mailto:Sukunsh2883@gmail.com"
-          className="mt-4 inline-flex text-sm font-medium tracking-[0.18em] text-[#cfcfcf] transition-colors hover:text-white sm:text-base"
+          href={`mailto:${profile?.email || "sukunsh2883@gmail.com"}`}
+          className="mt-4 w-fit text-[clamp(0.85rem,1.6vw,1.15rem)] tracking-[0.12em] text-[#d7d7d7] transition-colors hover:text-white"
         >
-          Sukunsh2883@gmail.com
+          {profile?.email || "sukunsh2883@gmail.com"}
         </a>
-      </div>
 
-      <button
-        type="button"
-        onClick={() => onNavigate?.("#scroll-demo")}
-        className="absolute left-[48.5%] top-[52%] z-30 h-10 w-[20%] cursor-pointer rounded-sm bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        aria-label="Work"
-      />
-      <button
-        type="button"
-        onClick={() => onNavigate?.("#about-me-modal")}
-        className="absolute left-[48.5%] top-[61%] z-30 h-10 w-[20%] cursor-pointer rounded-sm bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        aria-label="About"
-      />
-      <a
-        href="mailto:Sukunsh2883@gmail.com"
-        className="absolute left-[48.5%] top-[70%] z-30 h-10 w-[20%] rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        aria-label="Contact"
-      />
-      <a
-        href={profile?.instagram || "https://instagram.com/sukunsh"}
-        target="_blank"
-        rel="noreferrer"
-        className="absolute left-[70.5%] top-[52%] z-30 h-10 w-[20%] rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        aria-label="Instagram"
-      />
-      <a
-        href={profile?.linkedin || "https://www.linkedin.com/in/sukunsh"}
-        target="_blank"
-        rel="noreferrer"
-        className="absolute left-[70.5%] top-[61%] z-30 h-10 w-[20%] rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        aria-label="LinkedIn"
-      />
-      <a
-        href={profile?.behance || "https://www.behance.net/sukunshsharma"}
-        target="_blank"
-        rel="noreferrer"
-        className="absolute left-[70.5%] top-[70%] z-30 h-10 w-[20%] rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        aria-label="Behance"
-      />
-      <button
-        type="button"
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="absolute bottom-[8%] right-[9%] z-30 h-9 w-32 cursor-pointer rounded-sm bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-        aria-label="Scroll back to top"
-      />
+        <nav className="mt-10 grid grid-cols-2 gap-x-8 gap-y-1" aria-label="Footer navigation">
+          <button type="button" onClick={() => onNavigate?.("#scroll-demo")} className="footer-link">
+            <span>Work</span><ArrowUpRight className="h-3.5 w-3.5" />
+          </button>
+          <a href={profile?.instagram || "https://instagram.com/sukunsh"} target="_blank" rel="noreferrer" className="footer-link">
+            <span>Instagram</span><ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+          <button type="button" onClick={() => onNavigate?.("#about-me-modal")} className="footer-link">
+            <span>About</span><ArrowUpRight className="h-3.5 w-3.5" />
+          </button>
+          <a href={profile?.linkedin || "https://www.linkedin.com/in/sukunsh"} target="_blank" rel="noreferrer" className="footer-link">
+            <span>LinkedIn</span><ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+          <a href={`mailto:${profile?.email || "sukunsh2883@gmail.com"}`} className="footer-link">
+            <span>Contact</span><ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+          <a href={profile?.behance || "https://www.behance.net/sukunshsharma"} target="_blank" rel="noreferrer" className="footer-link">
+            <span>Behance</span><ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+        </nav>
+
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="mt-9 inline-flex w-fit items-center gap-2 text-xs text-white/55 transition-colors hover:text-white"
+          aria-label="Scroll back to top"
+        >
+          <span>Back to top</span>
+          <ArrowUp className="h-3.5 w-3.5" />
+        </button>
+      </motion.div>
     </footer>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   X, Briefcase, GraduationCap, Laptop, BadgeCheck, FileText, 
@@ -85,7 +85,7 @@ export default function FullResumeModal({ isOpen, onClose }: FullResumeModalProp
         description: "Designed, layered, and screen-printed highly tactical welcome cards and premium children's book layouts using specialized Risography duplicator stencils and ink separations."
       },
       {
-        title: "Typographic Children’s Book",
+        title: "Typographic Children's Book",
         context: "Core Typography Exploration",
         description: "Established a tactile storytelling publication design where expressive, scaled, and baseline-shifted typography completely replaces traditional pictorial illustrations to visually communicate emotion and pace."
       }
@@ -421,3 +421,5 @@ export default function FullResumeModal({ isOpen, onClose }: FullResumeModalProp
     </AnimatePresence>
   );
 }
+
+

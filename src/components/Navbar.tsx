@@ -104,7 +104,7 @@ export default function Navbar({
     },
     {
       label: "Email",
-      link: `mailto:${profile?.email || "sukunsh2883@gmail.com"}`,
+      link: `mailto:${profile?.email || "Sukunsh2883@gmail.com"}`,
     },
   ];
 

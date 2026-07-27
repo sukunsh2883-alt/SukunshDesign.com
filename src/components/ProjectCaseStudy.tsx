@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 import { DesignProject } from "../portfolioData";
 
 interface ProjectCaseStudyProps {
@@ -59,84 +59,111 @@ export default function ProjectCaseStudy({ project, allProjects = [], onClose }:
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen overflow-y-auto bg-[#181818] text-neutral-950"
+      className="min-h-screen overflow-x-hidden bg-[#181818] text-neutral-950"
     >
-      <div className="w-full px-4 py-5 sm:px-6 sm:py-8 md:px-10">
-        <article className="mx-auto w-full max-w-[980px] bg-white shadow-[0_28px_90px_rgba(0,0,0,0.35)]">
-          <section className="grid min-h-[420px] grid-cols-1 gap-10 px-7 py-8 sm:px-10 md:min-h-[520px] md:grid-cols-[0.86fr_1.5fr] md:gap-14 md:px-12 md:py-12 lg:px-16">
-            <div className="flex flex-col justify-between gap-10">
+      <article className="mx-auto min-h-screen w-full max-w-[1440px] bg-white shadow-[0_28px_90px_rgba(0,0,0,0.35)]">
+        <section className="grid min-h-[100svh] grid-cols-1 gap-10 px-5 pb-12 pt-6 sm:px-8 md:grid-cols-[0.72fr_1.45fr] md:items-center md:gap-12 md:px-12 md:py-10 lg:px-16">
+          <div className="flex h-full flex-col justify-between gap-12 md:min-h-[78vh]">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Back to projects"
+              className="sticky top-5 z-40 inline-flex w-fit items-center gap-2 rounded-full border border-neutral-200 bg-white/90 px-4 py-2 text-[12px] font-medium text-neutral-900 backdrop-blur-md transition-colors hover:border-neutral-900"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back</span>
+            </button>
+
+            <div className="max-w-[360px] pb-4">
+              <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.24em] text-neutral-400">
+                Project {displayIndex}
+              </p>
+              <h1 className="text-[clamp(2.4rem,5vw,5.5rem)] font-sans font-medium leading-[0.92] tracking-normal text-neutral-950">
+                {project.title}
+              </h1>
+              <p className="mt-6 border-b border-neutral-300 pb-5 text-[14px] leading-relaxed text-neutral-600">
+                {project.description || project.aboutProject}
+              </p>
+
+              <div className="mt-5 grid grid-cols-2 gap-5 text-left">
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Category</p>
+                  <p className="mt-1 text-[12px] font-medium text-neutral-950">{project.type}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Year</p>
+                  <p className="mt-1 text-[12px] font-medium text-neutral-950">{project.year}</p>
+                </div>
+              </div>
+
               <button
                 type="button"
-                onClick={onClose}
-                aria-label="Back to projects"
-                className="inline-flex w-fit items-center gap-2 text-[12px] font-medium text-neutral-900 transition-colors hover:text-[#FF6A00]"
+                onClick={scrollToGallery}
+                className="mt-8 inline-flex items-center gap-2 text-[12px] font-medium text-neutral-950 transition-colors hover:text-[#FF6A00]"
               >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back</span>
+                <span>Explore case study</span>
+                <ChevronDown className="h-4 w-4" />
               </button>
-
-              <div className="max-w-[260px] pb-2">
-                <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.24em] text-neutral-400">
-                  Project {displayIndex}
-                </p>
-                <h1 className="text-3xl font-sans font-medium leading-none tracking-normal text-neutral-950 sm:text-4xl">
-                  {project.title}
-                </h1>
-                <p className="mt-4 border-b border-neutral-400 pb-3 text-[11px] leading-relaxed text-neutral-700">
-                  {project.description || project.aboutProject}
-                </p>
-
-                <div className="mt-4 space-y-3 text-left">
-                  <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Category</p>
-                    <p className="mt-1 text-[11px] font-medium text-neutral-950">{project.type}</p>
-                  </div>
-                  <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Year</p>
-                    <p className="mt-1 text-[11px] font-medium text-neutral-950">{project.year}</p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={scrollToGallery}
-                  className="mt-7 inline-flex items-center gap-1.5 text-[11px] font-medium text-neutral-950 hover:text-[#FF6A00]"
-                >
-                  <span>Scroll Down</span>
-                  <ChevronDown className="h-3.5 w-3.5" />
-                </button>
-              </div>
             </div>
+          </div>
 
-            <div className="flex items-center">
-              <div className="w-full overflow-hidden bg-neutral-200 aspect-[1.52]">
-                <img
-                  src={galleryImages[0]}
-                  alt={`${project.title} cover`}
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center"
+          >
+            <div className="aspect-[1.35] w-full overflow-hidden bg-neutral-200">
+              <img
+                src={galleryImages[0]}
+                alt={`${project.title} cover`}
+                referrerPolicy="no-referrer"
+                className="h-full w-full object-cover"
+              />
             </div>
-          </section>
+          </motion.div>
+        </section>
 
-          <section id="project-gallery" className="space-y-4 px-5 pb-6 pt-5 sm:px-8 md:space-y-5 md:px-8 md:pb-8">
+        <section id="project-gallery" className="bg-white px-3 pb-3 sm:px-5 sm:pb-5">
+          <div className="mx-auto flex max-w-[1360px] flex-col gap-2 sm:gap-3">
             {galleryImages.map((image, index) => (
-              <figure key={`${image}-${index}`} className="w-full">
-                <div className="w-full overflow-hidden bg-neutral-200 aspect-[1.95]">
-                  <img
-                    src={image}
-                    alt={`${project.title} image ${index + 1}`}
-                    referrerPolicy="no-referrer"
-                    className="h-full w-full object-cover"
-                    loading={index === 0 ? "eager" : "lazy"}
-                  />
-                </div>
-              </figure>
+              <motion.figure
+                key={`${image}-${index}`}
+                initial={{ opacity: 0, y: 44 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.12 }}
+                transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full overflow-hidden bg-neutral-200"
+              >
+                <img
+                  src={image}
+                  alt={`${project.title} case study image ${index + 1}`}
+                  referrerPolicy="no-referrer"
+                  className="h-auto w-full object-cover"
+                  loading={index < 2 ? "eager" : "lazy"}
+                />
+              </motion.figure>
             ))}
-          </section>
-        </article>
-      </div>
+          </div>
+        </section>
+
+        <section className="flex min-h-[38vh] flex-col justify-between gap-10 bg-[#111] px-6 py-10 text-white sm:px-10 md:flex-row md:items-end md:px-16 md:py-14">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">End of case study</p>
+            <h2 className="mt-3 text-[clamp(2rem,4vw,4rem)] font-medium leading-none">More work awaits.</h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {project.link && (
+              <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/25 px-5 py-3 text-sm transition-colors hover:bg-white hover:text-black">
+                View on Behance <ArrowUpRight className="h-4 w-4" />
+              </a>
+            )}
+            <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-full border border-white/25 px-5 py-3 text-sm transition-colors hover:bg-white hover:text-black">
+              Back to projects <ArrowLeft className="h-4 w-4" />
+            </button>
+          </div>
+        </section>
+      </article>
     </motion.div>
   );
 }

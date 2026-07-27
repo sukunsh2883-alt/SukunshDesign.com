@@ -198,7 +198,7 @@ export const designProjects: DesignProject[] = [
     description: "Academic photo communication study capturing extreme body elasticity, suspension leaps, and somatic contour lighting.",
     image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
     tools: ["Studio Spotlight Rigging", "Motion Capture", "Contrast Optimization", "Academic Layouts"],
-    link: "mailto:sukunsh3882@gmail.com",
+    link: "mailto:Sukunsh2883@gmail.com",
     client: "College of Art, Delhi University",
     aboutProject: "Action photography is an incredibly exciting genre to shoot. Under the guidance of Mr. Parveen Kumar, the study explores body contouring using high-density side lighting and extreme raw athleticism. It illustrates suspension, equilibrium, and spatial trajectory transitions in darkness.",
     galleryImages: [
@@ -646,6 +646,6 @@ export const profile = {
   accentGradient: "linear-gradient(90deg, #FF6A00 0%, #FFB000 100%)",
   logoFontFamily: "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
   heroVideoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1779644211/make_give_bit_loop_motion_202605242304_vd4fkj.mp4",
-  aboutImage: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_39_obkaf2.png",
-  aboutImageSecondary: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_42_z0hjbd.png"
+  aboutImage: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png",
+  aboutImageSecondary: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png"
 };

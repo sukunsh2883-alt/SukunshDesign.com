@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ArrowUpRight } from "lucide-react";
 
@@ -75,13 +75,13 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
 
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-sans font-normal leading-[1.06] tracking-[-0.035em] text-neutral-950 select-none">
-                I’m a Delhi-based<br />
+                I'm a Delhi-based<br />
                 Visual Designer.
               </h1>
 
               {/* Intro Paragraph */}
               <p className="text-neutral-600 text-base sm:text-lg md:text-[21px] font-normal leading-relaxed max-w-xl">
-                Rooted in Bihar’s rich cultural heritage,<br className="hidden sm:inline" />
+                Rooted in Bihar's rich cultural heritage,<br className="hidden sm:inline" />
                 with a background in fine art,<br className="hidden sm:inline" />
                 visual communication and design.
               </p>
@@ -100,7 +100,7 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
                     <div className="space-y-5">
                       <div>
                         <div className="text-sm sm:text-[15px] font-medium text-neutral-900 leading-snug">
-                          M.Des — IDC School of Design
+                          M.Des - IDC School of Design
                         </div>
                         <div className="text-xs sm:text-sm text-neutral-500 mt-0.5 font-normal">
                           IIT Bombay
@@ -216,3 +216,5 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
     </AnimatePresence>
   );
 }
+
+

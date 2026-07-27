@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+﻿import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -96,7 +96,7 @@ export default function AboutMist() {
                   {word}
                 </span>
               ))}
-              {"Delhi Based".split(" ").map((word, idx) => (
+              {"Delhi-based".split(" ").map((word, idx) => (
                 <span key={`delhi-${idx}`} className="about-heading-word font-bold">
                   {word}
                 </span>
@@ -125,4 +125,5 @@ export default function AboutMist() {
     </section>
   );
 }
+
 
