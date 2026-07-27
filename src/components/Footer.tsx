@@ -60,7 +60,8 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
 
     const getFill = (el: SVGGraphicsElement) => (el.getAttribute("fill") || "").toLowerCase();
     const getStroke = (el: SVGGraphicsElement) => (el.getAttribute("stroke") || "").toLowerCase();
-    const isBotanicalZone = (box: DOMRect | SVGRect) => box.x < 620 && box.y > 320;
+    const isBotanicalZone = (box: DOMRect | SVGRect) =>
+      box.y > 220 && box.y < 760 && box.width < 280 && box.height < 360;
     const roleCounters: Record<"flower" | "leaf" | "stem", number> = { flower: 0, leaf: 0, stem: 0 };
 
     focusable.forEach((el, index) => {
@@ -226,10 +227,10 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
           Let&apos;s Talk
         </div>
         <a
-          href={`mailto:${profile?.email || "Sukunsh2883@gmail.com"}`}
+          href="mailto:Sukunsh2883@gmail.com"
           className="mt-4 inline-flex text-sm font-medium tracking-[0.18em] text-[#cfcfcf] transition-colors hover:text-white sm:text-base"
         >
-          {profile?.email || "Sukunsh2883@gmail.com"}
+          Sukunsh2883@gmail.com
         </a>
       </div>
 
@@ -246,7 +247,7 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
         aria-label="About"
       />
       <a
-        href={`mailto:${profile?.email || "sukunsh2883@gmail.com"}`}
+        href="mailto:Sukunsh2883@gmail.com"
         className="absolute left-[48.5%] top-[70%] z-30 h-10 w-[20%] rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         aria-label="Contact"
       />
