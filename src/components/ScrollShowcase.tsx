@@ -401,7 +401,7 @@ export default function ScrollShowcase({
                 playsInline
                 autoPlay
                 preload="auto"
-                className="h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-90"
+                className="h-full w-full object-cover opacity-100 transition-opacity group-hover:opacity-100"
               />
               <span className="absolute inset-0 flex items-center justify-center">
                 <span className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-500 bg-white/25">
@@ -474,7 +474,7 @@ export default function ScrollShowcase({
                 playsInline
                 autoPlay
                 preload="auto"
-                className="h-full w-full object-cover opacity-65 transition-opacity group-hover:opacity-90"
+                className="h-full w-full object-cover opacity-100 transition-opacity group-hover:opacity-100"
               />
               <span className="absolute inset-0 flex items-center justify-center">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-500 bg-white/30">
