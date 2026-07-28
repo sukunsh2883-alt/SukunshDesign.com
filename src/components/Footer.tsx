@@ -220,7 +220,7 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
   return (
     <footer id="contact" className="relative min-h-[560px] overflow-hidden bg-[#111111] text-[#f3f4f4] select-none md:min-h-[520px]">
       <div className="absolute inset-0 bg-[#111111]" />
-      <div ref={artworkRef} className="footer-artwork absolute inset-0 z-10 overflow-hidden" aria-hidden="true">
+      <div ref={artworkRef} className="footer-artwork absolute bottom-0 left-[-4%] top-0 z-10 w-[64%] overflow-visible sm:w-[58%] lg:w-[52%]" aria-hidden="true">
         {artworkMarkup ? <div className="h-full w-full" dangerouslySetInnerHTML={{ __html: artworkMarkup }} /> : null}
       </div>
 

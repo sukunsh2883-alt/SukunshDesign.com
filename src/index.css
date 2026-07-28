@@ -1242,6 +1242,11 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
   width: 100%;
 }
 
+.footer-artwork > div {
+  height: 100%;
+  width: 100%;
+}
+
 .footer-artwork .botanical-piece {
   transform-box: fill-box;
   transition: transform 180ms ease-out;
@@ -1292,6 +1297,27 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
 .project-scroll-wrapper {
   min-height: 100svh;
   overflow: visible;
+}
+
+.project-case-study {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+}
+
+.project-case-study article {
+  min-height: calc(100svh + 1px);
+}
+
+@media (max-width: 767px) {
+  .footer-artwork {
+    left: -18% !important;
+    width: 92% !important;
+  }
+
+  .ai-film-details {
+    max-width: calc(100% - 2.5rem);
+  }
 }
 
 @media (pointer: fine) and (prefers-reduced-motion: no-preference) {

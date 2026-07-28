@@ -22,14 +22,9 @@ function createDefaultLanyardTexture(): string {
   const ctx = canvas.getContext('2d');
   if (!ctx) return BLANK_PIXEL;
 
-  // Narrow, matte black strap inspired by the portfolio reference.
-  ctx.fillStyle = '#050505';
+  // Flat black textile: no highlight or gradient, so the band stays matte.
+  ctx.fillStyle = '#030303';
   ctx.fillRect(0, 0, 2048, 256);
-
-  // Woven edge stitching borders
-  ctx.strokeStyle = '#262626';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(0, 5, 2048, 246);
 
   // Repeating white "SUKUNSH" pattern along the strap
   ctx.font = '900 44px sans-serif';

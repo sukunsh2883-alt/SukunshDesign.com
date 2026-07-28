@@ -308,7 +308,7 @@ export default function ScrollShowcase({
               springStrength={0.86}
               damping={2.8}
               cardWeight={0.68}
-              cardScale={1.16}
+              cardScale={1.27}
             />
           </div>
         </div>
@@ -415,8 +415,8 @@ export default function ScrollShowcase({
             </button>
           </div>
 
-          <div ref={aiFilmDetailsRef} className="relative z-20 flex w-full flex-col gap-5 bg-white px-5 py-8 opacity-0 sm:px-8 md:flex-row md:items-end md:justify-between md:px-14 md:py-10">
-            <div className="max-w-[250px]">
+          <div ref={aiFilmDetailsRef} className="ai-film-details relative z-20 mx-auto flex w-[calc(100%_-_2.5rem)] max-w-[860px] flex-col gap-6 bg-white py-7 opacity-0 sm:w-[calc(100%_-_4rem)] md:flex-row md:items-end md:justify-between md:py-8">
+            <div className="w-full max-w-[310px]">
               <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
               <p className="mt-2 text-[15px] leading-tight text-neutral-600">
                 Background in Fine Art
@@ -436,7 +436,7 @@ export default function ScrollShowcase({
             <button
               type="button"
               onClick={onOpenAIWork}
-              className="inline-flex w-fit items-center gap-8 rounded-full border border-neutral-200 px-7 py-3 text-sm text-[#878787] hover:border-neutral-900"
+              className="inline-flex w-fit items-center gap-5 rounded-full border border-neutral-200 px-6 py-3 text-sm text-[#878787] transition-colors hover:border-neutral-900 hover:text-neutral-950"
             >
               <span>View All</span>
               <ChevronRight className="h-4 w-4" />
