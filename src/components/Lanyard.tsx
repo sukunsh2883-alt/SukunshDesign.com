@@ -22,26 +22,46 @@ function createDefaultLanyardTexture(): string {
   const ctx = canvas.getContext('2d');
   if (!ctx) return BLANK_PIXEL;
 
-  // Dark matte charcoal strap
-  ctx.fillStyle = '#111115';
+  // Narrow, matte black strap inspired by the portfolio reference.
+  ctx.fillStyle = '#050505';
   ctx.fillRect(0, 0, 2048, 256);
 
   // Woven edge stitching borders
-  ctx.strokeStyle = '#27272a';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(0, 8, 2048, 240);
+  ctx.strokeStyle = '#262626';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(0, 5, 2048, 246);
 
   // Repeating white "SUKUNSH" pattern along the strap
   ctx.font = '900 44px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  for (let x = 140; x < 2048; x += 360) {
+  for (let x = 99999; x < 2048; x += 360) {
     ctx.fillStyle = '#f4f4f5';
     ctx.fillText('SUKUNSH', x, 128);
 
     ctx.fillStyle = '#71717a';
     ctx.fillText('✦', x + 180, 128);
+  }
+
+  // Delicate white flower marks repeat down the black lanyard.
+  for (let x = 164; x < 2048; x += 300) {
+    ctx.save();
+    ctx.translate(x, 128);
+    ctx.fillStyle = '#f7f7f5';
+    for (let petal = 0; petal < 5; petal += 1) {
+      ctx.save();
+      ctx.rotate((petal * Math.PI * 2) / 5);
+      ctx.beginPath();
+      ctx.ellipse(0, -18, 11, 22, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(0, 0, 7, 0, Math.PI * 2);
+    ctx.fillStyle = '#bdbdb8';
+    ctx.fill();
+    ctx.restore();
   }
 
   return canvas.toDataURL();
@@ -613,8 +633,8 @@ function Band({
       if (frontImage) {
         const img = frontTex.image as HTMLImageElement;
         
-        // 1. Crystal Clear User Image (Pure white card, no gray strip or watermark)
-        const px = 100, py = 180, pw = fW - 200, ph = 1380, pr = 32;
+        // Portrait card: a generous white border and a single clean image face.
+        const px = 88, py = 174, pw = fW - 176, ph = 1360, pr = 36;
 
         // Clipped High-Res Image
         ctx.save();
@@ -646,12 +666,14 @@ function Band({
         ctx.drawImage(img, drawX, drawY, drawW, drawH);
         ctx.restore();
 
-        // 2. ONLY THE NAME BELOW THE IMAGE
+        // Quiet name line beneath the portrait.
         ctx.fillStyle = '#09090b';
-        ctx.font = '900 88px sans-serif';
+        ctx.font = '700 62px sans-serif';
+        ctx.letterSpacing = '10px';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('SUKUNSH', fW / 2, 1780);
+        ctx.fillText('SUKUNSH', fW / 2, 1765);
+        ctx.letterSpacing = '0px';
       } else {
         ctx.drawImage(frontTex.image as HTMLImageElement, 0, 0, fW, fH);
       }
