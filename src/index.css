@@ -792,7 +792,7 @@ header *,
 }
 
 .svg-stage #Sukunsh {
-  transform: scale(var(--sukunsh-scale, 0.88));
+  transform: translateX(-1%) scale(var(--sukunsh-scale, 0.88));
   transform-box: fill-box;
   transform-origin: center center;
 }

@@ -46,18 +46,18 @@ function getHeroMetrics(): HeroMetrics {
   const width = typeof window !== "undefined" ? window.innerWidth : 1440;
 
   if (width < 640) {
-    return { stageScale: 0.94, stageY: 0, sukunshScale: 0.78 };
+    return { stageScale: 0.94, stageY: 0, sukunshScale: 0.96 };
   }
 
   if (width < 1024) {
-    return { stageScale: 1.04, stageY: 3, sukunshScale: 0.82 };
+    return { stageScale: 1.04, stageY: 3, sukunshScale: 0.9 };
   }
 
   if (width < 1440) {
-    return { stageScale: 1.16, stageY: 7, sukunshScale: 0.88 };
+    return { stageScale: 1.16, stageY: 7, sukunshScale: 0.94 };
   }
 
-  return { stageScale: 1.24, stageY: 9, sukunshScale: 0.92 };
+  return { stageScale: 1.24, stageY: 9, sukunshScale: 1 };
 }
 
 export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProps) {
