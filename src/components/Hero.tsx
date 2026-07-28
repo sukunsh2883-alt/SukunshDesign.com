@@ -108,8 +108,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
 
       if (heroText) {
         heroText.innerHTML = `
-          <text x="65" y="315" fill="#FFFFFF" font-family="'Arial Black', 'Clash Display', 'Plus Jakarta Sans', 'Syne', sans-serif" font-weight="900" font-size="clamp(260px, 25vw, 440px)" style="font-weight: 900; font-size: clamp(260px, 25vw, 440px); line-height: 1;" letter-spacing="0.03em" class="select-none font-black">
-            PORT<tspan class="font-black" font-weight="900" fill="#FFFFFF" letter-spacing="0.03em">FOLIO</tspan>
+          <text x="48" y="322" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7" paint-order="stroke fill" font-family="'Arial Black', Impact, 'Clash Display', sans-serif" font-weight="900" font-size="clamp(285px, 26vw, 450px)" style="font-weight: 900; font-size: clamp(285px, 26vw, 450px); line-height: 1;" letter-spacing="0.005em" class="select-none font-black">
+            PORT<tspan class="font-black" font-weight="900" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7" letter-spacing="0.005em">FOLIO</tspan>
           </text>
         `;
       }

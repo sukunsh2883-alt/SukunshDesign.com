@@ -414,7 +414,7 @@ export default function ScrollShowcase({
             </button>
           </div>
 
-          <div ref={aiFilmDetailsRef} className="absolute bottom-5 left-5 right-5 z-20 flex flex-col gap-5 opacity-0 sm:left-8 sm:right-8 md:bottom-7 md:left-14 md:right-14 md:flex-row md:items-end md:justify-between">
+          <div ref={aiFilmDetailsRef} className="relative z-20 flex w-full flex-col gap-5 bg-white px-5 py-8 opacity-0 sm:px-8 md:flex-row md:items-end md:justify-between md:px-14 md:py-10">
             <div className="max-w-[250px]">
               <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
               <p className="mt-2 text-[15px] leading-tight text-neutral-600">
