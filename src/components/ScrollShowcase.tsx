@@ -303,11 +303,12 @@ export default function ScrollShowcase({
               frontImage={portraitImage}
               backImage={portraitImage}
               imageFit="cover"
-              lanyardWidth={0.86}
+              lanyardWidth={0.56}
               strapLength={0.74}
               springStrength={0.86}
               damping={2.8}
               cardWeight={0.68}
+              cardScale={1.16}
             />
           </div>
         </div>

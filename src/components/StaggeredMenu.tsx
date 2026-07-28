@@ -436,7 +436,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 if (homeItem?.onClick) homeItem.onClick();
                 else document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="text-white font-medium hover:opacity-80 transition-opacity"
+              className="nav-primary-link text-white font-medium"
             >
               Home
             </a>
@@ -448,7 +448,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 if (aboutItem?.onClick) aboutItem.onClick();
                 else document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="text-white/80 hover:text-white transition-colors"
+              className="nav-primary-link text-white/80"
             >
               About
             </a>
@@ -460,7 +460,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 if (projectItem?.onClick) projectItem.onClick();
                 else document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="text-white/80 hover:text-white transition-colors"
+              className="nav-primary-link text-white/80"
             >
               Project
             </a>
@@ -472,9 +472,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 if (contactItem?.onClick) contactItem.onClick();
                 else document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="text-white/80 hover:text-white transition-colors"
+              className="nav-primary-link text-white/80"
             >
-              Connect me
+              Contact
             </a>
           </nav>
 

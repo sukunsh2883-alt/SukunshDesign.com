@@ -1289,3 +1289,37 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
   border-radius: 28px !important;
 }
 
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html,
+  body,
+  body * {
+    cursor: none !important;
+  }
+
+  .dot-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999999;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 0 2px rgba(5, 5, 5, 0.9), 0 0 14px rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 160ms ease, width 180ms ease, height 180ms ease;
+    will-change: transform;
+  }
+
+  .dot-cursor.is-visible {
+    opacity: 1;
+  }
+
+  a:hover ~ .dot-cursor,
+  button:hover ~ .dot-cursor {
+    width: 12px;
+    height: 12px;
+  }
+}
+

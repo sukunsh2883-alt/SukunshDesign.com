@@ -314,6 +314,7 @@ export interface LanyardProps {
   strapLength?: number;
   cardWeight?: number;
   anchorX?: number;
+  cardScale?: number;
 }
 
 export default function Lanyard({
@@ -336,6 +337,7 @@ export default function Lanyard({
   strapLength = DEFAULT_LANYARD_SETTINGS.strapLength,
   cardWeight = DEFAULT_LANYARD_SETTINGS.cardWeight,
   anchorX,
+  cardScale = 1,
 }: LanyardProps) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -374,6 +376,7 @@ export default function Lanyard({
             strapLength={strapLength}
             cardWeight={cardWeight}
             anchorX={resolvedAnchorX}
+            cardScale={cardScale}
           />
         </Physics>
         <Environment blur={0.75}>
@@ -430,6 +433,7 @@ interface BandProps {
   strapLength: number;
   cardWeight: number;
   anchorX?: number;
+  cardScale?: number;
 }
 
 function Band({
@@ -450,6 +454,7 @@ function Band({
   strapLength,
   cardWeight,
   anchorX = 0,
+  cardScale = 1,
 }: BandProps) {
   const band = useRef<any>(null),
     fixed = useRef<any>(null),
@@ -870,9 +875,10 @@ function Band({
           <BallCollider args={[0.1]} />
         </RigidBody>
         <RigidBody position={[0, -(strapLength * 3 + 1.28), 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
-          <CuboidCollider args={[0.65, 0.98, 0.015]} />
+          <CuboidCollider args={[0.65 * cardScale, 0.98 * cardScale, 0.015]} />
           <group
             position={[0, 0, 0]}
+            scale={cardScale}
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
             onPointerUp={e => {

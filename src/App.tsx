@@ -18,6 +18,7 @@ import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
 import ScrollShowcase from "./components/ScrollShowcase";
 import GitHubExplorer from "./components/GitHubExplorer";
+import DotCursor from "./components/DotCursor";
 
 // State Engines and Credentials
 import {
@@ -474,6 +475,7 @@ export default function App() {
 
   return (
     <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300">
+      <DotCursor />
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
