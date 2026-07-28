@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { motion } from "motion/react";
+import gsap from "gsap";
 import { ArrowLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 import { DesignProject } from "../portfolioData";
 
@@ -30,6 +31,7 @@ const buildFiveImages = (project: DesignProject) => {
 };
 
 export default function ProjectCaseStudy({ project, allProjects = [], onClose }: ProjectCaseStudyProps) {
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
   const galleryImages = useMemo(() => buildFiveImages(project), [project]);
   const projectIndex = Math.max(0, allProjects.findIndex((item) => item.id === project.id));
   const displayIndex = String(projectIndex + 1).padStart(2, "0");
@@ -47,15 +49,59 @@ export default function ProjectCaseStudy({ project, allProjects = [], onClose }:
     };
   }, [project.id]);
 
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    if (reduceMotion || coarsePointer) return;
+
+    let targetScroll = scroller.scrollTop;
+
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+      targetScroll = Math.min(maxScroll, Math.max(0, targetScroll + event.deltaY * 1.15));
+
+      gsap.to(scroller, {
+        scrollTop: targetScroll,
+        duration: 0.82,
+        ease: "power3.out",
+        overwrite: true,
+      });
+    };
+
+    const syncTarget = () => {
+      if (!gsap.isTweening(scroller)) targetScroll = scroller.scrollTop;
+    };
+
+    scroller.addEventListener("wheel", handleWheel, { passive: false });
+    scroller.addEventListener("scroll", syncTarget, { passive: true });
+
+    return () => {
+      gsap.killTweensOf(scroller);
+      scroller.removeEventListener("wheel", handleWheel);
+      scroller.removeEventListener("scroll", syncTarget);
+    };
+  }, [project.id]);
+
   const scrollToGallery = () => {
-    document.querySelector("#project-gallery")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
+    const scroller = scrollerRef.current;
+    const gallery = scroller?.querySelector<HTMLElement>("#project-gallery");
+    if (!scroller || !gallery) return;
+
+    gsap.to(scroller, {
+      scrollTop: gallery.offsetTop,
+      duration: 1.15,
+      ease: "power3.inOut",
+      overwrite: true,
     });
   };
 
   return (
     <motion.div
+      ref={scrollerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

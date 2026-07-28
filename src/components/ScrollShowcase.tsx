@@ -308,7 +308,7 @@ export default function ScrollShowcase({
               springStrength={0.86}
               damping={2.8}
               cardWeight={0.68}
-              cardScale={1.27}
+              cardScale={1.48}
             />
           </div>
         </div>

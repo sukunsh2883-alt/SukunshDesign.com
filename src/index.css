@@ -1311,8 +1311,9 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
 
 @media (max-width: 767px) {
   .footer-artwork {
-    left: -18% !important;
-    width: 92% !important;
+    bottom: 0 !important;
+    height: 290px !important;
+    top: auto !important;
   }
 
   .ai-film-details {

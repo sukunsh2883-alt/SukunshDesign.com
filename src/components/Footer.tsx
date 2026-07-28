@@ -35,6 +35,8 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
     const svg = root.querySelector("svg");
     if (!svg) return;
 
+    svg.setAttribute("preserveAspectRatio", "xMinYMax meet");
+
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const focusable = Array.from(svg.querySelectorAll("path, ellipse, circle, line, rect")) as SVGGraphicsElement[];
     svg.style.pointerEvents = "auto";
@@ -218,9 +220,9 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
   }, [artworkMarkup]);
 
   return (
-    <footer id="contact" className="relative min-h-[560px] overflow-hidden bg-[#111111] text-[#f3f4f4] select-none md:min-h-[520px]">
+    <footer id="contact" className="relative min-h-[760px] overflow-hidden bg-[#111111] text-[#f3f4f4] select-none sm:min-h-[650px] md:min-h-[520px]">
       <div className="absolute inset-0 bg-[#111111]" />
-      <div ref={artworkRef} className="footer-artwork absolute bottom-0 left-[-4%] top-0 z-10 w-[64%] overflow-visible sm:w-[58%] lg:w-[52%]" aria-hidden="true">
+      <div ref={artworkRef} className="footer-artwork absolute inset-0 z-10 overflow-visible" aria-hidden="true">
         {artworkMarkup ? <div className="h-full w-full" dangerouslySetInnerHTML={{ __html: artworkMarkup }} /> : null}
       </div>
 
