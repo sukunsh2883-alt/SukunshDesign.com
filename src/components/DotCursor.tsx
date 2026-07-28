@@ -22,19 +22,13 @@ export default function DotCursor() {
     const move = (event: PointerEvent) => {
       x = event.clientX - 5;
       y = event.clientY - 5;
+      dotRef.current?.classList.add("is-visible");
       if (!frame) frame = window.requestAnimationFrame(render);
     };
 
-    const show = () => dotRef.current?.classList.add("is-visible");
-    const hide = () => dotRef.current?.classList.remove("is-visible");
-
     window.addEventListener("pointermove", move, { passive: true });
-    window.addEventListener("pointerenter", show);
-    window.addEventListener("pointerleave", hide);
     return () => {
       window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerenter", show);
-      window.removeEventListener("pointerleave", hide);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);

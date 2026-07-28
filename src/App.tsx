@@ -523,7 +523,7 @@ export default function App() {
               />
             )}
 
-            <div id="smooth-wrapper">
+            <div id={selectedDesignProject ? undefined : "smooth-wrapper"} className={selectedDesignProject ? "project-scroll-wrapper" : undefined}>
               <div id="smooth-content" className="flex min-h-screen flex-col">
                 {/* Main view container */}
                 <main className="main flex-grow overflow-x-hidden overflow-y-visible">

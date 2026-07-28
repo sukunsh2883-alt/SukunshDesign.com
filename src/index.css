@@ -1289,6 +1289,11 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
   border-radius: 28px !important;
 }
 
+.project-scroll-wrapper {
+  min-height: 100svh;
+  overflow: visible;
+}
+
 @media (pointer: fine) and (prefers-reduced-motion: no-preference) {
   html,
   body,
@@ -1305,21 +1310,15 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
     height: 10px;
     border-radius: 50%;
     background: #ffffff;
-    box-shadow: 0 0 0 2px rgba(5, 5, 5, 0.9), 0 0 14px rgba(255, 255, 255, 0.4);
+    mix-blend-mode: difference;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 160ms ease, width 180ms ease, height 180ms ease;
+    transition: opacity 160ms ease;
     will-change: transform;
   }
 
   .dot-cursor.is-visible {
     opacity: 1;
-  }
-
-  a:hover ~ .dot-cursor,
-  button:hover ~ .dot-cursor {
-    width: 12px;
-    height: 12px;
   }
 }
 
