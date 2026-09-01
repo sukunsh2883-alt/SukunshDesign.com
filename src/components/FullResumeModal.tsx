@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   X, Briefcase, GraduationCap, Laptop, BadgeCheck, FileText, 
@@ -139,6 +139,8 @@ export default function FullResumeModal({ isOpen, onClose }: FullResumeModalProp
   return (
     <AnimatePresence>
       <motion.div 
+        id="resume-modal"
+        data-portal="resume"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

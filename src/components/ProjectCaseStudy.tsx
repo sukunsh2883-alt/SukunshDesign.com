@@ -53,37 +53,8 @@ export default function ProjectCaseStudy({ project, allProjects = [], onClose }:
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
-    if (reduceMotion || coarsePointer) return;
-
-    let targetScroll = scroller.scrollTop;
-
-    const handleWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-      targetScroll = Math.min(maxScroll, Math.max(0, targetScroll + event.deltaY * 1.15));
-
-      gsap.to(scroller, {
-        scrollTop: targetScroll,
-        duration: 0.82,
-        ease: "power3.out",
-        overwrite: true,
-      });
-    };
-
-    const syncTarget = () => {
-      if (!gsap.isTweening(scroller)) targetScroll = scroller.scrollTop;
-    };
-
-    scroller.addEventListener("wheel", handleWheel, { passive: false });
-    scroller.addEventListener("scroll", syncTarget, { passive: true });
-
-    return () => {
-      gsap.killTweensOf(scroller);
-      scroller.removeEventListener("wheel", handleWheel);
-      scroller.removeEventListener("scroll", syncTarget);
-    };
+    // Ensure scroll position is reset on open
+    scroller.scrollTop = 0;
   }, [project.id]);
 
   const scrollToGallery = () => {

@@ -191,188 +191,128 @@ export const aiFilms: AIFilm[] = [
 // Selected Design Works List
 export const designProjects: DesignProject[] = [
   {
-    id: "AI film",
-    title: "Ai short Film",
-    type: "Film",
+    id: "design-web-arch",
+    title: "Architectural Studio Web Platform",
+    type: "Web Design",
     year: "2026",
-    description: "Academic photo communication study capturing extreme body elasticity, suspension leaps, and somatic contour lighting.",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
-    tools: ["Studio Spotlight Rigging", "Motion Capture", "Contrast Optimization", "Academic Layouts"],
+    description: "Editorial web portal showcasing spatial architectures, interactive blueprints, and minimal typography.",
+    image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop",
+    tools: ["React", "Tailwind CSS", "Figma", "Web Design"],
     link: "mailto:Sukunsh2883@gmail.com",
-    client: "College of Art, Delhi University",
-    aboutProject: "Action photography is an incredibly exciting genre to shoot. Under the guidance of Mr. Parveen Kumar, the study explores body contouring using high-density side lighting and extreme raw athleticism. It illustrates suspension, equilibrium, and spatial trajectory transitions in darkness.",
+    client: "Studio Arch & Design",
+    aboutProject: "A high-performance editorial web platform designed for architectural storytelling. Built with responsive grid systems, tactile micro-interactions, and expansive full-bleed media layouts that adapt effortlessly to mobile, tablet, and ultra-wide displays.",
     galleryImages: [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png"
+      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop"
     ]
   },
   {
-    id: "design-illustrative-riso",
-    title: "Risography Welcome Cards",
-    type: "Illustration / Print",
-    year: "2025",
-    description: "Designed, layered, and printed welcome cards and children's book illustrations using tactile Risography duplicators.",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_41_knefoc.png",
-    tools: ["Riso Print", "Sourcing Ink", "Figma", "Illustrator"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "IDC, IIT Bombay",
-    aboutProject: "A physical illustration study. We crafted layered stencil assets which were processed straight via screen-printing mechanics on natural-toned cardstocks using botanical ink bases.",
-    galleryImages: [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_41_knefoc.png",
-      "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=800&auto=format&fit=crop"
-    ]
-  },
-  {
-    id: "design-kinetic-motion",
-    title: "Fluid Kinetic Promo Loop",
-    type: "Motion Design / Video",
+    id: "design-web-platform",
+    title: "NextGen Design System & Web App",
+    type: "UI/UX & Web",
     year: "2026",
-    description: "Branded after-effects motion sequence showcasing complex layout transformations and typography transitions.",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056274/image_36_hyojxm.png",
-    tools: ["After Effects", "Illustrator", "Premiere Pro"],
+    description: "Responsive web application and design system featuring high-contrast UI components and dark mode interactions.",
+    image: "https://images.unsplash.com/photo-1581291518655-9523c932dedf?q=80&w=1400&auto=format&fit=crop",
+    tools: ["Figma", "Design Systems", "Web UI", "TypeScript"],
+    link: "https://www.behance.net/sukunshsharma",
+    client: "Sukunsh Labs",
+    aboutProject: "A scalable web UI ecosystem with over 200+ accessible components, tokenized design systems, and responsive layouts engineered for cross-platform speed and visual precision.",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1581291518655-9523c932dedf?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1400&auto=format&fit=crop"
+    ]
+  },
+  {
+    id: "design-web-analytics",
+    title: "FinTech SaaS Web Dashboard",
+    type: "SaaS & Web",
+    year: "2025",
+    description: "Real-time visual data metrics dashboard with interactive graphs, clean layout grids, and multi-viewport responsiveness.",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1400&auto=format&fit=crop",
+    tools: ["Next.js", "D3.js", "Tailwind CSS", "Dashboard UI"],
+    link: "https://www.behance.net/sukunshsharma",
+    client: "Apex Financial",
+    aboutProject: "Creating a seamless data analytics dashboard with dense yet legible information architecture, custom financial charting modules, and rapid responsive breakpoints across tablet and mobile.",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop"
+    ]
+  },
+  {
+    id: "design-web-agency",
+    title: "Creative Agency Web Portal",
+    type: "Digital Web",
+    year: "2026",
+    description: "Brand storytelling web screen engineered with kinetic micro-interactions, smooth scrolling, and modular UI cards.",
+    image: "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
+    tools: ["GSAP", "Three.js", "Web Design", "UI Screens"],
     link: "https://www.behance.net/sukunshsharma",
     client: "ShareChat Creative Lab",
-    aboutProject: "Creating continuous loops that demonstrate fluid transformation of flat geometric assets into 3D isometric typography configurations in line with modern marketing trends.",
+    aboutProject: "A showcase web platform with fluid animations, dynamic typography scales, and modular cards that provide an immersive experience across desktop, iPad, and smartphone screens.",
     galleryImages: [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056274/image_36_hyojxm.png",
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop"
+      "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop"
     ]
   },
   {
-    id: "design-1",
-    title: "Brand Identity Layouts",
-    type: "Branding",
+    id: "design-web-mag",
+    title: "Minimalist Editorial Magazine Web",
+    type: "Editorial Web",
+    year: "2025",
+    description: "Digital editorial journal featuring high-precision typography scales, multi-column reading modes, and responsive grids.",
+    image: "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=1400&auto=format&fit=crop",
+    tools: ["Typography", "Editorial UI", "Web Layouts"],
+    link: "https://www.behance.net/sukunshsharma",
+    client: "National Typography Press",
+    aboutProject: "An editorial digital reading experience pairing Swiss typography with subtle horizontal dividers and responsive column masonry.",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=1400&auto=format&fit=crop"
+    ]
+  },
+  {
+    id: "design-web-commerce",
+    title: "Luxury E-Commerce Web Store",
+    type: "E-Commerce",
+    year: "2025",
+    description: "Seamless e-commerce web platform showcasing luxury product cards, fluid cart drawer, and high-performance navigation.",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop",
+    tools: ["React", "Shopify Headless", "Web Screens"],
+    link: "https://www.behance.net/sukunshsharma",
+    client: "Maison Studio",
+    aboutProject: "An ultra-refined digital shopping interface combining high-resolution product carousels, responsive checkout flows, and frictionless navigation.",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop"
+    ]
+  },
+  {
+    id: "design-web-portfolio",
+    title: "Interactive Spatial Web Experience",
+    type: "Spatial Web",
     year: "2026",
-    description: "Visual identity system with strong typography, color accent schemes, and cinematic brand guidelines.",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_33_lku3qb.png",
-    tools: ["Photoshop", "Illustrator", "Figma"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "Sukunsh Labs Inc.",
-    aboutProject: "A comprehensive core visual identity structure created to bridge corporate architecture with premium cinematic brand directives. The design relies heavily on grid alignment systems, technical display spacing, and fluid ink-based textures.",
-    galleryImages: [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_33_lku3qb.png",
-      "https://images.unsplash.com/photo-1581291518655-9523c932dedf?q=80&w=800&auto=format&fit=crop"
-    ]
-  },
-  {
-    id: "design-monogram-logos",
-    title: "Minimal Monogram logos",
-    type: "Logo Design",
-    year: "2025",
-    description: "Fusing geometric monolith layouts with elegant calligraphy forms to compile responsive, modern corporate logo designs.",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_37_mqlouw.png",
-    tools: ["Illustrator", "Grids", "Inking"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "Sukunsh Design Studio",
-    aboutProject: "An exploration into logo responsiveness. The mono-line grid is fully optimized to stay perfectly visible at massive billboard sizes or tiny 16px digital screen corners.",
-    galleryImages: [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_37_mqlouw.png"
-    ]
-  },
-  {
-    id: "design-earthquake-map",
-    title: "Disaster Pedagogy Map",
-    type: "Infographic Design",
-    year: "2025",
-    description: "High-density evacuation map illustrating structural weak zones and safe evacuation vectors through clear infographics.",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_34_xopufv.png",
-    tools: ["Figma", "Illustrator", "Evagenerate"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "National Earthquake Society",
-    aboutProject: "Developing clear directions and easy-to-digest symbols representing structural threats, exit pathways, and response coordinates.",
-    galleryImages: [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_34_xopufv.png"
-    ]
-  },
-  {
-    id: "design-character-anim",
-    title: "Neuro 2D Character Run",
-    type: "Animation",
-    year: "2025",
-    description: "A frame-by-frame 2D hand-drawn character run-cycle highlighting fluid action, clothes inertia, and wind drag.",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_35_st0j6w.png",
-    tools: ["Animate CC", "Photoshop", "Procreate"],
+    description: "Spatial digital experience and portfolio screen crafted with 3D canvas elements, fluid motion, and responsive layout.",
+    image: "https://images.unsplash.com/photo-1559028012-481c04fa702d?q=80&w=1400&auto=format&fit=crop",
+    tools: ["WebGL", "Tailwind", "Responsive UI"],
     link: "https://www.behance.net/sukunshsharma",
     client: "Freelance Editorial Study",
-    aboutProject: "Studying weight and balance in keyframes, drafting timing charts, and tracking joint markers to make the overall character motion feel deeply realistic and smooth.",
+    aboutProject: "An experimental web platform combining 3D interactive canvases with structured editorial layout components.",
     galleryImages: [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_35_st0j6w.png"
+      "https://images.unsplash.com/photo-1559028012-481c04fa702d?q=80&w=1400&auto=format&fit=crop"
     ]
   },
   {
     id: "design-pw-socials",
-    title: "PW Campaign Creatives",
-    type: "Social Media Post Design",
-    year: "2023",
-    description: "Branded visual layout posts, banners, and advertising composites designed for extensive digital distribution lists.",
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1200&auto=format&fit=crop",
-    tools: ["Photoshop", "Illustrator", "Color Theory"],
+    title: "Digital Campaign Web Experience",
+    type: "Digital Web",
+    year: "2025",
+    description: "Interactive campaign landing page and creative assets designed for high-conversion web distribution.",
+    image: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1400&auto=format&fit=crop",
+    tools: ["Figma", "Web Layouts", "Color Theory"],
     link: "https://www.behance.net/sukunshsharma",
     client: "Physics Wallah",
-    aboutProject: "A high-intensity campaign post-design system requiring fast visual alignment, readable call-out boxes, and engaging scientific graphics for social channels.",
+    aboutProject: "A high-intensity web campaign platform requiring fast visual alignment, readable call-out boxes, and engaging graphics.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1200&auto=format&fit=crop"
-    ]
-  },
-  {
-    id: "design-2",
-    title: "Typographic Children’s Book",
-    type: "Publication / Typography",
-    year: "2025",
-    description: "A storytelling format where expressive, kinetic typography replaces traditional illustration structures.",
-    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1200&auto=format&fit=crop",
-    tools: ["Typography", "Layout", "Print"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "National Typography Press",
-    aboutProject: "Rather than taking illustrations for granted, this typographic children's book treats words as live, breathing structural architecture that conveys tone, fear, scale, and joy.",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1200&auto=format&fit=crop"
-    ]
-  },
-  {
-    id: "design-eco-box",
-    title: "Aftershock Board Packaging",
-    type: "Packaging Design",
-    year: "2025",
-    description: "Eco-friendly cardboard structural packaging layouts complete with custom inner separation dividers and rules boxes.",
-    image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop",
-    tools: ["Boxes Blueprint", "Illustrator", "Sustainability Studies"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "Sukunsh Boardgames Studio",
-    aboutProject: "A premium structural packaging study designed with recycled boardstock. The box cover uses heavy industrial line-weights and a custom screen-printed yellow neon color accent.",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop"
-    ]
-  },
-  {
-    id: "design-3",
-    title: "Aftershock: Escape the Quake",
-    type: "Board Game / Academic Project",
-    year: "2025",
-    description: "A comprehensive board game simulating real-world earthquake evacuation scenarios through strategic pedagogy.",
-    image: "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?q=80&w=1200&auto=format&fit=crop",
-    tools: ["Game Design", "Visual Design", "Storytelling"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "Sukunsh Studio Studies",
-    aboutProject: "Aftershock structures disaster pedagogy as a dynamic physical board game. Our purpose was to create intuitive instructions, modular layouts, and visual rules cards.",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?q=80&w=1200&auto=format&fit=crop"
-    ]
-  },
-  {
-    id: "design-4",
-    title: "AI Virtual Gifts & UI",
-    type: "AI Visual Design",
-    year: "2026",
-    description: "AI-powered custom gifts, glass UI materials, and interface assets modeled for maximum digital engagement.",
-    image: "https://images.unsplash.com/photo-1618005198143-d366800ee4ef?q=80&w=1200&auto=format&fit=crop",
-    tools: ["AI Design", "UI Assets", "Branding"],
-    link: "https://www.behance.net/sukunshsharma",
-    client: "ShareChat & Moj Inc.",
-    aboutProject: "A study on design elements representing digital collectibles, virtual gifting mechanisms, and translucent materials.",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1618005198143-d366800ee4ef?q=80&w=1200&auto=format&fit=crop"
+      "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1400&auto=format&fit=crop"
     ]
   }
 ];

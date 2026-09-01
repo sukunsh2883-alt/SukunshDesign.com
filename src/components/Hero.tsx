@@ -3,10 +3,12 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface HeroProps {
-  onWatchShowreel: () => void;
+  onWatchShowreel?: () => void;
   profile: any;
   onOpenProjects?: () => void;
   onOpenAIWork?: () => void;
+  onOpenAboutMe?: () => void;
+  onOpenContact?: () => void;
 }
 
 const SVG_URL = "/artwork/main artwork.svg";
@@ -46,21 +48,21 @@ function getHeroMetrics(): HeroMetrics {
   const width = typeof window !== "undefined" ? window.innerWidth : 1440;
 
   if (width < 640) {
-    return { stageScale: 0.94, stageY: 0, sukunshScale: 0.96 };
+    return { stageScale: 1.15, stageY: 1, sukunshScale: 1 };
   }
 
   if (width < 1024) {
-    return { stageScale: 1.04, stageY: 3, sukunshScale: 0.9 };
+    return { stageScale: 1.28, stageY: 2, sukunshScale: 1 };
   }
 
   if (width < 1440) {
-    return { stageScale: 1.16, stageY: 7, sukunshScale: 0.94 };
+    return { stageScale: 1.38, stageY: 3, sukunshScale: 1 };
   }
 
-  return { stageScale: 1.24, stageY: 9, sukunshScale: 1 };
+  return { stageScale: 1.48, stageY: 4, sukunshScale: 1 };
 }
 
-export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProps) {
+export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAboutMe, onOpenContact }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,9 +91,21 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const isTouch = window.matchMedia("(pointer: coarse)").matches;
       const svgElement = stage.querySelector("svg");
       if (!svgElement) return;
+      svgElement.classList.add("hero-svg");
 
       const byId = <T extends SVGGraphicsElement>(id: string) => findSvgElement<T>(svgElement, id);
       const heroText = byId("Sukunsh");
+
+      // Replace or configure background hero text to display "PORTFOLIO"
+      if (heroText) {
+        const textNode = heroText.querySelector("text");
+        if (textNode) {
+          textNode.textContent = "PORTFOLIO";
+          textNode.setAttribute("class", "st1 st2 st3 hero-portfolio-text");
+          textNode.setAttribute("letter-spacing", "0.015em");
+          textNode.setAttribute("transform", "matrix(1 0 0 1 80 314.15)");
+        }
+      }
       const head = byId("head-2");
       const leftEye = byId("eye_ball_left");
       const rightEye = byId("eyes_ball_right");
@@ -106,45 +120,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
       const tagRects = Array.from(svgElement.querySelectorAll("#Layer_147 rect, #Layer_147 path")) as SVGGraphicsElement[];
       const tagTexts = Array.from(svgElement.querySelectorAll("#Layer_148 text")) as SVGGraphicsElement[];
 
-      if (heroText) {
-        heroText.innerHTML = `
-          <text x="48" y="322" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7" paint-order="stroke fill" font-family="'Arial Black', Impact, 'Clash Display', sans-serif" font-weight="900" font-size="clamp(285px, 26vw, 450px)" style="font-weight: 900; font-size: clamp(285px, 26vw, 450px); line-height: 1;" letter-spacing="0.005em" class="select-none font-black">
-            PORT<tspan class="font-black" font-weight="900" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7" letter-spacing="0.005em">FOLIO</tspan>
-          </text>
-        `;
-      }
-
-      if (svgElement && !svgElement.querySelector("#extra_hero_labels")) {
-        const extraLabelsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        extraLabelsGroup.setAttribute("id", "extra_hero_labels");
-        extraLabelsGroup.innerHTML = `
-          <!-- Floating Plain Text Labels -->
-          <text x="140" y="425" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">Illustration</text>
-          <text x="265" y="480" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">Typographic</text>
-          <text x="1400" y="465" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">UI/UX</text>
-          <text x="1440" y="525" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="20" letter-spacing="0.02em" opacity="0.95">Cinematography</text>
-
-          <!-- Arrow and 2026 -->
-          <g transform="translate(1350, 368)">
-            <path d="M 0,0 L 90,0 M 76,-6 L 90,0 L 76,6" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-            <text x="115" y="7" fill="#FFFFFF" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="400" font-size="28" letter-spacing="0.05em">2026</text>
-          </g>
-
-          <!-- Left side vertical scroll indicator -->
-          <g transform="translate(55, 480)">
-            <circle cx="0" cy="-110" r="4" fill="#FFFFFF" />
-            <line x1="0" y1="-95" x2="0" y2="105" stroke="#FFFFFF" stroke-width="1.2" stroke-opacity="0.4" />
-            <text transform="rotate(-90)" x="-40" y="-14" fill="#A1A1AA" font-family="'Clash Display', 'Plus Jakarta Sans', sans-serif" font-weight="500" font-size="12" letter-spacing="0.25em">SCROLL TO EXPLORE</text>
-          </g>
-        `;
-        svgElement.appendChild(extraLabelsGroup);
-      }
-
-      const backgroundLayer = byId("Layer_38");
-      if (heroText?.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
-        svgElement.insertBefore(heroText, backgroundLayer.nextSibling);
-      }
-      const characterGroup = byId("character_group");
       const wrapSvgElements = (id: string, elements: SVGGraphicsElement[]) => {
         const filtered = elements.filter(Boolean);
         const first = filtered[0];
@@ -156,6 +131,21 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         filtered.forEach((element) => group.appendChild(element));
         return group as SVGGElement;
       };
+
+      const characterElementIds = [
+        "blue_pen-2", "pink", "paper-2", "ipad-2", "red_bag-2", "pentab-2",
+        "Layer_136", "Layer_135", "Layer_134", "Layer_133", "Layer_152", "Layer_130", "Layer_129",
+        "right_arm_with_pen-2", "Layer_253", "Layer_252", "head-2", "Layer_123", "shirt-2", "green_bag",
+        "Layer_234", "Layer_233", "Layer_117", "Layer_118", "camera-2", "Layer_116", "Layer_114", "Layer_112",
+        "Layer_109", "Layer_108"
+      ];
+      const charElements = characterElementIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
+      const characterGroup = byId("character_group") || (charElements.length > 0 ? wrapSvgElements("character_group", charElements) : null);
+
+      const backgroundLayer = byId("Layer_38");
+      if (heroText?.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
+        svgElement.insertBefore(heroText, backgroundLayer.nextSibling);
+      }
 
       const sukunshParallax = heroText ? wrapSvgElements("sukunsh_parallax_group", [heroText]) : null;
       const characterParallax = characterGroup ? wrapSvgElements("character_parallax_group", [characterGroup]) : null;
@@ -728,9 +718,11 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
         if (!globalSvg) {
           globalSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg") as unknown as SVGSVGElement;
           globalSvg.setAttribute("id", "global-beetle-svg");
-          globalSvg.setAttribute("viewBox", "0 0 1358.17 730.78");
+          globalSvg.setAttribute("viewBox", svgElement.getAttribute("viewBox") || "0 0 1728.2 758.1");
           globalSvg.setAttribute("class", "fixed inset-0 w-screen h-screen pointer-events-none z-[99999] overflow-visible");
           document.body.appendChild(globalSvg);
+        } else {
+          globalSvg.setAttribute("viewBox", svgElement.getAttribute("viewBox") || "0 0 1728.2 758.1");
         }
 
         // Copy styles to make sure classes render perfectly
@@ -1168,19 +1160,28 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork }: HeroProp
     };
   }, []);
 
+  const handleNavClick = (sectionId: string) => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section
       ref={sectionRef}
       id="home"
-      className="hero relative overflow-hidden bg-[#050505]"
+      data-cursor-tag="Home"
+      className="hero relative min-h-screen overflow-hidden bg-[#050505] text-white select-none"
     >
+      {/* Central Interactive Artwork Canvas with Character & PORTFOLIO Typography */}
       <div className="hero-scroll-base" aria-hidden="true" />
 
       <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
         <div className="hero-art relative flex justify-center w-full">
           <div
             ref={stageRef}
-            className="svg-stage relative mb-0 aspect-[1358.17/730.78] origin-center overflow-visible"
+            className="svg-stage relative mb-0 aspect-[1728.2/758.1] origin-center overflow-visible"
             style={{
               "--svg-scale-multiplier": heroMetrics.stageScale,
               "--svg-y-offset": `${heroMetrics.stageY}vh`,

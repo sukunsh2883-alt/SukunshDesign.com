@@ -1,11 +1,13 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DesignProject, aiFilms } from "../portfolioData";
+import { DesignProject, designProjects, aiFilms } from "../portfolioData";
 import ShapeGrid from "./ShapeGrid";
 import CurvedLoop from "./CurvedLoop";
-import Lanyard from "./Lanyard";
+import LanyardCard from "./LanyardCard";
+import EditorialProjects from "./EditorialProjects";
+import LetsTalk from "./LetsTalk";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,12 +22,6 @@ interface ScrollShowcaseProps {
   profile?: any;
 }
 
-const fallbackProjects = [
-  "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056273/image_33_lku3qb.png",
-  "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_41_knefoc.png",
-  "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056274/image_36_hyojxm.png",
-];
-
 export default function ScrollShowcase({
   onClose,
   isInline = false,
@@ -38,17 +34,17 @@ export default function ScrollShowcase({
 }: ScrollShowcaseProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const aboutStageRef = useRef<HTMLDivElement | null>(null);
-  const projectSectionRef = useRef<HTMLElement | null>(null);
-  const projectTrackRef = useRef<HTMLDivElement | null>(null);
   const aiFilmSectionRef = useRef<HTMLElement | null>(null);
   const aiFilmCardRef = useRef<HTMLButtonElement | null>(null);
   const aiFilmHeadingRef = useRef<HTMLDivElement | null>(null);
   const aiFilmDetailsRef = useRef<HTMLDivElement | null>(null);
   const [filmIndex, setFilmIndex] = useState(0);
-  const selectedProjects = (designs.length ? designs : []).slice(0, 3);
-  const rollingProjects = [...selectedProjects, ...selectedProjects];
+
+  const allProjects = designs && designs.length > 0 ? designs : designProjects;
+
   const film = aiFilms[filmIndex % aiFilms.length];
-  const reelItems = Array.from({ length: 10 }, (_, index) => aiFilms[index % aiFilms.length]);
+  // 12 items for seamless continuous reel stream
+  const reelItems = Array.from({ length: 14 }, (_, index) => aiFilms[index % aiFilms.length]);
   const portraitImage =
     "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
@@ -57,14 +53,15 @@ export default function ScrollShowcase({
     if (reduceMotion || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
+      // General section reveals
       gsap.utils.toArray<HTMLElement>(".folio-reveal").forEach((element) => {
         gsap.fromTo(
           element,
-          { opacity: 0, y: 32 },
+          { opacity: 0, y: 28 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
+            duration: 0.75,
             ease: "power3.out",
             scrollTrigger: {
               trigger: element,
@@ -76,62 +73,20 @@ export default function ScrollShowcase({
         );
       });
 
-      gsap.to(".wave-reel-card", {
-        y: (index) => Math.sin(index * 0.9) * 24,
-        rotation: (index) => [-10, -4, 3, 8, 13, 5, -6, -12, 2, 11][index % 10],
-        duration: 2.6,
+      // Seamless left-to-right straight horizontal track motion for AI Reel cards
+      gsap.to(".seamless-reel-track", {
+        xPercent: -50,
+        duration: 25,
         repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: 0.12,
-      });
-
-      gsap.to(".wave-reel-track", {
-        xPercent: -12,
-        duration: 9,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      const media = gsap.matchMedia();
-
-      media.add("(min-width: 768px)", () => {
-        gsap.fromTo(
-          projectTrackRef.current,
-          { x: 0 },
-          {
-            x: () => {
-              const track = projectTrackRef.current;
-              const section = projectSectionRef.current;
-              if (!track || !section) return 0;
-              return -(track.scrollWidth - section.clientWidth);
-            },
-            ease: "none",
-            scrollTrigger: {
-              trigger: projectSectionRef.current || ".project-roll-section",
-              start: "top top",
-              end: () => {
-                const track = projectTrackRef.current;
-                const section = projectSectionRef.current;
-                if (!track || !section) return "+=1100";
-                return `+=${Math.max(track.scrollWidth - section.clientWidth + window.innerWidth * 0.65, 1100)}`;
-              },
-              scrub: 0.8,
-              pin: true,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
-          },
-        );
+        ease: "none",
       });
 
       const filmTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: aiFilmSectionRef.current || ".ai-film-section",
           start: "top top",
-          end: "+=180%",
-          scrub: 1.6,
+          end: "+=100%",
+          scrub: 0.6,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -169,28 +124,14 @@ export default function ScrollShowcase({
           0.76,
         );
 
-      return () => media.revert();
+      ScrollTrigger.refresh();
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
-
-  const getProject = (index: number) => {
-    const project = selectedProjects[index];
-    return {
-      project,
-      title: project?.type || "Branding",
-      description: project?.description || "Background in Fine Art and Design.",
-      image: project?.image || fallbackProjects[index % fallbackProjects.length],
-    };
-  };
+  }, [allProjects]);
 
   const openFilm = () => {
     if (film) onOpenVideo?.(film.videoUrl, film.title);
-  };
-
-  const openBehance = () => {
-    window.open(profile?.behance || "https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -209,14 +150,143 @@ export default function ScrollShowcase({
         </nav>
       )}
 
-      <section id="about" className="relative min-h-screen overflow-hidden border-b border-neutral-100 bg-white px-5 py-16 sm:px-8 md:px-14 md:py-20">
-        <div className="absolute inset-x-6 top-14 bottom-14 z-0 hidden md:block">
+      {/* PROJECTS SECTION */}
+      <EditorialProjects
+        projects={allProjects}
+        onSelectProject={onSelectProject}
+        onOpenProjectsExplorer={onOpenProjects}
+        onOpenAIWork={onOpenAIWork}
+        profile={profile}
+      />
+
+      {/* 3. AI FILM & REELS SECTION */}
+      <section id="ai-work" ref={aiFilmSectionRef} data-cursor-tag="AI Works" className="ai-film-section relative min-h-screen overflow-hidden bg-white">
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <div ref={aiFilmHeadingRef} className="pointer-events-none absolute left-5 top-6 z-20 opacity-0 sm:left-8 md:left-14">
+            <div className="h-px w-36 bg-neutral-700" />
+            <div className="mt-2 flex items-center gap-1.5 text-3xl font-normal text-[#1f1f1e]">
+              <span>AI Film</span>
+              <ArrowDownLeft className="h-5 w-5" />
+            </div>
+          </div>
+
+          <div className="flex min-h-screen w-full items-center justify-center">
+            <button
+              ref={aiFilmCardRef}
+              type="button"
+              onClick={openFilm}
+              className="ai-film-card group relative block h-[100svh] w-[100vw] shrink-0 overflow-hidden rounded-none bg-neutral-200"
+            >
+              <video
+                key={film?.id}
+                src={film?.videoUrl}
+                poster={film?.thumbnail}
+                muted
+                loop
+                playsInline
+                autoPlay
+                preload="auto"
+                className="h-full w-full object-cover opacity-100 transition-opacity group-hover:opacity-100"
+              />
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-500 bg-white/25">
+                  <Play className="h-5 w-5 fill-neutral-600 text-neutral-600" />
+                </span>
+              </span>
+            </button>
+          </div>
+
+          <div ref={aiFilmDetailsRef} className="ai-film-details relative z-20 mx-auto flex w-[calc(100%_-_2.5rem)] max-w-[860px] flex-col gap-6 bg-white py-7 opacity-0 sm:w-[calc(100%_-_4rem)] md:flex-row md:items-end md:justify-between md:py-8">
+            <div className="w-full max-w-[310px]">
+              <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
+              <p className="mt-2 text-[15px] leading-tight text-neutral-600">
+                Background in Fine Art
+                <br />
+                and Design.
+              </p>
+              <button
+                type="button"
+                onClick={() => setFilmIndex((value) => (value + 1) % aiFilms.length)}
+                className="mt-5 flex w-full items-center justify-between border-t border-neutral-500 pt-2 text-sm text-[#878787]"
+              >
+                <span>Next film</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={onOpenAIWork}
+              className="inline-flex w-fit items-center gap-5 rounded-full border border-neutral-200 px-6 py-3 text-sm text-[#878787] transition-colors hover:border-neutral-900 hover:text-neutral-950"
+            >
+              <span>View All</span>
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Promotion Reels: Straight, Non-floating, Seamlessly Attached moving horizontally */}
+      <section id="ai-reels" data-cursor-tag="AI Works" className="relative min-h-[65vh] overflow-hidden bg-white px-5 py-14 sm:px-8 md:px-14 md:py-20 border-t border-neutral-100">
+        <div className="folio-reveal grid grid-cols-1 gap-8 md:grid-cols-[0.55fr_1fr] max-w-[1240px] mx-auto">
+          <div>
+            <div className="h-px w-28 bg-neutral-700" />
+            <div className="mt-2 flex items-center gap-1.5 text-2xl font-normal text-[#1f1f1e]">
+              <span>AI Promotion Reel</span>
+              <ArrowDownLeft className="h-4 w-4" />
+            </div>
+          </div>
+          <p className="max-w-[260px] text-[13px] leading-tight text-neutral-600">
+            Watch more AI-powered brand promotion reels.
+          </p>
+        </div>
+
+        {/* Straight, Seamless, Non-floating Carousel Track */}
+        <div className="mt-10 overflow-hidden w-full">
+          <div className="seamless-reel-track flex items-center gap-4 sm:gap-6 w-max py-4">
+            {reelItems.map((item, index) => (
+              <button
+                key={`${item.id}-${index}`}
+                type="button"
+                onClick={() => onOpenVideo?.(item.videoUrl, item.title)}
+                className="group relative h-[280px] w-[160px] sm:h-[320px] sm:w-[185px] shrink-0 overflow-hidden rounded-xl bg-neutral-100 border border-neutral-200 transition-all duration-300 hover:border-neutral-400 hover:scale-[1.02]"
+              >
+                <video
+                  src={item.videoUrl}
+                  poster={item.thumbnail}
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="auto"
+                  className="h-full w-full object-cover opacity-95 transition-opacity group-hover:opacity-100"
+                />
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-400/80 bg-white/40 backdrop-blur-xs transition-transform group-hover:scale-110">
+                    <Play className="h-4 w-4 fill-neutral-800 text-neutral-800" />
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-center gap-7 text-sm text-neutral-500">
+          <ChevronLeft className="h-4 w-4 cursor-pointer hover:text-neutral-900" />
+          <span className="text-xs uppercase tracking-widest font-mono">DRAG / HOVER TO EXPLORE</span>
+          <ChevronRight className="h-4 w-4 cursor-pointer hover:text-neutral-900" />
+        </div>
+      </section>
+
+      {/* 4. ABOUT ME SECTION (Placed after AI Reels as requested) */}
+      <section id="about" className="relative min-h-screen overflow-visible border-t border-neutral-100 bg-white px-5 py-16 sm:px-8 md:px-14 md:py-24 z-20">
+        <div className="absolute inset-x-6 top-14 bottom-14 z-0 hidden md:block overflow-hidden pointer-events-none">
           <ShapeGrid
             direction="diagonal"
             speed={0.35}
             squareSize={34}
-            borderColor="rgba(0, 0, 0, 0.065)"
-            hoverFillColor="rgba(0, 0, 0, 0.08)"
+            borderColor="rgba(0, 0, 0, 0.05)"
+            hoverFillColor="rgba(0, 0, 0, 0.07)"
             shape="square"
             hoverTrailAmount={8}
           />
@@ -293,210 +363,26 @@ export default function ScrollShowcase({
 
           <div
             ref={aboutStageRef}
-            className="folio-reveal relative h-[560px] min-h-[70vh] w-full touch-none lg:absolute lg:inset-0 lg:z-20 lg:h-full lg:min-h-0"
-            aria-label="Interactive Sukunsh identity card"
+            className="folio-reveal flex flex-col items-center justify-center lg:col-span-5 relative"
+            aria-label="Sukunsh identity card"
           >
-            <Lanyard
-              position={[0, 0, 13.5]}
-              gravity={[0, -40, 0]}
-              fov={22}
-              frontImage={portraitImage}
-              backImage={portraitImage}
-              imageFit="cover"
-              lanyardWidth={0.42}
-              strapLength={0.74}
-              springStrength={0.86}
-              damping={2.8}
-              cardWeight={0.68}
-              cardScale={1.48}
-            />
+            <LanyardCard portraitImage={portraitImage} />
           </div>
         </div>
-        <div className="folio-reveal relative mx-auto mt-4 w-full max-w-[1380px]">
+        <div className="folio-reveal relative mx-auto mt-8 w-full max-w-[1380px]">
           <CurvedLoop
             marqueeText="VISUAL ART ✦ FINE ART ✦ RISOGRAPHY ✦ CULTURAL HERITAGE ✦ BIHAR ✦ DELHI ✦ MOTION DESIGN ✦ CINEMATIC EXPERIMENTS ✦ "
             speed={1.45}
             curveAmount={0}
             direction="left"
             interactive={true}
-            className="fill-neutral-950 font-sans text-[18px] font-bold uppercase tracking-[0.18em]"
+            className="fill-neutral-950 font-sans text-[32px] font-bold uppercase tracking-[0.18em]"
           />
         </div>
       </section>
 
-      <section ref={projectSectionRef} className="project-roll-section min-h-screen overflow-hidden bg-white px-4 py-12 sm:px-6 md:px-8 md:py-16">
-        <div className="folio-reveal mb-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5 text-2xl font-normal tracking-normal text-[#1f1f1e]">
-          <span>Selected</span>
-          <span className="font-semibold">Projects</span>
-          <ArrowDownLeft className="h-5 w-5" />
-          </div>
-          <button
-            type="button"
-            onClick={openBehance}
-            className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-5 py-2 text-sm text-[#878787] transition-colors hover:border-neutral-900 hover:text-neutral-950"
-          >
-            <span>View All Project</span>
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-
-        <div ref={projectTrackRef} className="project-roll-track flex w-max max-w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-5 will-change-transform md:max-w-none md:overflow-visible">
-          {rollingProjects.map((project, index) => {
-            const item = getProject(index % Math.max(selectedProjects.length, 1));
-            return (
-              <article key={`${project?.id || "fallback"}-${index}`} className="folio-reveal group w-[82vw] max-w-[360px] shrink-0 snap-start md:w-[420px] md:max-w-none">
-                <button
-                  type="button"
-                  onClick={() => item.project && onSelectProject?.(item.project)}
-                  data-project-card={item.project?.id || `fallback-${index}`}
-                  className="block w-full cursor-pointer text-left"
-                >
-                  <div className="aspect-[1.4] w-full overflow-hidden bg-neutral-200">
-                    <img
-                      src={item.image}
-                      alt={item.project?.title || item.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-                  <div className="mt-6 max-w-[260px]">
-                    <h3 className="text-xl font-medium text-[#1f1f1e]">{item.title}</h3>
-                    <p className="mt-2 text-[15px] leading-tight text-neutral-600">
-                      Background in Fine Art
-                      <br />
-                      and Design.
-                    </p>
-                    <div className="mt-5 flex max-w-[230px] items-center justify-between border-t border-neutral-500 pt-2 text-sm text-[#878787]">
-                      <span>see project</span>
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                </button>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section ref={aiFilmSectionRef} className="ai-film-section relative min-h-screen overflow-hidden bg-white">
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <div ref={aiFilmHeadingRef} className="pointer-events-none absolute left-5 top-6 z-20 opacity-0 sm:left-8 md:left-14">
-            <div className="h-px w-36 bg-neutral-700" />
-            <div className="mt-2 flex items-center gap-1.5 text-3xl font-normal text-[#1f1f1e]">
-              <span>AI Film</span>
-              <ArrowDownLeft className="h-5 w-5" />
-            </div>
-          </div>
-
-          <div className="flex min-h-screen w-full items-center justify-center">
-            <button
-              ref={aiFilmCardRef}
-              type="button"
-              onClick={openFilm}
-              className="ai-film-card group relative block h-[100svh] w-[100vw] shrink-0 overflow-hidden rounded-none bg-neutral-200"
-            >
-              <video
-                key={film?.id}
-                src={film?.videoUrl}
-                poster={film?.thumbnail}
-                muted
-                loop
-                playsInline
-                autoPlay
-                preload="auto"
-                className="h-full w-full object-cover opacity-100 transition-opacity group-hover:opacity-100"
-              />
-              <span className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-500 bg-white/25">
-                  <Play className="h-5 w-5 fill-neutral-600 text-neutral-600" />
-                </span>
-              </span>
-            </button>
-          </div>
-
-          <div ref={aiFilmDetailsRef} className="ai-film-details relative z-20 mx-auto flex w-[calc(100%_-_2.5rem)] max-w-[860px] flex-col gap-6 bg-white py-7 opacity-0 sm:w-[calc(100%_-_4rem)] md:flex-row md:items-end md:justify-between md:py-8">
-            <div className="w-full max-w-[310px]">
-              <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
-              <p className="mt-2 text-[15px] leading-tight text-neutral-600">
-                Background in Fine Art
-                <br />
-                and Design.
-              </p>
-              <button
-                type="button"
-                onClick={() => setFilmIndex((value) => (value + 1) % aiFilms.length)}
-                className="mt-5 flex w-full items-center justify-between border-t border-neutral-500 pt-2 text-sm text-[#878787]"
-              >
-                <span>Next film</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={onOpenAIWork}
-              className="inline-flex w-fit items-center gap-5 rounded-full border border-neutral-200 px-6 py-3 text-sm text-[#878787] transition-colors hover:border-neutral-900 hover:text-neutral-950"
-            >
-              <span>View All</span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative min-h-[72vh] overflow-hidden bg-white px-5 py-14 sm:px-8 md:px-14 md:py-20">
-        <div className="folio-reveal grid grid-cols-1 gap-8 md:grid-cols-[0.55fr_1fr]">
-          <div>
-            <div className="h-px w-28 bg-neutral-700" />
-            <div className="mt-2 flex items-center gap-1.5 text-2xl font-normal text-[#1f1f1e]">
-              <span>AI Promotion Reel</span>
-              <ArrowDownLeft className="h-4 w-4" />
-            </div>
-          </div>
-          <p className="max-w-[260px] text-[13px] leading-tight text-neutral-600">
-            Watch more AI-powered brand promotion reels.
-          </p>
-        </div>
-
-        <div className="wave-reel-track mt-10 flex h-[400px] w-max items-end justify-center gap-6 md:gap-9">
-          {reelItems.map((item, index) => (
-            <button
-              key={`${item.id}-${index}`}
-              type="button"
-              onClick={() => onOpenVideo?.(item.videoUrl, item.title)}
-              className="wave-reel-card group relative h-[270px] w-[154px] shrink-0 overflow-hidden rounded-[28px] bg-neutral-200 shadow-sm md:h-[300px] md:w-[170px]"
-              style={{
-                transform: `rotate(${[-10, -4, 3, 8, 13, 5, -6, -12, 2, 11][index]}deg) translateY(${[46, -8, 18, -18, 36, 0, 28, -10, 44, 8][index]}px)`,
-              }}
-            >
-              <video
-                src={item.videoUrl}
-                poster={item.thumbnail}
-                muted
-                loop
-                playsInline
-                autoPlay
-                preload="auto"
-                className="h-full w-full object-cover opacity-100 transition-opacity group-hover:opacity-100"
-              />
-              <span className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-500 bg-white/30">
-                  <Play className="h-4 w-4 fill-neutral-600 text-neutral-600" />
-                </span>
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-6 flex items-center justify-center gap-7 text-sm">
-          <ChevronLeft className="h-4 w-4" />
-          <ChevronRight className="h-4 w-4" />
-        </div>
-      </section>
+      {/* 5. LET'S TALK CONTACT SECTION */}
+      <LetsTalk profile={profile} />
     </div>
   );
 }
-
-
-

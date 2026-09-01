@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 
@@ -163,7 +163,7 @@ export default function AboutMe({ profile }: AboutMeProps) {
             </div>
 
             {/* White Rounded Rectangular ID Badge */}
-            <div className="relative z-10 -mt-2 w-full max-w-[300px] bg-white rounded-2xl sm:rounded-[22px] border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] p-4 sm:p-5 flex flex-col items-center text-center">
+            <div className="relative z-10 -mt-2 w-full max-w-[300px] bg-white rounded-[36px] border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] p-4 sm:p-5 flex flex-col items-center text-center">
               
               {/* Small Circular Hole at top center */}
               <div className="w-3.5 h-3.5 rounded-full bg-neutral-900 border-2 border-neutral-300 mb-3 shadow-inner flex items-center justify-center">
@@ -171,11 +171,11 @@ export default function AboutMe({ profile }: AboutMeProps) {
               </div>
 
               {/* B&W Portrait Photograph */}
-              <div className="w-full aspect-[4/5] overflow-hidden rounded-xl bg-neutral-100 shadow-sm border border-neutral-200/60">
+              <div className="w-full aspect-[4/5] overflow-hidden rounded-[28px] bg-neutral-100 shadow-sm border border-neutral-200/60">
                 <img
                   src={portraitImage}
                   alt="SUKANSH Portrait"
-                  className="w-full h-full object-cover filter grayscale contrast-110"
+                  className="w-full h-full object-cover filter grayscale contrast-110 rounded-[28px]"
                 />
               </div>
 

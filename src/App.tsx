@@ -8,7 +8,6 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import Footer from "./components/Footer";
 import Lightbox from "./components/Lightbox";
 import AdminPanel from "./components/AdminPanel";
 import ProjectCaseStudy from "./components/ProjectCaseStudy";
@@ -18,7 +17,6 @@ import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
 import ScrollShowcase from "./components/ScrollShowcase";
 import GitHubExplorer from "./components/GitHubExplorer";
-import DotCursor from "./components/DotCursor";
 
 // State Engines and Credentials
 import {
@@ -475,7 +473,6 @@ export default function App() {
 
   return (
     <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300">
-      <DotCursor />
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
@@ -553,8 +550,10 @@ export default function App() {
                       <Hero
                         profile={profileState}
                         onWatchShowreel={handleLaunchShowreel}
-                        onOpenProjects={() => handleNavigate("#scroll-demo")}
-                        onOpenAIWork={() => handleNavigate("#scroll-demo")}
+                        onOpenProjects={() => handleNavigate("#projects")}
+                        onOpenAIWork={() => handleNavigate("#ai-work")}
+                        onOpenAboutMe={() => handleNavigate("#about")}
+                        onOpenContact={() => handleNavigate("#contact")}
                       />
 
                       {/* Dynamic GSAP Scroll Showcase Section */}
@@ -582,9 +581,6 @@ export default function App() {
                   )}
 
                 </main>
-
-                {/* Marqueed footer section */}
-                {!isScrollShowcaseOpen && <Footer profile={profileState} onNavigate={handleNavigate} />}
               </div>
             </div>
 

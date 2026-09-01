@@ -139,6 +139,8 @@ export default function Lightbox({
 
   return (
     <div
+      id="lightbox"
+      data-portal="media"
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fade-in"
       onClick={onClose}
     >

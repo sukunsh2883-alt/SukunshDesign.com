@@ -137,6 +137,8 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
   return (
     <AnimatePresence>
       <motion.div
+        id="projects-explorer"
+        data-portal="projects"
         ref={containerRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -155,31 +157,36 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
             <X className="w-5 h-5" />
           </button>
 
-          {/* Section Heading Title */}
-          <div className="mb-8 md:mb-12">
-            <h1 className="text-5xl md:text-8xl font-sans font-semibold tracking-tight text-neutral-800 select-none">
-              Selected Work
-            </h1>
+          {/* Section Heading Title matching reference style */}
+          <div className="mb-8 md:mb-12 flex items-start justify-between border-b border-neutral-300 pb-6">
+            <div>
+              <h1 className="font-['Big_Shoulders_Display',sans-serif] text-6xl sm:text-8xl md:text-9xl font-black uppercase tracking-tight text-neutral-950 leading-[0.85] select-none">
+                PROJECTS
+              </h1>
+            </div>
+            <span className="font-['Big_Shoulders_Display',sans-serif] text-3xl sm:text-5xl font-bold text-neutral-900 pt-2">
+              {String(projects.length).padStart(2, "0")}
+            </span>
           </div>
 
           {/* Search Box and Filters Bar layout */}
           <div className="flex items-center gap-4 mb-12 overflow-hidden">
             {/* Filter Pill List */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full">
-              <div className="flex flex-nowrap gap-2">
+              <div className="flex flex-nowrap gap-4 sm:gap-6 text-xs font-semibold uppercase tracking-[0.18em]">
                 {FILTERS.map((filter) => {
                   const isActive = selectedFilter === filter.id;
                   return (
                     <button
                       key={filter.id}
                       onClick={() => setSelectedFilter(filter.id)}
-                      className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full text-[11px] font-sans font-medium tracking-normal transition-all cursor-pointer select-none border ${
+                      className={`transition-all cursor-pointer select-none ${
                         isActive
-                          ? "bg-black border-black text-white shadow-sm font-semibold"
-                          : "bg-white border-neutral-200 text-neutral-500 hover:text-black hover:border-neutral-400"
+                          ? "text-neutral-950 font-bold"
+                          : "text-neutral-400 hover:text-neutral-900"
                       }`}
                     >
-                      {filter.label}
+                      {isActive ? `[${filter.label.toUpperCase()}]` : filter.label.toUpperCase()}
                     </button>
                   );
                 })}
@@ -210,7 +217,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                   className="group flex flex-col cursor-pointer"
                 >
                   {/* Card container carrying ONLY the image for high-end minimalistic seamless layout */}
-                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-100 border border-neutral-150/40 shadow-sm z-0">
+                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-100 shadow-sm z-0">
                     
                     <img
                       src={project.image}
@@ -253,7 +260,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                   className="group flex flex-col select-none"
                 >
                   {/* Card container carrying the overlay image */}
-                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-950 border border-neutral-800/40 shadow-sm z-0">
+                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-950 shadow-sm z-0">
                     
                     <img
                       src={project.image}

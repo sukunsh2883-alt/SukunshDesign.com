@@ -30,7 +30,8 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
   const [offset, setOffset] = useState(0);
   const uid = useId();
   const pathId = `curve-${uid}`;
-  const pathD = curveAmount === 0 ? 'M-100,40 L1540,40' : `M-100,40 Q500,${40 + curveAmount} 1540,40`;
+  const viewBoxHeight = curveAmount === 0 ? 80 : Math.max(120, 80 + Math.abs(curveAmount));
+  const pathD = curveAmount === 0 ? 'M-100,50 L1540,50' : `M-100,40 Q670,${40 + curveAmount} 1540,40`;
 
   const dragRef = useRef(false);
   const lastXRef = useRef(0);
@@ -39,15 +40,22 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
 
   const textLength = spacing;
   const totalText = textLength
-    ? Array(Math.ceil(1800 / textLength) + 2)
+    ? Array(Math.ceil(3600 / textLength) + 4)
         .fill(text)
         .join('')
     : text;
   const ready = spacing > 0;
 
   useEffect(() => {
-    if (measureRef.current) {
-      setSpacing(measureRef.current.getComputedTextLength());
+    const measure = () => {
+      if (measureRef.current) {
+        const len = measureRef.current.getComputedTextLength();
+        if (len > 0) setSpacing(len);
+      }
+    };
+    measure();
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(measure);
     }
   }, [text, className]);
 
@@ -124,8 +132,8 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
       onPointerUp={endDrag}
       onPointerLeave={endDrag}
     >
-      <svg className="curved-loop-svg" viewBox="0 0 1440 120">
-        <text ref={measureRef} xmlSpace="preserve" style={{ visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}>
+      <svg className="curved-loop-svg" viewBox={`0 0 1440 ${viewBoxHeight}`}>
+        <text ref={measureRef} xmlSpace="preserve" className={className} style={{ visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}>
           {text}
         </text>
         <defs>

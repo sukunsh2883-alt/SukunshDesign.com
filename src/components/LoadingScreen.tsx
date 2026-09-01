@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -7,182 +7,215 @@ interface LoadingScreenProps {
   profile?: any;
 }
 
-const phrase = ["Hello,", "I’m", "Sukunsh", "welcome", "to", "my", "visual", "world."];
-const tittleWord = "visual";
-const tittleLetterIndex = 1;
+export default function LoadingScreen({ onComplete, profile }: LoadingScreenProps) {
+  const [progress, setProgress] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
 
-export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-  const tittleSourceRef = useRef<HTMLSpanElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const hasFinishedRef = useRef(false);
+  const startTimeRef = useRef<number>(Date.now());
 
-  useEffect(() => {
-    let completed = false;
-    const finish = () => {
-      if (completed) return;
-      completed = true;
+  const brandName = profile?.brandName || "SUKUNSH";
+
+  const finishLoading = useCallback(() => {
+    if (hasFinishedRef.current) return;
+    hasFinishedRef.current = true;
+    setIsExiting(true);
+
+    setTimeout(() => {
       onComplete();
-    };
-    const fallbackTimer = window.setTimeout(finish, 4200);
+    }, 650);
+  }, [onComplete]);
 
-    const loader = loaderRef.current;
-    const tittleSource = tittleSourceRef.current;
-    if (!loader || !tittleSource) {
-      return () => window.clearTimeout(fallbackTimer);
-    }
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const ctx = gsap.context(() => {
-      const words = gsap.utils.toArray<HTMLElement>(".loader-word");
-      const letters = gsap.utils.toArray<HTMLElement>(".loader-letter");
-
-      const lockTittleToItsScreenPosition = () => {
-        const sourceBox = tittleSource.getBoundingClientRect();
-        gsap.set(tittleSource, {
-          position: "fixed",
-          left: sourceBox.left + sourceBox.width / 2,
-          top: sourceBox.top + sourceBox.height / 2,
-          width: sourceBox.width,
-          height: sourceBox.height,
-          xPercent: -50,
-          yPercent: -50,
-          scale: 1,
-          margin: 0,
-          zIndex: 5,
-          boxShadow: "0 0 0 rgba(5, 5, 5, 0)",
-          transformOrigin: "50% 50%",
-        });
-        loader.appendChild(tittleSource);
-      };
-
-      if (reduceMotion) {
-        gsap.timeline({ onComplete: finish })
-          .to(loader, { opacity: 0, duration: 0.5, ease: "power2.out" });
-        return;
+  // Keyboard shortcut to skip (Spacebar or Enter)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space" || e.code === "Enter") {
+        e.preventDefault();
+        finishLoading();
       }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [finishLoading]);
 
-      gsap.set(words, { y: 28, opacity: 0, filter: "blur(10px)" });
-      gsap.set(letters, { y: 12, opacity: 0, scale: 0.96, filter: "blur(6px)" });
+  // Smooth realistic progress animation
+  useEffect(() => {
+    let animationFrame: number;
+    const duration = 1800; // 1.8 seconds - crisp, modern and responsive
 
-      const getCoverScale = () => {
-        const sourceBox = tittleSource.getBoundingClientRect();
-        const viewport = Math.hypot(window.innerWidth, window.innerHeight);
-        const tittleWidth = Math.max(sourceBox.width, sourceBox.height, 8);
-        return viewport / tittleWidth + 12;
-      };
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTimeRef.current;
+      const rawProgress = Math.min(elapsed / duration, 1);
 
-      const timeline = gsap.timeline({
-        defaults: { ease: "power3.out" },
-        onComplete: finish,
-      });
+      // Smooth custom easing
+      const eased = Math.min(
+        100,
+        Math.floor(
+          rawProgress < 0.6
+            ? 60 * Math.pow(rawProgress / 0.6, 1.1)
+            : 60 + 40 * Math.pow((rawProgress - 0.6) / 0.4, 0.9)
+        )
+      );
 
-      timeline
-        .to(words, {
-          y: 0,
-          opacity: 1,
-          filter: "blur(0px)",
-          duration: 0.76,
-          stagger: 0.105,
-        })
-        .to(letters, {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          filter: "blur(0px)",
-          duration: 0.58,
-          stagger: 0.012,
-          ease: "expo.out",
-        }, "-=0.5")
-        .to(tittleSource, {
-          scale: 1.28,
-          boxShadow: "0 0 18px rgba(5, 5, 5, 0.18)",
-          duration: 0.42,
-          ease: "power3.out",
-          transformOrigin: "50% 50%",
-        })
-        .call(lockTittleToItsScreenPosition)
-        .to(tittleSource, {
-          scale: getCoverScale,
-          backgroundColor: "#050505",
-          boxShadow: "0 0 0 rgba(5, 5, 5, 0)",
-          duration: 1.08,
-          ease: "power4.inOut",
-        })
-        .to(".loader-copy", {
-          scale: 1.04,
-          opacity: 0,
-          filter: "blur(18px)",
-          duration: 0.58,
-          ease: "power3.inOut",
-        }, "-=0.72")
-        .to(loader, {
-          backgroundColor: "#050505",
-          duration: 0.18,
-          ease: "power2.out",
-        }, "-=0.08");
+      setProgress(eased);
 
-      const handleResize = () => {
-        if (timeline.progress() > 0.62) return;
-        gsap.set(tittleSource, { clearProps: "position,left,top,width,height,xPercent,yPercent,zIndex,margin" });
-      };
+      if (rawProgress < 1) {
+        animationFrame = requestAnimationFrame(updateProgress);
+      } else {
+        setProgress(100);
+        setTimeout(() => {
+          finishLoading();
+        }, 150);
+      }
+    };
 
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, loader);
+    animationFrame = requestAnimationFrame(updateProgress);
 
     return () => {
-      window.clearTimeout(fallbackTimer);
-      ctx.revert();
+      if (animationFrame) cancelAnimationFrame(animationFrame);
     };
-  }, [onComplete]);
+  }, [finishLoading]);
+
+  const letters = brandName.split("");
 
   return (
     <div
-      ref={loaderRef}
-      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#f4f1e8] px-6 text-[#050505]"
-      aria-label="Loading portfolio"
+      ref={containerRef}
+      id="custom-loading-screen"
+      className="fixed inset-0 z-[99999] flex flex-col justify-between overflow-hidden bg-[#0A0A0C] text-[#EDEDED] select-none font-sans px-8 py-8 sm:px-14 sm:py-12"
+      onClick={finishLoading}
+      role="progressbar"
+      aria-valuenow={progress}
+      aria-valuemin={0}
+      aria-valuemax={100}
     >
-      <div className="loader-frame" aria-hidden="true">
-        <div className="loader-liquid-border" />
-        <div className="loader-side-fill" />
-      </div>
-      <div className="loader-copy relative z-10 mx-auto max-w-[1180px] text-center">
-        <h1
-          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[clamp(2.4rem,7vw,7rem)] font-semibold leading-[0.98] tracking-normal"
-          aria-label="Hello, I’m Sukunsh welcome to my visual world."
+      {/* Top Header: Pure Minimalist Editorial Details */}
+      <div className="flex items-center justify-between">
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-400"
         >
-          {phrase.map((word) => (
-            <span key={word} className="loader-word inline-flex whitespace-nowrap">
-              {word === tittleWord
-                ? word.split("").map((letter, index) => (
-                    <span
-                      key={`${letter}-${index}`}
-                      className={letter === "i" && index === tittleLetterIndex ? "loader-letter loader-i-anchor" : "loader-letter"}
-                    >
-                      {letter === "i" && index === tittleLetterIndex ? (
-                        <>
-                          <span className="loader-i-stem" aria-hidden="true" />
-                          <span
-                            ref={tittleSourceRef}
-                            className="loader-tittle-source"
-                            aria-hidden="true"
-                          />
-                        </>
-                      ) : letter}
-                    </span>
-                  ))
-                : word.split("").map((letter, index) => (
-                    <span key={`${letter}-${index}`} className="loader-letter">
-                      {letter}
-                    </span>
-                  ))}
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />
+          <span>PORTFOLIO — 2026</span>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            finishLoading();
+          }}
+        >
+          SKIP [SPACE]
+        </motion.div>
+      </div>
+
+      {/* Center: Hero Typography & Minimal Counter */}
+      <div className="mx-auto w-full max-w-5xl my-auto">
+        <div className="overflow-hidden">
+          <h1 className="flex items-baseline justify-between text-[clamp(2.5rem,8.5vw,7.5rem)] font-bold uppercase leading-[0.88] tracking-[-0.04em] text-white">
+            <span className="flex">
+              {letters.map((char, index) => (
+                <motion.span
+                  key={`${char}-${index}`}
+                  initial={{ y: "105%" }}
+                  animate={{ y: "0%" }}
+                  transition={{
+                    duration: 0.65,
+                    delay: 0.05 + index * 0.04,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="inline-block"
+                  style={{
+                    fontFamily:
+                      '"Clash Display Local", "Clash Display", system-ui, sans-serif',
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
             </span>
-          ))}
-        </h1>
+
+            {/* Micro Monospace Counter aligned with baseline */}
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              className="font-mono text-base sm:text-2xl font-light tracking-tight text-neutral-400 self-end mb-2 sm:mb-4"
+            >
+              {String(progress).padStart(3, "0")}
+            </motion.span>
+          </h1>
+        </div>
+
+        {/* Minimalist Sub-discipline Rule */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.18em] text-neutral-400"
+        >
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span>Visual Design</span>
+            <span className="text-neutral-600">/</span>
+            <span>AI Creative</span>
+            <span className="text-neutral-600">/</span>
+            <span>Motion Direction</span>
+          </div>
+
+          <div className="text-neutral-500">
+            LOADING EXPERIENCE
+          </div>
+        </motion.div>
+
+        {/* Hairline Progress Rule */}
+        <div className="relative mt-8 h-[1px] w-full bg-white/15 overflow-hidden">
+          <motion.div
+            className="absolute left-0 top-0 bottom-0 bg-white"
+            style={{ width: `${progress}%` }}
+            transition={{ ease: "linear", duration: 0.05 }}
+          />
+        </div>
       </div>
-      <div className="loader-status" aria-hidden="true">
-        Loading portfolio
+
+      {/* Bottom Footer: Minimalist Coordinates & System Status */}
+      <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          DELHI, IN
+        </motion.span>
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+        >
+          © 2026 ALL RIGHTS RESERVED
+        </motion.span>
       </div>
+
+      {/* Smooth Minimalist Curtain Reveal */}
+      <AnimatePresence>
+        {isExiting && (
+          <motion.div
+            initial={{ y: "0%" }}
+            animate={{ y: "-100%" }}
+            transition={{
+              duration: 0.6,
+              ease: [0.76, 0, 0.24, 1],
+            }}
+            className="absolute inset-0 z-50 bg-[#0A0A0C]"
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

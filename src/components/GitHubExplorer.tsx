@@ -316,6 +316,8 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
   return (
     <AnimatePresence>
       <motion.div
+        id="github-explorer"
+        data-portal="github"
         ref={containerRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

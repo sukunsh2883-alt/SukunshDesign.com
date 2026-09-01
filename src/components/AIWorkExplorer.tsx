@@ -114,6 +114,8 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
   return (
     <AnimatePresence>
       <motion.div
+        id="ai-work-explorer"
+        data-portal="ai-work"
         ref={containerRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

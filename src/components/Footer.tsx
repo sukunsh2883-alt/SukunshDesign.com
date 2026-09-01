@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { ArrowUp, ArrowUpRight } from "lucide-react";
 
 interface FooterProps {
@@ -7,9 +7,21 @@ interface FooterProps {
   onNavigate?: (id: string) => void;
 }
 
+interface HoveredBotanical {
+  role: "flower" | "leaf" | "stem";
+  name: string;
+  label: string;
+  x: number;
+  y: number;
+}
+
 export default function Footer({ profile, onNavigate }: FooterProps) {
   const artworkRef = useRef<HTMLDivElement | null>(null);
   const [artworkMarkup, setArtworkMarkup] = useState("");
+  const [botanicalCounts, setBotanicalCounts] = useState({ flower: 0, leaf: 0, stem: 0 });
+  const [hoveredInfo, setHoveredInfo] = useState<HoveredBotanical | null>(null);
+  const [isBreezing, setIsBreezing] = useState(false);
+  const breezeImpulseRef = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -49,8 +61,11 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
       phase: number;
       speed: number;
       strength: number;
-      hoverIn: () => void;
+      label: string;
+      clickImpulse: number;
+      hoverIn: (e: PointerEvent) => void;
       hoverOut: () => void;
+      handleClick: () => void;
     }> = [];
     const hoveredPieces = new Set<SVGGraphicsElement>();
 
@@ -64,47 +79,109 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
 
     const getFill = (el: SVGGraphicsElement) => (el.getAttribute("fill") || "").toLowerCase();
     const getStroke = (el: SVGGraphicsElement) => (el.getAttribute("stroke") || "").toLowerCase();
-    const isBotanicalZone = (box: DOMRect | SVGRect) =>
-      box.y > 220 && box.y < 760 && box.width < 280 && box.height < 360;
+    const getClassName = (el: SVGGraphicsElement) => (el.getAttribute("class") || "").toLowerCase();
+
+    const isBackgroundBox = (box: DOMRect | SVGRect) => box.width > 1200 && box.height > 700;
     const roleCounters: Record<"flower" | "leaf" | "stem", number> = { flower: 0, leaf: 0, stem: 0 };
 
     focusable.forEach((el, index) => {
       const box = getBbox(el);
-      if (!box || !isBotanicalZone(box)) return;
+      if (!box || box.width === 0 || box.height === 0 || isBackgroundBox(box)) return;
 
       const fill = getFill(el);
       const stroke = getStroke(el);
+      const cls = getClassName(el);
+
       const isFlower =
         fill.includes("f9faed") ||
         fill.includes("ffee") ||
         fill.includes("f9bc41") ||
         fill.includes("e9702f") ||
-        fill.includes("radialgradient");
-      const isStem = stroke.includes("5e6363") || stroke.includes("545251") || stroke.includes("4d4325");
+        fill.includes("d75027") ||
+        fill.includes("ffecd2") ||
+        fill.includes("ff5a28") ||
+        fill.includes("712a14") ||
+        fill.includes("radialgradient") ||
+        fill.includes("svgid_") ||
+        cls.includes("st4") ||
+        cls.includes("st5") ||
+        cls.includes("st7") ||
+        cls.includes("st8") ||
+        cls.includes("st9") ||
+        cls.includes("st10");
+
+      const isStem =
+        stroke.includes("5e6363") ||
+        stroke.includes("545251") ||
+        stroke.includes("4d4325") ||
+        cls.includes("st3") ||
+        cls.includes("st6");
+
       const role: "flower" | "leaf" | "stem" = isStem ? "stem" : isFlower ? "flower" : "leaf";
 
       roleCounters[role] += 1;
-      const botanicalName = `${role}-${roleCounters[role]}`;
+      const count = roleCounters[role];
+      const botanicalName = `${role}-${count}`;
+      const label =
+        role === "flower"
+          ? `Flower Petal #${count}`
+          : role === "leaf"
+            ? `Botanical Leaf #${count}`
+            : `Living Stem #${count}`;
 
       el.classList.add("botanical-piece", `botanical-${role}`);
       el.setAttribute("data-botanical-role", role);
       el.setAttribute("data-botanical-name", botanicalName);
       el.setAttribute("data-botanical-index", String(index));
+      el.setAttribute("aria-label", label);
       el.style.transformBox = "fill-box";
       el.style.transformOrigin = "50% 100%";
       el.style.pointerEvents = "auto";
+      el.style.cursor = "pointer";
+      el.style.transition = "filter 0.3s ease";
 
-      const phase = index * 0.41;
-      const speed = role === "stem" ? 0.72 : role === "flower" ? 0.95 : 0.84;
-      const strength = role === "stem" ? 0.78 : role === "flower" ? 1.18 : 0.96;
+      // Add SVG title element for browser hover tooltips
+      const existingTitle = el.querySelector("title");
+      if (!existingTitle) {
+        const titleEl = document.createElementNS("http://www.w3.org/2000/svg", "title");
+        titleEl.textContent = `${label} - Hover to view animation`;
+        el.appendChild(titleEl);
+      }
 
-      const hoverIn = () => hoveredPieces.add(el);
-      const hoverOut = () => hoveredPieces.delete(el);
+      const phase = index * 0.37;
+      const speed = role === "stem" ? 0.75 : role === "flower" ? 1.05 : 0.88;
+      const strength = role === "stem" ? 0.82 : role === "flower" ? 1.35 : 1.12;
 
-      el.addEventListener("pointerenter", hoverIn);
+      let pieceObj: (typeof pieces)[0];
+
+      const hoverIn = (event: PointerEvent) => {
+        hoveredPieces.add(el);
+        const rect = svg.getBoundingClientRect();
+        setHoveredInfo({
+          role,
+          name: botanicalName,
+          label,
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        });
+      };
+
+      const hoverOut = () => {
+        hoveredPieces.delete(el);
+        setHoveredInfo(null);
+      };
+
+      const handleClick = () => {
+        if (pieceObj) {
+          pieceObj.clickImpulse = 1.0;
+        }
+      };
+
+      el.addEventListener("pointerenter", hoverIn as any);
       el.addEventListener("pointerleave", hoverOut);
+      el.addEventListener("click", handleClick);
 
-      pieces.push({
+      pieceObj = {
         el,
         cx: box.x + box.width / 2,
         cy: box.y + box.height / 2,
@@ -112,10 +189,17 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
         phase,
         speed,
         strength,
+        label,
+        clickImpulse: 0,
         hoverIn,
         hoverOut,
-      });
+        handleClick,
+      };
+
+      pieces.push(pieceObj);
     });
+
+    setBotanicalCounts({ ...roleCounters });
 
     if (reduceMotion || pieces.length === 0) return;
 
@@ -149,45 +233,62 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
     const animate = (now: number) => {
       const time = now * 0.001;
 
+      if (breezeImpulseRef.current > 0) {
+        breezeImpulseRef.current = Math.max(0, breezeImpulseRef.current - 0.015);
+      }
+      const breeze = breezeImpulseRef.current;
+
       for (let i = 0; i < pieces.length; i += 1) {
         const piece = pieces[i];
-        const drift = Math.sin(time * 0.3 + piece.phase * 0.58);
+        if (piece.clickImpulse > 0) {
+          piece.clickImpulse = Math.max(0, piece.clickImpulse - 0.03);
+        }
+        const impulse = piece.clickImpulse;
+
+        const drift = Math.sin(time * 0.35 + piece.phase * 0.58);
         const flutter = Math.sin(time * piece.speed + piece.phase);
         const lift = Math.cos(time * (piece.speed * 0.88) + piece.phase * 1.35);
         const twist = Math.sin(time * (piece.speed * 0.7) + piece.phase * 0.88);
 
-        const waveX = drift * (3.2 + piece.strength * 2.7) + flutter * (2.8 + piece.strength * 2.1);
+        const waveX = drift * (3.5 + piece.strength * 3.2) + flutter * (3.0 + piece.strength * 2.4);
         const waveY =
-          lift * (2.2 + piece.strength * 1.7) + Math.sin(time * 0.44 + piece.phase) * (1.1 + piece.strength * 0.65);
-        const waveR = twist * (4.2 + piece.strength * 3.8);
+          lift * (2.5 + piece.strength * 2.0) + Math.sin(time * 0.45 + piece.phase) * (1.2 + piece.strength * 0.8);
+        const waveR = twist * (4.8 + piece.strength * 4.2);
 
-        let tx = waveX;
-        let ty = waveY;
-        let rot = waveR;
-        let scale = 1 + Math.sin(time * 0.4 + piece.phase * 0.7) * 0.012;
+        let tx = waveX + Math.sin(time * 2.5 + piece.phase) * breeze * 24;
+        let ty = waveY - Math.cos(time * 2.0 + piece.phase) * breeze * 16;
+        let rot = waveR + Math.sin(time * 3.0 + piece.phase) * breeze * 18;
+        let scale = 1 + Math.sin(time * 0.45 + piece.phase * 0.7) * 0.015 + impulse * 0.22;
 
         if (pointer) {
           const dx = piece.cx - pointer.x;
           const dy = piece.cy - pointer.y;
           const distance = Math.max(1, Math.hypot(dx, dy));
-          const influence = Math.max(0, 1 - distance / 200);
+          const influence = Math.max(0, 1 - distance / 220);
 
           if (influence > 0) {
-            const awayX = (dx / distance) * influence * (11 + piece.strength * 5.5);
-            const awayY = (dy / distance) * influence * (8 + piece.strength * 4.2);
+            const awayX = (dx / distance) * influence * (14 + piece.strength * 6.5);
+            const awayY = (dy / distance) * influence * (10 + piece.strength * 5.0);
             tx += awayX;
             ty += awayY;
-            rot += (dx / distance) * influence * (6.4 + piece.strength * 2.6);
-            scale += influence * 0.04;
+            rot += (dx / distance) * influence * (8.5 + piece.strength * 3.2);
+            scale += influence * 0.06;
           }
         }
 
-        if (hoveredPieces.has(piece.el)) {
-          const pulse = 1 + Math.sin(time * 3.2 + piece.phase) * 0.015;
-          tx += Math.sin(time * 1.8 + piece.phase) * (2 + piece.strength * 1.6);
-          ty += Math.cos(time * 1.5 + piece.phase) * (1.8 + piece.strength * 1.3);
-          rot += Math.sin(time * 1.6 + piece.phase) * (3.4 + piece.strength * 1.1);
-          scale *= pulse;
+        const isHovered = hoveredPieces.has(piece.el);
+        if (isHovered) {
+          const pulse = 1 + Math.sin(time * 3.8 + piece.phase) * 0.025;
+          tx += Math.sin(time * 2.2 + piece.phase) * (3.5 + piece.strength * 2.2);
+          ty += Math.cos(time * 1.8 + piece.phase) * (3.0 + piece.strength * 1.8);
+          rot += Math.sin(time * 2.0 + piece.phase) * (6.0 + piece.strength * 2.0);
+          scale *= 1.2 * pulse;
+          piece.el.style.filter =
+            piece.role === "flower"
+              ? "drop-shadow(0 0 10px rgba(249, 250, 237, 0.95)) brightness(1.25)"
+              : "drop-shadow(0 0 8px rgba(127, 113, 62, 0.85)) brightness(1.2)";
+        } else {
+          piece.el.style.filter = "none";
         }
 
         piece.el.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotate(${rot}deg) scale(${scale})`;
@@ -212,19 +313,53 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
       window.removeEventListener("pointerup", clearPointer);
       window.removeEventListener("resize", updateRect);
       window.removeEventListener("scroll", updateRect);
-      pieces.forEach(({ el, hoverIn, hoverOut }) => {
-        el.removeEventListener("pointerenter", hoverIn);
+      pieces.forEach(({ el, hoverIn, hoverOut, handleClick }) => {
+        el.removeEventListener("pointerenter", hoverIn as any);
         el.removeEventListener("pointerleave", hoverOut);
+        el.removeEventListener("click", handleClick);
       });
     };
   }, [artworkMarkup]);
 
+  const triggerBreeze = () => {
+    breezeImpulseRef.current = 1.5;
+    setIsBreezing(true);
+    setTimeout(() => setIsBreezing(false), 2000);
+  };
+
   return (
-    <footer id="contact" className="relative min-h-[760px] overflow-hidden bg-[#111111] text-[#f3f4f4] select-none sm:min-h-[650px] md:min-h-[520px]">
+    <footer id="contact" data-cursor-tag="Contact Me" className="relative min-h-[760px] overflow-hidden bg-[#111111] text-[#f3f4f4] select-none sm:min-h-[650px] md:min-h-[520px]">
       <div className="absolute inset-0 bg-[#111111]" />
-      <div ref={artworkRef} className="footer-artwork absolute inset-0 z-10 overflow-visible" aria-hidden="true">
+
+      <div ref={artworkRef} className="footer-artwork absolute inset-0 z-10 overflow-visible" aria-label="Interactive Botanical Artwork with Leaves and Flowers">
         {artworkMarkup ? <div className="h-full w-full" dangerouslySetInnerHTML={{ __html: artworkMarkup }} /> : null}
       </div>
+
+      {/* Floating Botanical Hover Badge */}
+      <AnimatePresence>
+        {hoveredInfo && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.85, y: 5 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            style={{
+              position: "absolute",
+              left: Math.min(Math.max(hoveredInfo.x - 70, 20), window.innerWidth - 180),
+              top: Math.max(hoveredInfo.y - 45, 20),
+            }}
+            className="pointer-events-none z-30 flex items-center gap-2 rounded-full border border-white/20 bg-[#181818]/90 px-3.5 py-1.5 text-xs font-medium text-white shadow-xl backdrop-blur-md"
+          >
+            <span className="text-sm">
+              {hoveredInfo.role === "flower" ? "🌸" : hoveredInfo.role === "leaf" ? "🌿" : "🌱"}
+            </span>
+            <span className="capitalize">{hoveredInfo.label}</span>
+            <span className="ml-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] uppercase text-white/70">
+              Interactive
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -277,3 +412,4 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
     </footer>
   );
 }
+
