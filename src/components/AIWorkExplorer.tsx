@@ -140,13 +140,22 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
             <X className="w-5 h-5" />
           </button>
 
-          {/* Epic Hero Title Heading */}
-          <div className="mb-10 text-left">
-            <h1 className={`text-5xl md:text-8xl font-sans font-semibold tracking-tight select-none transition-colors duration-500 ${
-              activePlayingId ? "text-white" : "text-neutral-800"
+          {/* Section Heading Title matching Projects Explorer style */}
+          <div className={`mb-8 md:mb-12 flex items-start justify-between border-b pb-6 transition-colors duration-500 ${
+            activePlayingId ? "border-neutral-800" : "border-neutral-300"
+          }`}>
+            <div>
+              <h1 className={`font-['Big_Shoulders_Display',sans-serif] text-6xl sm:text-8xl md:text-9xl font-black uppercase tracking-tight leading-[0.85] select-none transition-colors duration-500 ${
+                activePlayingId ? "text-white" : "text-neutral-950"
+              }`}>
+                AI FILMS
+              </h1>
+            </div>
+            <span className={`font-['Big_Shoulders_Display',sans-serif] text-3xl sm:text-5xl font-bold pt-2 transition-colors duration-500 ${
+              activePlayingId ? "text-neutral-300" : "text-neutral-900"
             }`}>
-              AI Archive
-            </h1>
+              {String(films.length + videos.filter((v) => v.isAI || v.type.toLowerCase().includes("ai")).length).padStart(2, "0")}
+            </span>
           </div>
 
           {/* Action Row containing filter tabs & searchable micro text boxes */}

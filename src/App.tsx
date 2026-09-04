@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
+import Lenis from "lenis";
 
 // Subcomponents
 import LoadingScreen from "./components/LoadingScreen";
@@ -140,7 +140,7 @@ export default function App() {
   const [isScrollShowcaseOpen, setIsScrollShowcaseOpen] = useState(false);
   const [isGitHubExplorerOpen, setIsGitHubExplorerOpen] = useState(false);
 
-  const smootherRef = useRef<any>(null);
+  const lenisRef = useRef<Lenis | null>(null);
 
   const isAnyPortalOpen = 
     isProjectsExplorerOpen || 
@@ -204,7 +204,17 @@ export default function App() {
           return;
         }
       }
+      setSelectedDesignProject(null);
       closePortals();
+
+      // Return to projects section smoothly instead of jumping to hero
+      window.setTimeout(() => {
+        const el = document.getElementById("projects") || document.getElementById("scroll-demo");
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.pageYOffset - 60;
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+      }, 50);
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -232,44 +242,54 @@ export default function App() {
     if (isLoading) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
-    const isMobile = window.innerWidth < 768;
-    if (reduceMotion || isTouch || isMobile || selectedDesignProject) return;
+    if (reduceMotion || selectedDesignProject) return;
 
-    gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
-    const smoother = ScrollSmoother.create({
-      wrapper: "#smooth-wrapper",
-      content: "#smooth-content",
-      smooth: 1.65,
-      speed: isScrollShowcaseOpen ? 1.35 : 1,
-      effects: true,
-      smoothTouch: 0.35,
-      normalizeScroll: false,
-      ignoreMobileResize: true,
+    gsap.registerPlugin(ScrollTrigger);
+
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.1,
+      infinite: false,
     });
 
-    smootherRef.current = smoother;
+    lenisRef.current = lenis;
+
+    // Connect Lenis scroll updates to GSAP ScrollTrigger
+    lenis.on("scroll", ScrollTrigger.update);
+
+    const updateTicker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(updateTicker);
+    gsap.ticker.lagSmoothing(0);
 
     const refresh = () => ScrollTrigger.refresh();
-    const refreshTimer = window.setTimeout(refresh, 350);
+    const refreshTimer = window.setTimeout(refresh, 250);
     window.addEventListener("load", refresh, { once: true });
 
     return () => {
       window.clearTimeout(refreshTimer);
       window.removeEventListener("load", refresh);
-      smoother.kill();
-      smootherRef.current = null;
+      gsap.ticker.remove(updateTicker);
+      lenis.destroy();
+      lenisRef.current = null;
     };
   }, [isLoading, isScrollShowcaseOpen, selectedDesignProject]);
 
-  // Handle scroll lock and smoother pause when overlays are active
+  // Handle scroll lock when modal overlays are active
   useEffect(() => {
-    if (smootherRef.current) {
+    if (lenisRef.current) {
       if (isAnyPortalOpen) {
-        smootherRef.current.paused(true);
+        lenisRef.current.stop();
         document.body.style.overflow = "hidden";
       } else {
-        smootherRef.current.paused(false);
+        lenisRef.current.start();
         document.body.style.overflow = "";
       }
     } else {
@@ -348,14 +368,18 @@ export default function App() {
 
     if (targetId === "#projects" || targetId === "#scroll-demo") {
       setTimeout(() => {
-        const element = document.getElementById("scroll-demo");
+        const element = document.getElementById("scroll-demo") || document.getElementById("projects");
         if (element) {
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - 80;
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth"
-          });
+          if (lenisRef.current) {
+            lenisRef.current.scrollTo(element, { offset: -60, duration: 1.15 });
+          } else {
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - 60;
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth"
+            });
+          }
         }
       }, 50);
     } else if (targetId === "#full-resume") {
@@ -371,14 +395,18 @@ export default function App() {
       setTimeout(() => {
         const element = document.getElementById(id);
         if (element) {
-          const offset = id === "home" ? 0 : 80;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - offset;
+          const offset = id === "home" ? 0 : -60;
+          if (lenisRef.current) {
+            lenisRef.current.scrollTo(element, { offset, duration: 1.15 });
+          } else {
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset + offset;
 
-          window.scrollTo({
-            top: id === "home" ? 0 : offsetPosition,
-            behavior: "smooth"
-          });
+            window.scrollTo({
+              top: id === "home" ? 0 : offsetPosition,
+              behavior: "smooth"
+            });
+          }
         }
       }, 50);
     }
@@ -490,8 +518,18 @@ export default function App() {
                 allProjects={designs}
                 onClose={() => {
                   setSelectedDesignProject(null);
-                  window.history.pushState({}, "", "/");
-                  window.setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 0);
+                  window.history.pushState({}, "", "/#projects");
+                  window.setTimeout(() => {
+                    const el = document.getElementById("projects") || document.getElementById("scroll-demo");
+                    if (el) {
+                      if (lenisRef.current) {
+                        lenisRef.current.scrollTo(el, { offset: -60, duration: 1.0 });
+                      } else {
+                        const top = el.getBoundingClientRect().top + window.pageYOffset - 60;
+                        window.scrollTo({ top, behavior: "smooth" });
+                      }
+                    }
+                  }, 60);
                 }}
                 onUpdateProject={(updatedProj) => {
                   setDesigns((prev) => prev.map(p => p.id === updatedProj.id ? updatedProj : p));
@@ -520,15 +558,15 @@ export default function App() {
               />
             )}
 
-            <div id={selectedDesignProject ? undefined : "smooth-wrapper"} className={selectedDesignProject ? "project-scroll-wrapper" : undefined}>
-              <div id="smooth-content" className="flex min-h-screen flex-col">
+            <div className={selectedDesignProject ? "project-scroll-wrapper" : "app-viewport-wrapper w-full"}>
+              <div className="flex min-h-screen flex-col w-full">
                 {/* Main view container */}
                 <main className="main flex-grow overflow-x-hidden overflow-y-visible">
 
                    {isScrollShowcaseOpen ? (
                     <ScrollShowcase
                       onClose={() => setIsScrollShowcaseOpen(false)}
-                      onOpenProjects={() => openPortal("projects")}
+                      onOpenProjects={() => window.open(profileState?.behance || "https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
                       onOpenAIWork={() => openPortal("ai-work")}
                       designs={designs}
                       profile={profileState}
@@ -563,7 +601,7 @@ export default function App() {
                           designs={designs}
                           profile={profileState}
                           onSelectProject={handleSelectProject}
-                          onOpenProjects={() => openPortal("projects")}
+                          onOpenProjects={() => window.open(profileState?.behance || "https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
                           onOpenAIWork={() => openPortal("ai-work")}
                           onOpenVideo={(videoUrl, title) => {
                             setLightbox({

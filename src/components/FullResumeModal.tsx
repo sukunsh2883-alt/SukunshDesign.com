@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   X, Briefcase, GraduationCap, Laptop, BadgeCheck, FileText, 
-  MapPin, Phone, Mail, Linkedin, Globe, Award, Heart, Printer, Copy, Check 
+  MapPin, Mail, Linkedin, Globe, Award, Heart, Printer, Copy, Check 
 } from "lucide-react";
 
 interface FullResumeModalProps {
@@ -19,7 +19,6 @@ export default function FullResumeModal({ isOpen, onClose }: FullResumeModalProp
     title: "Visual Designer | AI Creative Designer",
     tagline: "Bridging human artistic vision with emerging generative AI technologies.",
     contact: {
-      phone: "+91 9968849327",
       email: "sukunsh2883@gmail.com",
       linkedin: "www.linkedin.com/in/sukunsh",
       behance: "www.behance.net/sukunshsharma",
@@ -205,10 +204,6 @@ export default function FullResumeModal({ isOpen, onClose }: FullResumeModalProp
               
               {/* Quick Contact Layout */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-xs font-mono font-medium text-neutral-600">
-                <div className="flex items-center gap-2">
-                  <Phone className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                  <span>{resumeDetails.contact.phone}</span>
-                </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                   <a href={`mailto:${resumeDetails.contact.email}`} className="hover:text-black hover:underline">{resumeDetails.contact.email}</a>

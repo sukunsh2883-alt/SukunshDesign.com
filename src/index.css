@@ -418,84 +418,161 @@ header *,
   animation-play-state: paused;
 }
 
-#smooth-wrapper {
-  background: #050505;
+/* Lenis Smooth Scroll Styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
   overflow: hidden;
 }
 
-#smooth-content {
-  background: #050505;
-  will-change: transform;
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
-/* Inline SVG hero stage and JS-created beetle layer. */
-.hero {
+/* App root & wrappers */
+.app {
   background: #050505;
-  min-height: 100vh;
-  overflow: hidden;
-  position: relative;
   width: 100%;
 }
 
+/* Hero Section: Zero gap below, 100vh / 100dvh pinned initial screen */
+.hero {
+  background: #050505;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .hero-inner {
-  align-items: flex-end;
+  align-items: center;
   display: flex;
   justify-content: center;
+  height: 100%;
+  width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   padding: 0;
   position: relative;
+  overflow: hidden;
   z-index: 2;
 }
 
 .hero-art {
-  align-items: flex-end;
+  align-items: center;
   display: flex;
   justify-content: center;
-  left: 50%;
-  pointer-events: auto;
   position: absolute;
-  bottom: 0;
-  transform: translateX(-50%);
+  inset: 0;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: auto;
   z-index: 3;
 }
 
+/* Mobile Hero SVG (<768px): Character artwork is centered and scaled to comfortably fit mobile screen */
 .svg-stage {
   align-items: center;
   background: transparent;
   display: flex;
   aspect-ratio: 1728.2 / 758.1;
-  height: auto;
+  height: 76dvh;
+  max-height: 520px;
+  width: auto;
+  flex-shrink: 0;
   justify-content: center;
   min-height: 0;
   overflow: visible;
   position: relative;
-  transform: translateY(var(--svg-y-offset, 1vh));
-  width: calc(min(220vw, 3200px, calc((100svh - 20px) * 2.1)) * var(--svg-scale-multiplier, 1.35));
+  transform: translateY(0);
 }
 
-#Layer_1,
 .hero-svg,
-div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div#smooth-wrapper:nth-of-type(2) > div#smooth-content:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1) {
+#Layer_1,
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1) {
   display: block;
-  width: 1600px;
-  margin-top: 100px;
-  margin-right: 0px;
-  margin-left: 0px;
-  padding-left: 3px;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  margin-top: 2px;
+  margin-right: -2px;
+  margin-bottom: -100px;
+  margin-left: 20px;
+  padding: 0;
+  flex-shrink: 0;
 }
 
-.hero-scroll-base {
-  background: #f4f1e8;
-  bottom: -1px;
-  height: 38vh;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  transform: translateY(100%);
-  will-change: transform;
-  z-index: 1;
+.hero-portfolio-text {
+  font-family: "Clash Display Local", "Clash Display", sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* Desktop Hero layout >= 768px (Kept exactly as is) */
+@media (min-width: 768px) {
+  .hero {
+    height: 100vh;
+    min-height: 100vh;
+    max-height: none;
+  }
+
+  .hero-inner {
+    align-items: flex-end;
+    min-height: 100vh;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .hero-art {
+    align-items: flex-end;
+    position: absolute;
+    inset: auto;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .svg-stage {
+    max-height: none;
+    height: auto;
+    width: calc(min(220vw, 3200px, calc((100svh - 20px) * 2.1)) * var(--svg-scale-multiplier, 1.35));
+    transform: translateY(var(--svg-y-offset, 1vh));
+    flex-shrink: 1;
+  }
+
+  #Layer_1,
+  .hero-svg,
+  div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div#smooth-wrapper:nth-of-type(2) > div#smooth-content:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1) {
+    display: block;
+    width: 1600px;
+    height: auto;
+    max-width: none;
+    margin-top: 100px;
+    margin-right: 0px;
+    margin-left: 0px;
+    padding-left: 3px;
+    flex-shrink: 1;
+  }
 }
 
 .horizontal-intro {
@@ -736,215 +813,10 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
   transform-origin: center center;
 }
 
-@media (max-width: 1200px) {
-  .svg-stage {
-    align-items: center;
-    display: flex;
-    aspect-ratio: 1728.2 / 758.1;
-    height: auto;
-    justify-content: center;
-    margin-bottom: 0 !important;
-    overflow: visible;
-    transform: translateY(calc(8vh + var(--svg-y-offset, 4vh))) !important;
-    width: calc(min(162vw, calc((100svh - 40px) * 1.858)) * var(--svg-scale-multiplier, 1.15)) !important;
-  }
-
-  .svg-stage > svg:not(.beetle-svg) {
-    height: auto !important;
-    max-width: none;
-    width: 100% !important;
-  }
-
-  .svg-stage #Layer_147,
-  .svg-stage #Layer_148 {
-    transform-box: fill-box;
-    transform-origin: center center;
-  }
-
-  .svg-stage #Layer_147 rect,
-  .svg-stage #Layer_148 text {
-    transform: scale(0.9);
-  }
-}
-
-@media (max-width: 1024px) {
-  html,
-  body {
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  section {
-    height: auto;
-    min-height: auto;
-    overflow: visible;
-  }
-
-  .hero {
-    height: auto;
-    min-height: auto;
-    overflow: visible;
-    padding: 92px 20px 32px !important;
-  }
-
-  .hero-inner {
-    align-items: center !important;
-    display: flex;
-    flex-direction: column;
-    gap: 36px;
-    justify-content: flex-start !important;
-    min-height: auto;
-    padding: 0 !important;
-  }
-
-  .hero-content {
-    display: block;
-    position: relative;
-    text-align: center;
-    width: 100%;
-    z-index: 5;
-  }
-
-  .hero-art {
-    margin: 0 auto;
-    max-width: none;
-    position: relative;
-    bottom: auto;
-    left: auto;
-    transform: none;
-    margin-bottom: -5vh;
-    width: 100%;
-    z-index: 2;
-  }
-
-  .svg-stage {
-    aspect-ratio: 1728.2 / 758.1 !important;
-    height: auto;
-    min-height: 0;
-    margin-bottom: 0 !important;
-    overflow: visible;
-    transform: translateY(calc(2vh + var(--svg-y-offset, 4vh))) !important;
-    width: calc(min(186vw, calc((100svh - 24px) * 1.86)) * var(--svg-scale-multiplier, 1.15)) !important;
-  }
-
-  .svg-stage > svg:not(.beetle-svg) {
-    height: auto !important;
-    max-width: none;
-    width: 100% !important;
-  }
-
-  .svg-stage #Sukunsh {
-    transform-box: fill-box;
-    transform-origin: center center;
-  }
-
-  .svg-stage #Layer_147 rect {
-    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.42));
-    stroke-width: 1px;
-  }
-
-  .svg-stage #Layer_148 text,
-  .svg-stage #Layer_148 tspan {
-    font-size: 10px !important;
-  }
-
-  .beetle-wrap {
-    left: 34%;
-    top: 66%;
-    width: 28px;
-  }
-
-  .nav-links {
-    display: none;
-  }
-
-  .navbar nav {
-    height: 56px;
-    padding-left: 22px;
-    padding-right: 22px;
-  }
-
-  .navbar {
-    background: transparent;
-    left: 0;
-    padding: 18px 22px;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 20;
-  }
-
-  .logo {
-    font-size: 16px;
-  }
-
-  #smooth-wrapper,
-  #smooth-content {
-    overflow: visible;
-  }
-
-  .horizontal-intro {
-    height: auto;
-    min-height: 72svh;
-    padding: 90px 0;
-  }
-
-  .horizontal-intro__text {
-    font-size: clamp(2.6rem, 15vw, 5.5rem);
-    padding-left: 70vw;
-  }
-
-  .about-mist {
-    min-height: auto;
-  }
-
-  .about-mist__inner {
-    padding: 96px 20px 92px;
-  }
-
-  .about-mist__text {
-    font-size: clamp(2.1rem, 12vw, 4.8rem);
-    line-height: 1.02;
-  }
-
-  .projects-section {
-    overflow: hidden;
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .project-column-center,
-  .project-column-right {
-    padding-top: 0 !important;
-  }
-
-  .project-card__frame {
-    border-radius: 14px !important;
-  }
-}
-
+/* Mobile beetle positioning adjustments if needed */
 @media (max-width: 768px) {
-  .svg-stage > svg:not(.beetle-svg) {
-    max-width: 540px;
-    width: 98vw !important;
-  }
-
-  .svg-stage #Layer_148 text,
-  .svg-stage #Layer_148 tspan {
-    font-size: 9px !important;
-  }
-
   .beetle-wrap {
     width: 28px;
-  }
-}
-
-@media (max-width: 480px) {
-  .svg-stage > svg:not(.beetle-svg) {
-    max-width: 480px;
-    width: 98vw !important;
   }
 }
 
@@ -1255,4 +1127,25 @@ div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
   height: 600px;
   margin-left: -160px;
 }
+
+/* Native Fullscreen Video Handling (YouTube-style) */
+:fullscreen,
+:-webkit-full-screen,
+:-moz-full-screen,
+:-ms-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: #000000 !important;
+}
+
+:fullscreen video,
+:-webkit-full-screen video,
+:-moz-full-screen video,
+:-ms-fullscreen video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  background-color: #000000 !important;
+}
+
 

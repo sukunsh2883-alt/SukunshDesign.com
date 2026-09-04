@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownLeft, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
+import { ArrowDownLeft, ArrowLeft, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Maximize, Maximize2, Minimize2, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DesignProject, designProjects, aiFilms } from "../portfolioData";
@@ -34,11 +34,13 @@ export default function ScrollShowcase({
 }: ScrollShowcaseProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const aboutStageRef = useRef<HTMLDivElement | null>(null);
-  const aiFilmSectionRef = useRef<HTMLElement | null>(null);
-  const aiFilmCardRef = useRef<HTMLButtonElement | null>(null);
-  const aiFilmHeadingRef = useRef<HTMLDivElement | null>(null);
-  const aiFilmDetailsRef = useRef<HTMLDivElement | null>(null);
+  const aiSectionRef = useRef<HTMLElement | null>(null);
+  const videoWrapperRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [filmIndex, setFilmIndex] = useState(0);
+  const [isPlayingInline, setIsPlayingInline] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const allProjects = designs && designs.length > 0 ? designs : designProjects;
 
@@ -47,6 +49,161 @@ export default function ScrollShowcase({
   const reelItems = Array.from({ length: 14 }, (_, index) => aiFilms[index % aiFilms.length]);
   const portraitImage =
     "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
+
+  const togglePlayInline = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlayingInline(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlayingInline(false);
+    }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    const nextMuted = !videoRef.current.muted;
+    videoRef.current.muted = nextMuted;
+    setIsMuted(nextMuted);
+  };
+
+  const toggleFullscreen = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const elem = videoWrapperRef.current;
+    if (!elem) return;
+
+    const isNativeFs = Boolean(
+      document.fullscreenElement ||
+      (document as any).webkitFullscreenElement ||
+      (document as any).mozFullScreenElement ||
+      (document as any).msFullscreenElement
+    );
+
+    if (isFullscreen || isNativeFs) {
+      // Exit fullscreen
+      if (document.exitFullscreen && isNativeFs) {
+        document.exitFullscreen().catch(() => {});
+      } else if ((document as any).webkitExitFullscreen && isNativeFs) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).mozCancelFullScreen && isNativeFs) {
+        (document as any).mozCancelFullScreen();
+      } else if ((document as any).msExitFullscreen && isNativeFs) {
+        (document as any).msExitFullscreen();
+      }
+      setIsFullscreen(false);
+    } else {
+      // Enter fullscreen
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().then(() => {
+          setIsFullscreen(true);
+        }).catch(() => {
+          // If browser iframe restrictions reject native requestFullscreen, toggle CSS fullscreen
+          setIsFullscreen(true);
+        });
+      } else if ((elem as any).webkitRequestFullscreen) {
+        (elem as any).webkitRequestFullscreen();
+        setIsFullscreen(true);
+      } else if ((elem as any).mozRequestFullScreen) {
+        (elem as any).mozRequestFullScreen();
+        setIsFullscreen(true);
+      } else if ((elem as any).msRequestFullscreen) {
+        (elem as any).msRequestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        setIsFullscreen(true);
+      }
+    }
+  };
+
+  // Switch film reset & auto-play
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().then(() => {
+        setIsPlayingInline(true);
+      }).catch(() => {
+        setIsPlayingInline(false);
+      });
+    }
+  }, [filmIndex]);
+
+  // Sync with native fullscreen changes
+  useEffect(() => {
+    const handleFsChange = () => {
+      const isFs = Boolean(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+      setIsFullscreen(isFs);
+    };
+
+    document.addEventListener("fullscreenchange", handleFsChange);
+    document.addEventListener("webkitfullscreenchange", handleFsChange);
+    document.addEventListener("mozfullscreenchange", handleFsChange);
+    document.addEventListener("MSFullscreenChange", handleFsChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFsChange);
+      document.removeEventListener("webkitfullscreenchange", handleFsChange);
+      document.removeEventListener("mozfullscreenchange", handleFsChange);
+      document.removeEventListener("MSFullscreenChange", handleFsChange);
+    };
+  }, []);
+
+  // Keyboard shortcuts (f for fullscreen, Escape to exit, Space to toggle play)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if typing in an input
+      if (["INPUT", "TEXTAREA"].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.key === "Escape" && isFullscreen) {
+        toggleFullscreen();
+      } else if (e.key === "f" || e.key === "F") {
+        toggleFullscreen();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen]);
+
+  // Auto-stop/pause video when scrolling away from the AI Film section
+  useEffect(() => {
+    const target = aiSectionRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!videoRef.current) return;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+            // In view - resume playing if it was active
+            if (videoRef.current.paused && isPlayingInline) {
+              videoRef.current.play().catch(() => {});
+            }
+          } else {
+            // Scrolled out of view - automatically pause to prevent background playback & save resources
+            if (!videoRef.current.paused) {
+              videoRef.current.pause();
+              setIsPlayingInline(false);
+            }
+          }
+        });
+      },
+      {
+        threshold: [0, 0.25, 0.5, 0.75, 1.0],
+      }
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isPlayingInline]);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -80,49 +237,6 @@ export default function ScrollShowcase({
         repeat: -1,
         ease: "none",
       });
-
-      const filmTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: aiFilmSectionRef.current || ".ai-film-section",
-          start: "top top",
-          end: "+=100%",
-          scrub: 0.6,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      filmTimeline
-        .to(
-          aiFilmCardRef.current,
-          {
-            width: "100vw",
-            height: "100svh",
-            borderRadius: 0,
-            transformOrigin: "center center",
-            duration: 0.18,
-            ease: "none",
-          },
-          0,
-        )
-        .to(
-          aiFilmCardRef.current,
-          {
-            width: () => (window.innerWidth < 768 ? window.innerWidth - 20 : Math.min(1240, window.innerWidth - 48)),
-            height: () => (window.innerWidth < 768 ? window.innerHeight * 0.7 : Math.min(window.innerHeight * 0.78, 780)),
-            borderRadius: () => (window.innerWidth < 768 ? 16 : 28),
-            duration: 0.82,
-            ease: "none",
-          },
-          0.18,
-        )
-        .fromTo(
-          [aiFilmHeadingRef.current, aiFilmDetailsRef.current],
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.22, ease: "none" },
-          0.76,
-        );
 
       ScrollTrigger.refresh();
     }, containerRef);
@@ -159,69 +273,184 @@ export default function ScrollShowcase({
         profile={profile}
       />
 
-      {/* 3. AI FILM & REELS SECTION */}
-      <section id="ai-work" ref={aiFilmSectionRef} data-cursor-tag="AI Works" className="ai-film-section relative min-h-screen overflow-hidden bg-white">
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <div ref={aiFilmHeadingRef} className="pointer-events-none absolute left-5 top-6 z-20 opacity-0 sm:left-8 md:left-14">
-            <div className="h-px w-36 bg-neutral-700" />
-            <div className="mt-2 flex items-center gap-1.5 text-3xl font-normal text-[#1f1f1e]">
-              <span>AI Film</span>
-              <ArrowDownLeft className="h-5 w-5" />
+      {/* 3. AI FILM BIG SCREEN SECTION */}
+      <section
+        id="ai-work"
+        ref={aiSectionRef}
+        data-cursor-tag="AI Works"
+        className="folio-reveal relative w-full bg-white px-5 py-12 sm:px-8 sm:py-16 md:px-14 md:py-20 border-t border-neutral-100"
+      >
+        <div className="mx-auto w-full max-w-[1400px]">
+          {/* Section Header: AI Film ↙ */}
+          <div className="mb-6 sm:mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold tracking-[-0.035em] text-neutral-950 leading-none select-none">
+                AI Film
+              </h2>
+              <span className="inline-flex items-center text-neutral-950 transform translate-y-1">
+                <svg
+                  className="w-[clamp(1.5rem,3.5vw,2.75rem)] h-[clamp(1.5rem,3.5vw,2.75rem)] stroke-current stroke-[2.2] fill-none"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19 5L5 19M5 19H17M5 19V7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </div>
+
+            {/* Film count index indicator */}
+            <div className="hidden sm:flex items-center gap-2 text-xs font-mono tracking-widest text-neutral-500 uppercase">
+              <span className="text-neutral-950 font-bold">0{(filmIndex % aiFilms.length) + 1}</span>
+              <span>/</span>
+              <span>0{aiFilms.length}</span>
             </div>
           </div>
 
-          <div className="flex min-h-screen w-full items-center justify-center">
-            <button
-              ref={aiFilmCardRef}
-              type="button"
-              onClick={openFilm}
-              className="ai-film-card group relative block h-[100svh] w-[100vw] shrink-0 overflow-hidden rounded-none bg-neutral-200"
+          {/* Big Screen Video Frame with in-place playback controls & Fullscreen toggle */}
+          <div
+            ref={videoWrapperRef}
+            className={`w-full transition-all duration-300 ${
+              isFullscreen
+                ? "fixed inset-0 z-[9999] h-screen w-screen bg-black flex items-center justify-center p-0 m-0 rounded-none overflow-hidden"
+                : "relative"
+            }`}
+          >
+            <div
+              onClick={togglePlayInline}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && togglePlayInline()}
+              className={`group relative block w-full bg-black cursor-pointer text-left outline-none transition-all duration-300 ${
+                isFullscreen
+                  ? "h-full w-full flex items-center justify-center rounded-none shadow-none"
+                  : "aspect-[16/8] sm:aspect-[16/7.5] md:aspect-[2.2/1] min-h-[260px] sm:min-h-[380px] md:min-h-[480px] lg:min-h-[540px] overflow-hidden rounded-[8px] sm:rounded-[12px] md:rounded-[16px] shadow-md focus-visible:ring-2 focus-visible:ring-neutral-950"
+              }`}
             >
               <video
+                ref={videoRef}
                 key={film?.id}
                 src={film?.videoUrl}
                 poster={film?.thumbnail}
-                muted
+                muted={isMuted}
                 loop
                 playsInline
                 autoPlay
                 preload="auto"
-                className="h-full w-full object-cover opacity-100 transition-opacity group-hover:opacity-100"
+                className={`w-full transition-opacity group-hover:opacity-95 ${
+                  isFullscreen
+                    ? "h-full max-h-screen object-contain bg-black"
+                    : "h-full object-cover opacity-100"
+                }`}
               />
-              <span className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-500 bg-white/25">
-                  <Play className="h-5 w-5 fill-neutral-600 text-neutral-600" />
+
+              {/* Top Title Overlay in Fullscreen */}
+              {isFullscreen && film && (
+                <div
+                  className="absolute top-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex items-center justify-between z-30 transition-opacity duration-300"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="text-white">
+                    <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400">AI Film</span>
+                    <h4 className="text-base sm:text-xl font-bold tracking-tight">
+                      {film.id === "ai-film-rivr-ad" ? "RIVE" : film.title}
+                    </h4>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={toggleFullscreen}
+                    aria-label="Exit Fullscreen"
+                    className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white text-white hover:text-black transition-all border border-white/20 cursor-pointer"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Center Play/Pause Indicator (Smoothly fades when playing, appears on hover or pause) */}
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
+                  isPlayingInline ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                }`}
+              >
+                <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur-md text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
+                  {isPlayingInline ? (
+                    <Pause className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white" />
+                  ) : (
+                    <Play className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white ml-1" />
+                  )}
                 </span>
-              </span>
-            </button>
+              </div>
+
+              {/* Bottom Right Controls: Sound Unmute/Mute & Fullscreen Button */}
+              <div
+                className={`absolute z-30 flex items-center gap-2.5 ${
+                  isFullscreen ? "bottom-6 right-6" : "bottom-4 right-4"
+                }`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Unmute audio (m)" : "Mute audio (m)"}
+                  title={isMuted ? "Unmute (m)" : "Mute (m)"}
+                  className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
+                >
+                  {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={toggleFullscreen}
+                  aria-label={isFullscreen ? "Exit Fullscreen (f)" : "Enter Fullscreen (f)"}
+                  title={isFullscreen ? "Exit Fullscreen (f)" : "Fullscreen (f)"}
+                  className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
+                >
+                  {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div ref={aiFilmDetailsRef} className="ai-film-details relative z-20 mx-auto flex w-[calc(100%_-_2.5rem)] max-w-[860px] flex-col gap-6 bg-white py-7 opacity-0 sm:w-[calc(100%_-_4rem)] md:flex-row md:items-end md:justify-between md:py-8">
-            <div className="w-full max-w-[310px]">
-              <h3 className="text-xl font-medium text-[#1f1f1e]">{film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}</h3>
-              <p className="mt-2 text-[15px] leading-tight text-neutral-600">
-                Background in Fine Art
-                <br />
-                and Design.
+          {/* Bottom Details Row with Previous / Next Controls & Good Intention Captions */}
+          <div className="mt-5 sm:mt-7 flex w-full flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="w-full max-w-[460px]">
+              <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-neutral-950">
+                {film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}
+              </h3>
+              <p className="mt-1.5 text-sm sm:text-base leading-snug text-neutral-700 font-normal">
+                {film?.description || "High-fidelity AI generated cinematography focusing on lighting, fluid physics, and visual storytelling."}
               </p>
-              <button
-                type="button"
-                onClick={() => setFilmIndex((value) => (value + 1) % aiFilms.length)}
-                className="mt-5 flex w-full items-center justify-between border-t border-neutral-500 pt-2 text-sm text-[#878787]"
-              >
-                <span>Next film</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
+
+              {/* Previous / Next film switcher controls */}
+              <div className="mt-4 flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setFilmIndex((value) => (value - 1 + aiFilms.length) % aiFilms.length)}
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-800 hover:text-neutral-950 transition-colors cursor-pointer group"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
+                  <span className="border-b border-neutral-300 group-hover:border-neutral-950 pb-0.5">Previous film</span>
+                </button>
+                <span className="text-neutral-300 font-mono text-xs">/</span>
+                <button
+                  type="button"
+                  onClick={() => setFilmIndex((value) => (value + 1) % aiFilms.length)}
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-800 hover:text-neutral-950 transition-colors cursor-pointer group"
+                >
+                  <span className="border-b border-neutral-300 group-hover:border-neutral-950 pb-0.5">Next film</span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </button>
+              </div>
             </div>
 
-            <button
-              type="button"
-              onClick={onOpenAIWork}
-              className="inline-flex w-fit items-center gap-5 rounded-full border border-neutral-200 px-6 py-3 text-sm text-[#878787] transition-colors hover:border-neutral-900 hover:text-neutral-950"
-            >
-              <span>View All</span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
+            <div className="pt-1 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onOpenAIWork}
+                className="border border-neutral-900 bg-white px-8 sm:px-10 py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-normal text-neutral-950 hover:bg-neutral-950 hover:text-white active:scale-95 transition-all duration-200 cursor-pointer select-none"
+              >
+                <span>See all AI Films</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -303,14 +532,14 @@ export default function ScrollShowcase({
             <h2 className="select-none text-4xl font-normal leading-[1.06] tracking-normal text-neutral-950 sm:text-6xl md:text-7xl lg:text-[76px]">
               I'm a Delhi-based
               <br />
-              Visual Designer.
+              Web Designer.
             </h2>
             <p className="max-w-xl text-base font-normal leading-relaxed text-neutral-600 sm:text-lg md:text-[21px]">
-              Rooted in Bihar's rich cultural heritage,
+              Blending fine art sensibilities with contemporary design,
               <br className="hidden sm:inline" />
-              with a background in fine art,
+              crafting evocative visual stories through motion,
               <br className="hidden sm:inline" />
-              visual communication and design.
+              typography and creative precision.
             </p>
 
             <div className="pt-2">
@@ -371,7 +600,7 @@ export default function ScrollShowcase({
         </div>
         <div className="folio-reveal relative mx-auto mt-8 w-full max-w-[1380px]">
           <CurvedLoop
-            marqueeText="VISUAL ART ✦ FINE ART ✦ RISOGRAPHY ✦ CULTURAL HERITAGE ✦ BIHAR ✦ DELHI ✦ MOTION DESIGN ✦ CINEMATIC EXPERIMENTS ✦ "
+            marqueeText="VISUAL ART ✦ FINE ART ✦ RISOGRAPHY ✦ VISUAL STORYTELLING ✦ CONTEMPORARY DESIGN ✦ DELHI ✦ MOTION DESIGN ✦ CINEMATIC EXPERIMENTS ✦ "
             speed={1.45}
             curveAmount={0}
             direction="left"

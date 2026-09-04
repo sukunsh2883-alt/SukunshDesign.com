@@ -382,7 +382,7 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
           <button type="button" onClick={() => onNavigate?.("#scroll-demo")} className="footer-link">
             <span>Work</span><ArrowUpRight className="h-3.5 w-3.5" />
           </button>
-          <a href={profile?.instagram || "https://instagram.com/sukunsh"} target="_blank" rel="noreferrer" className="footer-link">
+          <a href={profile?.instagram || "https://www.instagram.com/sukunsh_"} target="_blank" rel="noreferrer" className="footer-link">
             <span>Instagram</span><ArrowUpRight className="h-3.5 w-3.5" />
           </a>
           <button type="button" onClick={() => onNavigate?.("#about")} className="footer-link">

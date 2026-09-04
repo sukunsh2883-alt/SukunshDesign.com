@@ -194,7 +194,7 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
         <div className="flex justify-center">
           <button
             type="button"
-            onClick={onOpenExplorer}
+            onClick={() => window.open("https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
             className="see-all-projects"
           >
             See All Projects

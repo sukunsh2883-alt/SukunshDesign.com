@@ -47,8 +47,8 @@ function findSvgElement<T extends Element>(svg: SVGSVGElement | null, id: string
 function getHeroMetrics(): HeroMetrics {
   const width = typeof window !== "undefined" ? window.innerWidth : 1440;
 
-  if (width < 640) {
-    return { stageScale: 1.15, stageY: 1, sukunshScale: 1 };
+  if (width < 768) {
+    return { stageScale: 1, stageY: 0, sukunshScale: 1 };
   }
 
   if (width < 1024) {
@@ -97,19 +97,22 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       const heroText = byId("Sukunsh");
 
       // Replace or configure background hero text to display "PORTFOLIO"
+      // Centered at x=864.1 in 1728.2 viewBox so it's fully visible and never clipped
       if (heroText) {
         const textNode = heroText.querySelector("text");
         if (textNode) {
           textNode.textContent = "PORTFOLIO";
           textNode.setAttribute("class", "st1 st2 st3 hero-portfolio-text");
           textNode.setAttribute("letter-spacing", "0.015em");
-          textNode.setAttribute("transform", "matrix(1 0 0 1 80 314.15)");
+          textNode.setAttribute("text-anchor", "middle");
+          textNode.setAttribute("x", "864.1");
+          textNode.setAttribute("y", "326.6");
+          textNode.removeAttribute("transform");
         }
       }
       const head = byId("head-2");
       const leftEye = byId("eye_ball_left");
       const rightEye = byId("eyes_ball_right");
-      const penArm = byId("right_arm_with_pen-2");
       const sitPose = byId("beetal_sit_posttion") || byId("beetal_sit_postion");
       const flyPose = byId("beeta_flying_postion");
       const wing1 = byId("flyinh_beetal_right-2");
@@ -136,7 +139,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         "blue_pen-2", "pink", "paper-2", "ipad-2", "red_bag-2", "pentab-2",
         "Layer_136", "Layer_135", "Layer_134", "Layer_133", "Layer_152", "Layer_130", "Layer_129",
         "right_arm_with_pen-2", "Layer_253", "Layer_252", "head-2", "Layer_123", "shirt-2", "green_bag",
-        "Layer_234", "Layer_233", "Layer_117", "Layer_118", "camera-2", "Layer_116", "Layer_114", "Layer_112",
+        "left_arm_and_details", "Layer_117", "Layer_118", "camera-2", "Layer_116", "Layer_114", "Layer_112",
         "Layer_109", "Layer_108"
       ];
       const charElements = characterElementIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
@@ -168,7 +171,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
 
         gsap.set(stage, { opacity: 1 });
         gsap.set(svgElement, { transformOrigin: "center bottom" });
-        gsap.set(".hero-scroll-base", { yPercent: 100 });
         gsap.set([sukunshParallax, characterParallax, flowerParallax, leafParallax].filter(Boolean), {
           transformBox: "fill-box",
           transformOrigin: "50% 50%",
@@ -176,7 +178,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         gsap.set(heroText, { transformOrigin: "center center" });
         gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "50% 70%" });
         gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 95%" });
-        gsap.set(penArm, { transformBox: "fill-box", transformOrigin: "80% 55%" });
         gsap.set([leftEye, rightEye].filter(Boolean), { transformOrigin: "50% 50%" });
         gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
 
@@ -481,9 +482,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         const rightEyeX = quickTo(rightEye, "x", 0.22);
         const rightEyeY = quickTo(rightEye, "y", 0.22);
         const headRotation = quickTo(head, "rotation", 0.55);
-        const penX = quickTo(penArm, "x", 0.65);
-        const penY = quickTo(penArm, "y", 0.65);
-        const penRotation = quickTo(penArm, "rotation", 0.65);
 
         const moveCharacterDetails = (event: PointerEvent) => {
           const rect = stage.getBoundingClientRect();
@@ -495,9 +493,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           leftEyeY?.(y * 2.4);
           rightEyeY?.(y * 2.4);
           headRotation?.(x * 0.35);
-          penX?.(x * 0.6);
-          penY?.(y * 0.4);
-          penRotation?.(x * -1);
         };
 
         const resetCharacterDetails = () => {
@@ -506,9 +501,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           rightEyeX?.(0);
           rightEyeY?.(0);
           headRotation?.(0);
-          penX?.(0);
-          penY?.(0);
-          penRotation?.(0);
         };
 
         if (!isTouch) {
@@ -1172,13 +1164,11 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       ref={sectionRef}
       id="home"
       data-cursor-tag="Home"
-      className="hero relative min-h-screen overflow-hidden bg-[#050505] text-white select-none"
+      className="hero relative h-[100dvh] md:h-screen min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none overflow-hidden bg-[#050505] text-white select-none"
     >
       {/* Central Interactive Artwork Canvas with Character & PORTFOLIO Typography */}
-      <div className="hero-scroll-base" aria-hidden="true" />
-
-      <div className="hero-inner relative flex min-h-screen items-center justify-center px-0 pt-16">
-        <div className="hero-art relative flex justify-center w-full">
+      <div className="hero-inner relative flex h-full min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none items-center justify-center px-0 pt-0 md:pt-16">
+        <div className="hero-art relative flex justify-center items-center w-full">
           <div
             ref={stageRef}
             className="svg-stage relative mb-0 aspect-[1728.2/758.1] origin-center overflow-visible"

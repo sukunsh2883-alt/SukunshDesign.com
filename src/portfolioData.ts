@@ -75,13 +75,13 @@ export interface ExperienceItem {
 export const aiFilms: AIFilm[] = [
   {
     id: "ai-film-rivr-ad",
-    title: "RIVR Ad Film",
-    category: "AI Film / Product Ad",
+    title: "RIVR Film",
+    category: "AI Film",
     year: "2026",
-    description: "AI-directed product film with cinematic ad pacing and polished commercial framing.",
+    description: "AI-directed cinematic film with dynamic pacing and polished visual framing.",
     thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780259813/RIVR_AD_Flim_ln2lz9.jpg",
     videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780259813/RIVR_AD_Flim_ln2lz9.mp4",
-    tags: ["AI Film", "Product Ad", "Commercial", "RIVR"],
+    tags: ["AI Film", "Cinematic", "Motion", "RIVR"],
     isAI: true
   },
   {
@@ -108,13 +108,13 @@ export const aiFilms: AIFilm[] = [
   },
   {
     id: "ai-film-1",
-    title: "Hyper Motion Product Film",
-    category: "AI Video / Product Ad",
+    title: "Hyper Motion Visual",
+    category: "AI Video",
     year: "2026",
-    description: "Dynamic product storytelling using AI video generation, vector effects, and cinematic motion.",
+    description: "Dynamic storytelling using AI video generation, vector effects, and cinematic motion.",
     thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop",
     videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-futuristic-subway-station-with-neon-lights-43958-large.mp4",
-    tags: ["AI Video", "Product Film", "Motion", "Ads"]
+    tags: ["AI Video", "Cinematic Visual", "Motion"]
   },
   {
     id: "ai-film-2",
@@ -583,6 +583,7 @@ export const profile = {
   email: "sukunsh2883@gmail.com",
   linkedin: "https://www.linkedin.com/in/sukunsh",
   behance: "https://www.behance.net/sukunshsharma",
+  instagram: "https://www.instagram.com/sukunsh_",
   accentGradient: "linear-gradient(90deg, #FF6A00 0%, #FFB000 100%)",
   logoFontFamily: "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
   heroVideoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1779644211/make_give_bit_loop_motion_202605242304_vd4fkj.mp4",

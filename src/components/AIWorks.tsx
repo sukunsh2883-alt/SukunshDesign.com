@@ -251,8 +251,8 @@ export default function AIWorks({
         {/* Explore Button */}
         <div className="flex justify-center mt-12 md:mt-16">
           <button
-            onClick={onOpenExplorer}
-            className="px-8 py-3 text-xs md:text-sm font-mono tracking-widest uppercase text-white border border-white/30 hover:border-white hover:bg-white/5 transition-all rounded-full"
+            onClick={() => window.open("https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
+            className="px-8 py-3 text-xs md:text-sm font-mono tracking-widest uppercase text-white border border-white/30 hover:border-white hover:bg-white/5 transition-all rounded-full cursor-pointer"
           >
             View All AI Works
           </button>

@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -68,7 +68,7 @@ export default function AboutMist() {
     return () => ctx.revert();
   }, []);
 
-  const descText = "Rooted in Bihar's rich cultural heritage, with a background in Fine Art and Design.";
+  const descText = "Blending fine art sensibilities with contemporary design, crafting evocative visual stories through motion, typography and creative precision.";
 
   return (
     <section
@@ -103,8 +103,8 @@ export default function AboutMist() {
               ))}
             </span>
             <span className="block flex flex-wrap gap-x-[0.24em]">
-              {"Visual Designer".split(" ").map((word, idx) => (
-                <span key={`visual-${idx}`} className="about-heading-word font-medium">
+              {"Web Designer".split(" ").map((word, idx) => (
+                <span key={`web-${idx}`} className="about-heading-word font-medium">
                   {word}
                 </span>
               ))}

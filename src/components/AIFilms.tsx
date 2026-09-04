@@ -285,7 +285,7 @@ export default function AIFilms({ films, onSelectFilm, onOpenExplorer }: AIFilms
         {/* Explore More Option Footer */}
         <div className="flex justify-center mt-12 relative z-10">
           <button
-            onClick={onOpenExplorer}
+            onClick={() => window.open("https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
             className="group px-8 py-3.5 rounded-full border border-neutral-200 bg-neutral-50/60 backdrop-blur-md text-[11px] uppercase tracking-[0.25em] text-neutral-600 font-bold cursor-pointer hover:bg-[#FF6A00] hover:text-white hover:border-[#FF6A00] hover:shadow-lg hover:shadow-[#FF6A00]/25 transition-all active:scale-95 flex items-center gap-2"
           >
             <span>Explore All Media</span>

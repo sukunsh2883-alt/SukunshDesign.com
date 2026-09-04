@@ -587,7 +587,7 @@ export default function LanyardCard({ portraitImage }: LanyardCardProps) {
           <div className="w-full aspect-[4/5] overflow-hidden rounded-[28px] bg-neutral-100 border border-neutral-200/60 shadow-inner group">
             <img
               src={portraitImage}
-              alt="SUKANSH Portrait"
+              alt="Suraj Kumar Sharma Portrait"
               className="w-full h-full object-cover filter grayscale contrast-105 rounded-[28px] transition-all duration-700 group-hover:grayscale-0 group-hover:scale-[1.03]"
               draggable={false}
             />
@@ -596,8 +596,8 @@ export default function LanyardCard({ portraitImage }: LanyardCardProps) {
           {/* Card Footer: Typography & Status Indicator */}
           <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-3.5">
             <div>
-              <div className="font-sans font-bold tracking-[0.2em] text-sm text-neutral-950 uppercase">
-                SUKANSH
+              <div className="font-sans font-bold tracking-[0.16em] text-sm text-neutral-950 uppercase">
+                SURAJ KUMAR SHARMA
               </div>
               <div className="text-[11px] font-mono tracking-wider text-neutral-500 uppercase mt-0.5">
                 Visual Designer • IDC IIT Bombay

@@ -55,14 +55,14 @@ export default function AboutMe({ profile }: AboutMeProps) {
           {/* Main Heading */}
           <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-sans font-normal leading-[1.06] tracking-[-0.035em] text-neutral-950 select-none">
             I'm a Delhi-based<br />
-            Visual Designer.
+            Web Designer.
           </h1>
 
           {/* Intro Paragraph */}
           <p className="text-neutral-600 text-base sm:text-lg md:text-[21px] font-normal leading-relaxed max-w-xl">
-            Rooted in Bihar's rich cultural heritage,<br className="hidden sm:inline" />
-            with a background in fine art,<br className="hidden sm:inline" />
-            visual communication and design.
+            Blending fine art sensibilities with contemporary design,<br className="hidden sm:inline" />
+            crafting evocative visual stories through motion,<br className="hidden sm:inline" />
+            typography and creative precision.
           </p>
 
           {/* Education and Experience Section */}
@@ -174,14 +174,14 @@ export default function AboutMe({ profile }: AboutMeProps) {
               <div className="w-full aspect-[4/5] overflow-hidden rounded-[28px] bg-neutral-100 shadow-sm border border-neutral-200/60">
                 <img
                   src={portraitImage}
-                  alt="SUKANSH Portrait"
+                  alt="Suraj Kumar Sharma Portrait"
                   className="w-full h-full object-cover filter grayscale contrast-110 rounded-[28px]"
                 />
               </div>
 
-              {/* Name SUKANSH in bold uppercase */}
-              <div className="mt-4 sm:mt-5 font-sans font-bold tracking-[0.25em] text-sm sm:text-base text-neutral-950 uppercase">
-                SUKANSH
+              {/* Name SURAJ KUMAR SHARMA in bold uppercase */}
+              <div className="mt-4 sm:mt-5 font-sans font-bold tracking-[0.16em] text-sm sm:text-base text-neutral-950 uppercase">
+                SURAJ KUMAR SHARMA
               </div>
             </div>
 

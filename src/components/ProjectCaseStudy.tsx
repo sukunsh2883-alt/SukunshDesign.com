@@ -62,11 +62,9 @@ export default function ProjectCaseStudy({ project, allProjects = [], onClose }:
     const gallery = scroller?.querySelector<HTMLElement>("#project-gallery");
     if (!scroller || !gallery) return;
 
-    gsap.to(scroller, {
-      scrollTop: gallery.offsetTop,
-      duration: 1.15,
-      ease: "power3.inOut",
-      overwrite: true,
+    scroller.scrollTo({
+      top: gallery.offsetTop - 30,
+      behavior: "smooth",
     });
   };
 
@@ -76,7 +74,8 @@ export default function ProjectCaseStudy({ project, allProjects = [], onClose }:
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="project-case-study fixed inset-0 z-[200] overflow-x-hidden overflow-y-scroll overscroll-y-contain bg-[#181818] text-neutral-950"
+      className="project-case-study fixed inset-0 z-[200] overflow-x-hidden overflow-y-scroll overscroll-y-contain scroll-smooth bg-[#181818] text-neutral-950"
+      style={{ scrollBehavior: "smooth" }}
     >
       <article className="mx-auto min-h-screen w-full max-w-[1440px] bg-white shadow-[0_28px_90px_rgba(0,0,0,0.35)]">
         <section className="grid min-h-[100svh] grid-cols-1 gap-10 px-5 pb-12 pt-6 sm:px-8 md:grid-cols-[0.72fr_1.45fr] md:items-center md:gap-12 md:px-12 md:py-10 lg:px-16">
