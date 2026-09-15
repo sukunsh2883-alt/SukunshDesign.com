@@ -2015,13 +2015,11 @@ export default function AdminPanel({
         )}
       </AnimatePresence>
 
-      {/* Primary Floating Button (Light Theme styled) */}
+      {/* Primary Floating Button (Hidden per user request) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center gap-2.5 rounded-full border border-neutral-200 px-5 py-3 hover:scale-105 active:scale-95 transition-all duration-300 bg-white text-neutral-950 shadow-lg cursor-pointer"
-        style={{
-          boxShadow: isOpen ? "0 4px 20px rgba(10, 132, 255, 0.25)" : "0 8px 30px rgba(0,0,0,0.06)"
-        }}
+        className="hidden"
+        style={{ display: "none" }}
         aria-label="Toggle admin controller deck"
       >
         <span className="relative flex h-2 w-2">
