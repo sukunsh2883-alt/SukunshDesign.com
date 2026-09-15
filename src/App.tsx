@@ -90,13 +90,22 @@ export default function App() {
         const mapped = savedDesigns.map((d: DesignProject) => {
           const matchInitial = initialDesigns.find(init => init.id === d.id);
           if (matchInitial) {
+            // Prefer updated initial designs when matchInitial has custom Behance/Cloudinary images over generic unsplash
+            const hasLegacyPlaceholder = d.image.includes("unsplash.com") || d.image.includes("images.unsplash.com");
             return {
+              ...matchInitial,
               ...d,
+              title: hasLegacyPlaceholder ? matchInitial.title : d.title,
+              type: hasLegacyPlaceholder ? matchInitial.type : d.type,
+              year: hasLegacyPlaceholder ? matchInitial.year : d.year,
+              description: hasLegacyPlaceholder ? matchInitial.description : d.description,
+              aboutProject: hasLegacyPlaceholder ? matchInitial.aboutProject : d.aboutProject,
+              client: hasLegacyPlaceholder ? matchInitial.client : d.client,
               video: matchInitial.video || (d.video?.includes("f7ttaj.mp4") || d.video?.includes(".webp") ? "/design-illustration-loop.mp4" : d.video),
-              image: (d.image.includes("unsplash.com") || d.image.includes("images.unsplash.com")) ? matchInitial.image : d.image,
-              galleryImages: (d.galleryImages && d.galleryImages.length > (matchInitial.galleryImages?.length || 0))
+              image: hasLegacyPlaceholder ? matchInitial.image : d.image,
+              galleryImages: hasLegacyPlaceholder ? matchInitial.galleryImages : ((d.galleryImages && d.galleryImages.length > (matchInitial.galleryImages?.length || 0))
                 ? d.galleryImages
-                : (matchInitial.galleryImages || d.galleryImages)
+                : (matchInitial.galleryImages || d.galleryImages))
             };
           }
           return d;

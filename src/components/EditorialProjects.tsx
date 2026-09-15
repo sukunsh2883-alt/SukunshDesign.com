@@ -33,7 +33,9 @@ export default function EditorialProjects({
       // Split description into two balanced, meaningful lines
       const parts = proj.description.split(/[,.]+/).map((s) => s.trim()).filter(Boolean);
       if (parts.length >= 2) {
-        return { line1: parts[0], line2: parts[1] };
+        return { line1: parts[0], line2: parts.slice(1).join(", ") };
+      } else if (parts.length === 1) {
+        return { line1: parts[0], line2: proj.client ? `Client: ${proj.client} (${proj.year})` : defaultLine2 };
       }
     }
     return { line1: defaultLine1, line2: defaultLine2 };
@@ -47,7 +49,7 @@ export default function EditorialProjects({
       <span className="inline-block w-px self-stretch bg-neutral-900 shrink-0 my-0.5" />
       <div className="flex flex-col text-neutral-900 font-normal leading-[1.2]">
         <span>{line1}</span>
-        <span>{line2}</span>
+        {line2 && <span>{line2}</span>}
       </div>
     </div>
   );
@@ -173,9 +175,9 @@ export default function EditorialProjects({
                   />
                 </div>
                 {renderCardMeta(
-                  p2.type || "Branding",
-                  getProjectLines(p2, "Background in Fine Art", "and Design.").line1,
-                  getProjectLines(p2, "Background in Fine Art", "and Design.").line2
+                  p2.type || "AI Video & Virtual Gifts",
+                  getProjectLines(p2, "AI generative video virtual gift for ShareChat & Moj", "Catered for creator & fan engagements.").line1,
+                  getProjectLines(p2, "AI generative video virtual gift for ShareChat & Moj", "Catered for creator & fan engagements.").line2
                 )}
               </div>
             )}
