@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownLeft, ArrowLeft, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Maximize, Maximize2, Minimize2, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowDownLeft, ArrowLeft, ArrowRight, ArrowUpRight, Maximize, Maximize2, Minimize2, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DesignProject, designProjects, aiFilms } from "../portfolioData";
@@ -556,34 +556,6 @@ export default function ScrollShowcase({
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="mt-6 flex items-center justify-center gap-7 text-sm text-neutral-500">
-          <button
-            type="button"
-            aria-label="Previous reel"
-            onClick={() => {
-              if (reelTweenRef.current) {
-                reelTweenRef.current.time(reelTweenRef.current.time() - 3);
-              }
-            }}
-            className="p-1 text-neutral-500 hover:text-neutral-950 transition-colors cursor-pointer"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span className="text-xs uppercase tracking-widest font-mono select-none">HOVER TO PAUSE / EXPLORE</span>
-          <button
-            type="button"
-            aria-label="Next reel"
-            onClick={() => {
-              if (reelTweenRef.current) {
-                reelTweenRef.current.time(reelTweenRef.current.time() + 3);
-              }
-            }}
-            className="p-1 text-neutral-500 hover:text-neutral-950 transition-colors cursor-pointer"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
         </div>
       </section>
 
