@@ -1,0 +1,405 @@
+{
+  "savedAt": "2026-09-15T19:30:48.381Z",
+  "aiFilms": [
+    {
+      "id": "ai-film-rivr-ad",
+      "title": "RIVR Film",
+      "category": "AI Film",
+      "year": "2026",
+      "description": "AI-directed cinematic film with dynamic pacing and polished visual framing.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780259813/RIVR_AD_Flim_ln2lz9.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780259813/RIVR_AD_Flim_ln2lz9.mp4",
+      "tags": [
+        "AI Film",
+        "Cinematic",
+        "Motion",
+        "RIVR"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-extended-prompt",
+      "title": "Extended Prompt Film",
+      "category": "AI Film / Prompt Study",
+      "year": "2026",
+      "description": "Eight-second AI film study built from prompt extension and cinematic motion refinement.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260388/_extend_3______duration____8s____prompt___202605151502_2_ffqasy.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260388/_extend_3______duration____8s____prompt___202605151502_2_ffqasy.mp4",
+      "tags": [
+        "AI Film",
+        "Prompt Study",
+        "Cinematic"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-sequence-01-4",
+      "title": "Sequence 01 Film 04",
+      "category": "AI Film / Sequence",
+      "year": "2026",
+      "description": "Short cinematic AI sequence focused on atmosphere, timing, and visual continuity.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780264965/Sequence_01_4_m7ijop.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780264965/Sequence_01_4_m7ijop.mp4",
+      "tags": [
+        "AI Film",
+        "Sequence",
+        "Cinematic"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-kenerate-commercial",
+      "title": "Kenerate Commercial",
+      "category": "AI Commercial / Motion",
+      "year": "2026",
+      "description": "High-impact brand commercial with AI motion simulation and cinematic editing.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780264091/kenerate-ad-1779833779917_w0ndh7.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780264091/kenerate-ad-1779833779917_w0ndh7.mp4",
+      "tags": [
+        "AI Film",
+        "Commercial",
+        "Motion"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-kenerate-motion-ad",
+      "title": "Kenerate Motion Ad",
+      "category": "AI Film / Brand Ad",
+      "year": "2026",
+      "description": "AI-generated promotional motion visual with fluid transitions and refined color grading.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260451/kenerate-ad-1779796765745_1_njywwd.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260451/kenerate-ad-1779796765745_1_njywwd.mp4",
+      "tags": [
+        "AI Film",
+        "Brand",
+        "Motion"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-sequence-01-5",
+      "title": "Sequence 01 Film 05",
+      "category": "AI Sequence Study",
+      "year": "2026",
+      "description": "Atmospheric narrative sequence exploring cinematic depth and pacing.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260423/Sequence_01_5_ktappc.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260423/Sequence_01_5_ktappc.mp4",
+      "tags": [
+        "AI Film",
+        "Sequence",
+        "Cinematic"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-sequence-01-6",
+      "title": "Sequence 01 Film 06",
+      "category": "AI Sequence Study",
+      "year": "2026",
+      "description": "Cinematic exploration of light, texture, and continuity across frames.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260408/Sequence_01_6_c32bs3.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260408/Sequence_01_6_c32bs3.mp4",
+      "tags": [
+        "AI Film",
+        "Sequence",
+        "Cinematic"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-visual-exp-01",
+      "title": "AI Visual Experiment 01",
+      "category": "AI Visual Lab",
+      "year": "2026",
+      "description": "Creative visual experiment leveraging state-of-the-art generative motion models.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469510/1779188840357_o77qqi_emmrp5.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469510/1779188840357_o77qqi_emmrp5.mp4",
+      "tags": [
+        "AI Film",
+        "Experiment",
+        "Motion"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-visual-exp-02",
+      "title": "AI Visual Experiment 02",
+      "category": "AI Visual Lab",
+      "year": "2026",
+      "description": "Generative video investigation into kinetic typography, light, and fluid camera trajectories.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469385/1779095774772_lmmytk_hnbcwi.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469385/1779095774772_lmmytk_hnbcwi.mp4",
+      "tags": [
+        "AI Film",
+        "Experiment",
+        "Motion"
+      ],
+      "isAI": true
+    },
+    {
+      "id": "ai-film-visual-exp-03",
+      "title": "AI Visual Experiment 03",
+      "category": "AI Visual Lab",
+      "year": "2026",
+      "description": "Short-form AI visual exploration focusing on dynamic camera movement and cinematic composition.",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469345/1779197811307_n2mlxu_zz5t4u.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469345/1779197811307_n2mlxu_zz5t4u.mp4",
+      "tags": [
+        "AI Film",
+        "Experiment",
+        "Motion"
+      ],
+      "isAI": true
+    }
+  ],
+  "designProjects": [
+    {
+      "id": "design-web-arch",
+      "title": "Architectural Studio Web Platform",
+      "type": "Web Design",
+      "year": "2026",
+      "description": "Editorial web portal showcasing spatial architectures, interactive blueprints, and minimal typography.",
+      "video": "/design-illustration-loop.mp4",
+      "image": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+      "tools": [
+        "Design System",
+        "Illustration",
+        "UI/UX"
+      ],
+      "link": "mailto:Sukunsh2883@gmail.com",
+      "client": "Studio Showcase",
+      "aboutProject": "A showcase of design and illustration works.",
+      "galleryImages": [
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_2_blrh5x.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216478/MacBook_Pro_16__-_3_kgldoh.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_4_a6fb8w.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_5_eqbzcs.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_6_hzk4ov.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_7_jklgij.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_8_fnzrwj.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_13_dzwa3e.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_16_gop309.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300044/Slide_16_9_-_29_nwaotj.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_11_lwzl3p.png",
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_19_syziya.png"
+      ]
+    },
+    {
+      "id": "design-web-agency",
+      "title": "Creative Agency Web Portal",
+      "type": "Digital Web",
+      "year": "2026",
+      "description": "Brand storytelling web screen engineered with kinetic micro-interactions, smooth scrolling, and modular UI cards.",
+      "image": "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
+      "tools": [
+        "GSAP",
+        "Three.js",
+        "Web Design",
+        "UI Screens"
+      ],
+      "link": "https://www.behance.net/sukunshsharma",
+      "client": "ShareChat Creative Lab",
+      "aboutProject": "A showcase web platform with fluid animations, dynamic typography scales, and modular cards that provide an immersive experience across desktop, iPad, and smartphone screens.",
+      "galleryImages": [
+        "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop"
+      ]
+    },
+    {
+      "id": "design-web-platform",
+      "title": "NextGen Design System & Web App",
+      "type": "UI/UX & Web",
+      "year": "2026",
+      "description": "Concept branding for Somu Samosa, including logo, colors, stickers, and social media designs.",
+      "image": "https://mir-cdn.behance.net/v1/rendition/project_modules/source/0cada2251593317.6a3a85ae7be3f.jpg",
+      "tools": [
+        "Figma",
+        "Design Systems",
+        "Web UI",
+        "TypeScript"
+      ],
+      "link": "https://www.behance.net/sukunshsharma",
+      "client": "Sukunsh Labs",
+      "aboutProject": "Concept branding for Somu Samosa, including logo, colors, stickers, and social media designs.",
+      "galleryImages": [
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/0cada2251593317.6a3a85ae7be3f.jpg",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/a75c70251593317.6a3a85ae7c300.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/82b886251593317.6a3a85ae7ae50.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/9c49bf251593317.6a3a85ae7a82c.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/eaa77b251593317.6a3a85ae7b92c.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/fb56af251593317.6a3a85ae7c7fb.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/b6ef6b251593317.6a3a85ae7a2b9.png"
+      ],
+      "isAI": false,
+      "pdfUrl": "",
+      "uploadedPdfName": "",
+      "behanceEmbedUrl": ""
+    },
+    {
+      "id": "design-web-commerce",
+      "title": "Luxury E-Commerce Web Store",
+      "type": "E-Commerce",
+      "year": "2025",
+      "description": "Seamless e-commerce web platform showcasing luxury product cards, fluid cart drawer, and high-performance navigation.",
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop",
+      "tools": [
+        "React",
+        "Shopify Headless",
+        "Web Screens"
+      ],
+      "link": "https://www.behance.net/sukunshsharma",
+      "client": "Maison Studio",
+      "aboutProject": "An ultra-refined digital shopping interface combining high-resolution product carousels, responsive checkout flows, and frictionless navigation.",
+      "galleryImages": [
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "id": "video-kenerate-ad-02",
+      "title": "Kenerate Commercial",
+      "format": "9:16",
+      "type": "AI Ad Reel",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780264091/kenerate-ad-1779833779917_w0ndh7.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780264091/kenerate-ad-1779833779917_w0ndh7.mp4",
+      "duration": "00:15",
+      "year": "2026",
+      "isAI": true
+    },
+    {
+      "id": "video-kenerate-ad",
+      "title": "Kenerate Motion Ad",
+      "format": "9:16",
+      "type": "AI Ad Reel",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260451/kenerate-ad-1779796765745_1_njywwd.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260451/kenerate-ad-1779796765745_1_njywwd.mp4",
+      "duration": "00:15",
+      "year": "2026",
+      "isAI": true
+    },
+    {
+      "id": "video-sequence-01-5",
+      "title": "Sequence 01 Film 05",
+      "format": "9:16",
+      "type": "AI Ad Reel",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260423/Sequence_01_5_ktappc.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260423/Sequence_01_5_ktappc.mp4",
+      "duration": "00:15",
+      "year": "2026",
+      "isAI": true
+    },
+    {
+      "id": "video-sequence-01-6",
+      "title": "Sequence 01 Film 06",
+      "format": "9:16",
+      "type": "AI Ad Reel",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260408/Sequence_01_6_c32bs3.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260408/Sequence_01_6_c32bs3.mp4",
+      "duration": "00:15",
+      "year": "2026",
+      "isAI": true
+    },
+    {
+      "id": "video-ai-exp-1",
+      "title": "AI Visual Experiment 01",
+      "format": "9:16",
+      "type": "AI Ad Reel",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469510/1779188840357_o77qqi_emmrp5.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469510/1779188840357_o77qqi_emmrp5.mp4",
+      "duration": "00:15",
+      "year": "2026",
+      "isAI": true
+    },
+    {
+      "id": "video-ai-exp-2",
+      "title": "AI Visual Experiment 02",
+      "format": "9:16",
+      "type": "AI Ad Reel",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469385/1779095774772_lmmytk_hnbcwi.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469385/1779095774772_lmmytk_hnbcwi.mp4",
+      "duration": "00:15",
+      "year": "2026",
+      "isAI": true
+    },
+    {
+      "id": "video-ai-exp-3",
+      "title": "AI Visual Experiment 03",
+      "format": "9:16",
+      "type": "AI Ad Reel",
+      "thumbnail": "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469345/1779197811307_n2mlxu_zz5t4u.jpg",
+      "videoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469345/1779197811307_n2mlxu_zz5t4u.mp4",
+      "duration": "00:15",
+      "year": "2026",
+      "isAI": true
+    }
+  ],
+  "explorations": [
+    {
+      "id": "exp-1",
+      "title": "Abstract Chrome Fluid",
+      "imageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
+      "rotation": "-6deg",
+      "yOffset": "0px"
+    },
+    {
+      "id": "exp-2",
+      "title": "Cinematic Fog Study",
+      "imageUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
+      "rotation": "4deg",
+      "yOffset": "60px"
+    },
+    {
+      "id": "exp-3",
+      "title": "Surreal Mirror Portal",
+      "imageUrl": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=800&auto=format&fit=crop",
+      "rotation": "-3deg",
+      "yOffset": "-40px"
+    },
+    {
+      "id": "exp-4",
+      "title": "Neon Cinematic Transit",
+      "imageUrl": "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=800&auto=format&fit=crop",
+      "rotation": "5deg",
+      "yOffset": "200px"
+    },
+    {
+      "id": "exp-5",
+      "title": "Character Storyboard Concept",
+      "imageUrl": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop",
+      "rotation": "-5deg",
+      "yOffset": "120px"
+    },
+    {
+      "id": "exp-6",
+      "title": "Dark Cyberpunk Horizon",
+      "imageUrl": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=800&auto=format&fit=crop",
+      "rotation": "3deg",
+      "yOffset": "250px"
+    }
+  ],
+  "profile": {
+    "fullName": "Suraj Kumar Sharma",
+    "brandName": "Sukunsh",
+    "roles": [
+      "Visual Designer",
+      "AI Creative Designer",
+      "Motion Designer",
+      "Storyboard Artist",
+      "AI Film Creator"
+    ],
+    "bio": "Suraj Kumar Sharma is a Visual Designer and AI Creative Designer with deep experience in branding, motion graphics, UI design, AI-assisted creative workflows, video editing, storyboarding, typography, and visual storytelling.",
+    "email": "sukunsh2883@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/sukunsh",
+    "behance": "https://www.behance.net/sukunshsharma",
+    "instagram": "https://www.instagram.com/sukunsh_",
+    "accentGradient": "linear-gradient(90deg, #FF6A00 0%, #FFB000 100%)",
+    "logoFontFamily": "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
+    "heroVideoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/v1779644211/make_give_bit_loop_motion_202605242304_vd4fkj.mp4",
+    "aboutImage": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png",
+    "aboutImageSecondary": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png"
+  },
+  "aiArchiveImages": []
+}

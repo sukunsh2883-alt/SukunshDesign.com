@@ -236,7 +236,7 @@ export const aiFilms: AIFilm[] = [
   }
 ];
 
-// Selected Design Works List
+// Selected Design Works List - Only active visual projects shown in AI Studio preview
 export const designProjects: DesignProject[] = [
   {
     "id": "design-web-arch",
@@ -271,6 +271,27 @@ export const designProjects: DesignProject[] = [
     ]
   },
   {
+    "id": "design-web-agency",
+    "title": "Creative Agency Web Portal",
+    "type": "Digital Web",
+    "year": "2026",
+    "description": "Brand storytelling web screen engineered with kinetic micro-interactions, smooth scrolling, and modular UI cards.",
+    "image": "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
+    "tools": [
+      "GSAP",
+      "Three.js",
+      "Web Design",
+      "UI Screens"
+    ],
+    "link": "https://www.behance.net/sukunshsharma",
+    "client": "ShareChat Creative Lab",
+    "aboutProject": "A showcase web platform with fluid animations, dynamic typography scales, and modular cards that provide an immersive experience across desktop, iPad, and smartphone screens.",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop"
+    ]
+  },
+  {
     "id": "design-web-platform",
     "title": "NextGen Design System & Web App",
     "type": "UI/UX & Web",
@@ -301,73 +322,6 @@ export const designProjects: DesignProject[] = [
     "behanceEmbedUrl": ""
   },
   {
-    "id": "design-web-analytics",
-    "title": "Virtual Gifts & Fan Engagement",
-    "type": "AI Video & Virtual Gifts",
-    "year": "2025",
-    "description": "AI generative video virtual gifts designed for ShareChat and Moj, driving real-time creator and fan engagement.",
-    "image": "https://mir-cdn.behance.net/v1/rendition/project_modules/source/a1c8e7244190887.69922d898174e.png",
-    "tools": [
-      "AI Generative Video",
-      "Motion Design",
-      "Virtual Gifts",
-      "Creator Engagement"
-    ],
-    "link": "https://www.behance.net/sukunshsharma",
-    "client": "ShareChat & Moj",
-    "aboutProject": "AI generative video virtual gifts designed for ShareChat and Moj. This project is catered specifically for creators and fan engagements, elevating live-stream and community interactions through high-impact generative visual gifts and celebratory animation sequences.",
-    "galleryImages": [
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/a1c8e7244190887.69922d898174e.png",
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/bef690244190887.69922d8981229.png",
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/60121c244190887.69922d89831d8.png",
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/311bcd244190887.69922d8982ae3.png",
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/201e1b244190887.69922d8980d00.png",
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/f49c65244190887.69922d8981e54.png",
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/8a51f1244190887.69922d898257c.png"
-    ],
-    "isAI": true
-  },
-  {
-    "id": "design-web-agency",
-    "title": "Creative Agency Web Portal",
-    "type": "Digital Web",
-    "year": "2026",
-    "description": "Brand storytelling web screen engineered with kinetic micro-interactions, smooth scrolling, and modular UI cards.",
-    "image": "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
-    "tools": [
-      "GSAP",
-      "Three.js",
-      "Web Design",
-      "UI Screens"
-    ],
-    "link": "https://www.behance.net/sukunshsharma",
-    "client": "ShareChat Creative Lab",
-    "aboutProject": "A showcase web platform with fluid animations, dynamic typography scales, and modular cards that provide an immersive experience across desktop, iPad, and smartphone screens.",
-    "galleryImages": [
-      "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop"
-    ]
-  },
-  {
-    "id": "design-web-mag",
-    "title": "Minimalist Editorial Magazine Web",
-    "type": "Editorial Web",
-    "year": "2025",
-    "description": "Digital editorial journal featuring high-precision typography scales, multi-column reading modes, and responsive grids.",
-    "image": "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=1400&auto=format&fit=crop",
-    "tools": [
-      "Typography",
-      "Editorial UI",
-      "Web Layouts"
-    ],
-    "link": "https://www.behance.net/sukunshsharma",
-    "client": "National Typography Press",
-    "aboutProject": "An editorial digital reading experience pairing Swiss typography with subtle horizontal dividers and responsive column masonry.",
-    "galleryImages": [
-      "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=1400&auto=format&fit=crop"
-    ]
-  },
-  {
     "id": "design-web-commerce",
     "title": "Luxury E-Commerce Web Store",
     "type": "E-Commerce",
@@ -384,44 +338,6 @@ export const designProjects: DesignProject[] = [
     "aboutProject": "An ultra-refined digital shopping interface combining high-resolution product carousels, responsive checkout flows, and frictionless navigation.",
     "galleryImages": [
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop"
-    ]
-  },
-  {
-    "id": "design-web-portfolio",
-    "title": "Interactive Spatial Web Experience",
-    "type": "Spatial Web",
-    "year": "2026",
-    "description": "Spatial digital experience and portfolio screen crafted with 3D canvas elements, fluid motion, and responsive layout.",
-    "image": "https://images.unsplash.com/photo-1559028012-481c04fa702d?q=80&w=1400&auto=format&fit=crop",
-    "tools": [
-      "WebGL",
-      "Tailwind",
-      "Responsive UI"
-    ],
-    "link": "https://www.behance.net/sukunshsharma",
-    "client": "Freelance Editorial Study",
-    "aboutProject": "An experimental web platform combining 3D interactive canvases with structured editorial layout components.",
-    "galleryImages": [
-      "https://images.unsplash.com/photo-1559028012-481c04fa702d?q=80&w=1400&auto=format&fit=crop"
-    ]
-  },
-  {
-    "id": "design-pw-socials",
-    "title": "Digital Campaign Web Experience",
-    "type": "Digital Web",
-    "year": "2025",
-    "description": "Interactive campaign landing page and creative assets designed for high-conversion web distribution.",
-    "image": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1400&auto=format&fit=crop",
-    "tools": [
-      "Figma",
-      "Web Layouts",
-      "Color Theory"
-    ],
-    "link": "https://www.behance.net/sukunshsharma",
-    "client": "Physics Wallah",
-    "aboutProject": "A high-intensity web campaign platform requiring fast visual alignment, readable call-out boxes, and engaging graphics.",
-    "galleryImages": [
-      "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1400&auto=format&fit=crop"
     ]
   }
 ];

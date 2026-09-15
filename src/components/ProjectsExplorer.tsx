@@ -24,44 +24,7 @@ const FILTERS = [
   { id: "other design works", label: "other design works" }
 ];
 
-const UPCOMING_PROJECTS = [
-  {
-    id: "upcoming-1",
-    title: "Brand Identity Framework",
-    type: "branding",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_44_cmxx0z.png"
-  },
-  {
-    id: "upcoming-2",
-    title: "Cinematic Motion Graphics",
-    type: "motion design",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_45_v8v8q2.png"
-  },
-  {
-    id: "upcoming-3",
-    title: "Spatial Interface Lab",
-    type: "ui ux",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_46_p7u9p1.png"
-  },
-  {
-    id: "upcoming-4",
-    title: "Experimental Risography",
-    type: "illustration",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_47_x8c8q3.png"
-  },
-  {
-    id: "upcoming-5",
-    title: "Kinetic Identity Monogram",
-    type: "logo design",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_48_y2c8p4.png"
-  },
-  {
-    id: "upcoming-6",
-    title: "Interactive Wayfinding Study",
-    type: "infographic design",
-    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/q_auto/f_auto/v1782056275/image_49_b7v8r5.png"
-  }
-];
+const UPCOMING_PROJECTS: { id: string; title: string; type: string; image: string }[] = [];
 
 export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectProject }: ProjectsExplorerProps) {
   const [selectedFilter, setSelectedFilter] = useState("all");
