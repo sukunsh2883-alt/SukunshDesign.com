@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -370,6 +370,80 @@ export default function App() {
       console.error("Failed to persist explorations state to localStorage", e);
     }
   }, [explorationsState]);
+
+  // Codebase persistence engine: syncs localStorage changes directly to src/portfolioData.ts on the server
+  // so all updates made in Creator Studio are permanently written to git and visible when pushed to GitHub!
+  const syncToCodebase = useCallback(async () => {
+    try {
+      const res = await fetch("/api/portfolio/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          films,
+          designs,
+          videos: videosState,
+          explorations: explorationsState,
+          profile: profileState,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        console.log("[PortfolioSync] Saved directly to src/portfolioData.ts:", data.message);
+      }
+      return data;
+    } catch (err) {
+      console.warn("[PortfolioSync] Error syncing portfolio data to disk:", err);
+      return { success: false, error: err };
+    }
+  }, [films, designs, videosState, explorationsState, profileState]);
+
+  // Sync on initial mount if browser has stored items
+  useEffect(() => {
+    const hasLocalChanges =
+      localStorage.getItem("portfolio_designs") ||
+      localStorage.getItem("portfolio_films") ||
+      localStorage.getItem("portfolio_videos") ||
+      localStorage.getItem("portfolio_profile") ||
+      localStorage.getItem("portfolio_explorations");
+
+    if (hasLocalChanges) {
+      syncToCodebase();
+    }
+
+    const handleManualSync = () => {
+      syncToCodebase();
+    };
+    window.addEventListener("sync-portfolio-now", handleManualSync);
+
+    // Support opening Studio via URL hash (#admin, #studio) or query (?studio=true)
+    const handleUrlTrigger = () => {
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      if (hash === "#admin" || hash === "#studio" || search.includes("studio=true") || search.includes("admin=true")) {
+        window.dispatchEvent(new CustomEvent("open-creator-studio"));
+      }
+    };
+    handleUrlTrigger();
+    window.addEventListener("hashchange", handleUrlTrigger);
+
+    return () => {
+      window.removeEventListener("sync-portfolio-now", handleManualSync);
+      window.removeEventListener("hashchange", handleUrlTrigger);
+    };
+  }, [syncToCodebase]);
+
+  // Debounced auto-sync to codebase whenever states are modified in Creator Studio
+  const debounceSyncRef = useRef<any>(null);
+  useEffect(() => {
+    if (debounceSyncRef.current) clearTimeout(debounceSyncRef.current);
+    debounceSyncRef.current = setTimeout(() => {
+      syncToCodebase();
+    }, 1500);
+
+    return () => {
+      if (debounceSyncRef.current) clearTimeout(debounceSyncRef.current);
+    };
+  }, [films, designs, videosState, explorationsState, profileState, syncToCodebase]);
 
   // Lightbox view state managers
   const [lightbox, setLightbox] = useState({

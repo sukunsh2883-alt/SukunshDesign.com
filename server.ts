@@ -1,12 +1,100 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
+import { buildPortfolioTsContent } from "./server/portfolioSync";
 
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+// Endpoint to permanently save Creator Studio data to src/portfolioData.ts and git
+app.post("/api/portfolio/save", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const aiFilms = body.films || body.aiFilms || [];
+    const designProjects = body.designs || body.designProjects || [];
+    const videos = body.videos || [];
+    const explorations = body.explorations || [];
+    const profile = body.profile || {};
+    const journalPosts = body.journalPosts;
+    const education = body.education;
+    const experience = body.experience;
+    const skills = body.skills;
+    const software = body.software;
+    const RESUME_CATEGORIES = body.RESUME_CATEGORIES;
+
+    const fileContent = buildPortfolioTsContent({
+      aiFilms,
+      designProjects,
+      videos,
+      explorations,
+      journalPosts,
+      education,
+      experience,
+      skills,
+      software,
+      RESUME_CATEGORIES,
+      profile
+    });
+
+    const portfolioPath = path.join(process.cwd(), "src", "portfolioData.ts");
+    const jsonPath = path.join(process.cwd(), "src", "portfolioData.json");
+
+    fs.writeFileSync(portfolioPath, fileContent, "utf-8");
+    fs.writeFileSync(
+      jsonPath,
+      JSON.stringify(
+        {
+          savedAt: new Date().toISOString(),
+          aiFilms,
+          designProjects,
+          videos,
+          explorations,
+          profile,
+          aiArchiveImages: body.aiArchiveImages || []
+        },
+        null,
+        2
+      ),
+      "utf-8"
+    );
+
+    console.log(
+      `[PortfolioSync] Permanently saved to ${portfolioPath}: ${designProjects.length} designs, ${aiFilms.length} films, ${videos.length} videos.`
+    );
+
+    res.json({
+      success: true,
+      message: "Projects saved directly to src/portfolioData.ts. Ready for GitHub push!",
+      stats: {
+        designsCount: designProjects.length,
+        filmsCount: aiFilms.length,
+        videosCount: videos.length,
+        explorationsCount: explorations.length
+      }
+    });
+  } catch (error: any) {
+    console.error("[PortfolioSync] Error saving portfolio data:", error);
+    res.status(500).json({ success: false, error: error.message || "Failed to save portfolio data to disk." });
+  }
+});
+
+// Endpoint to retrieve saved portfolio json if present
+app.get("/api/portfolio/data", (req, res) => {
+  try {
+    const jsonPath = path.join(process.cwd(), "src", "portfolioData.json");
+    if (fs.existsSync(jsonPath)) {
+      const content = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+      return res.json({ success: true, exists: true, data: content });
+    }
+    res.json({ success: true, exists: false });
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // Lightweight cookie parsing helper
 function parseCookies(cookieHeader: string | undefined): Record<string, string> {

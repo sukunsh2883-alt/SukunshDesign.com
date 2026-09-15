@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { UploadCloud, Plus, Settings, Check, ShieldAlert, Edit3, Trash2, Image as ImageIcon, Briefcase, Film, User, Sparkles, X, ChevronRight, Lock, Unlock, LogOut, Download } from "lucide-react";
+import { UploadCloud, Plus, Settings, Check, ShieldAlert, Edit3, Trash2, Image as ImageIcon, Briefcase, Film, User, Sparkles, X, ChevronRight, Lock, Unlock, LogOut, Download, Save, FileUp, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { RESUME_CATEGORIES } from "../portfolioData";
 import { DEFAULT_LOGO_FONT, LOGO_FONT_OPTIONS, getLogoFontStyle } from "../localFonts";
@@ -141,7 +141,91 @@ export default function AdminPanel({
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
-    showToast("Changes exported. Send this JSON to Codex to make it permanent on GitHub.", "success");
+    showToast("Changes exported. Backup JSON downloaded.", "success");
+  };
+
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedTime, setLastSyncedTime] = useState<string | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importJsonText, setImportJsonText] = useState("");
+  const [importError, setImportError] = useState("");
+
+  const handleSyncToCodebase = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch("/api/portfolio/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profile,
+          films,
+          designs,
+          videos,
+          explorations,
+          aiArchiveImages: archiveImages,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLastSyncedTime(new Date().toLocaleTimeString());
+        showToast("Saved directly to src/portfolioData.ts! Ready for Git push.", "success");
+      } else {
+        showToast(data.error || "Failed to save to codebase.", "error");
+      }
+    } catch (err: any) {
+      showToast("Server sync error. Check dev server console.", "error");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleImportJson = async (jsonString: string) => {
+    try {
+      const parsed = JSON.parse(jsonString);
+      if (!parsed) throw new Error("Invalid JSON format");
+
+      if (parsed.profile) onUpdateProfile(parsed.profile);
+      if (Array.isArray(parsed.designs) || Array.isArray(parsed.designProjects)) {
+        onUpdateDesigns(parsed.designs || parsed.designProjects);
+      }
+      if (Array.isArray(parsed.films) || Array.isArray(parsed.aiFilms)) {
+        onUpdateFilms(parsed.films || parsed.aiFilms);
+      }
+      if (Array.isArray(parsed.videos)) {
+        onUpdateVideos(parsed.videos);
+      }
+      if (Array.isArray(parsed.explorations)) {
+        onUpdateExplorations?.(parsed.explorations);
+      }
+      if (Array.isArray(parsed.aiArchiveImages)) {
+        setArchiveImages(parsed.aiArchiveImages);
+      }
+
+      const res = await fetch("/api/portfolio/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profile: parsed.profile || profile,
+          films: parsed.films || parsed.aiFilms || films,
+          designs: parsed.designs || parsed.designProjects || designs,
+          videos: parsed.videos || videos,
+          explorations: parsed.explorations || explorations,
+          aiArchiveImages: parsed.aiArchiveImages || archiveImages,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLastSyncedTime(new Date().toLocaleTimeString());
+        setIsImportModalOpen(false);
+        setImportJsonText("");
+        setImportError("");
+        showToast("Successfully restored projects and saved to src/portfolioData.ts!", "success");
+      } else {
+        showToast("Imported locally, but server save failed: " + data.error, "error");
+      }
+    } catch (err: any) {
+      setImportError(err.message || "Failed to parse JSON file.");
+    }
   };
 
   const [consoleTab, setConsoleTab] = useState<"uploader" | "branding">("uploader");
@@ -854,14 +938,68 @@ export default function AdminPanel({
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleExportChanges}
-                  className="mb-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#FF6A00]/25 bg-[#FF6A00]/8 px-4 py-3 font-mono text-[9px] font-bold uppercase tracking-widest text-[#FF6A00] transition-colors hover:bg-[#FF6A00] hover:text-white"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Export Changes For GitHub
-                </button>
+                {/* Codebase Persistence & Git Sync Controls */}
+                <div className="mb-6 rounded-2xl border border-neutral-200 bg-neutral-50/80 p-3.5 space-y-2.5 font-sans">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      </span>
+                      <span className="font-mono text-[9px] uppercase tracking-wider font-bold text-neutral-800">
+                        Codebase Git Sync
+                      </span>
+                    </div>
+                    {lastSyncedTime && (
+                      <span className="font-mono text-[8px] text-emerald-600 font-medium">
+                        ✓ Synced at {lastSyncedTime}
+                      </span>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSyncToCodebase}
+                    disabled={isSyncing}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 font-mono text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:bg-black active:scale-[0.99] disabled:opacity-50 cursor-pointer shadow-sm"
+                  >
+                    {isSyncing ? (
+                      <>
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin text-[#FF6A00]" />
+                        <span>Saving to src/portfolioData.ts...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-3.5 w-3.5 text-[#FF6A00]" />
+                        <span>Save All Changes to Codebase (Git)</span>
+                      </>
+                    )}
+                  </button>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={handleExportChanges}
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 font-mono text-[9px] font-medium uppercase tracking-wider text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                      title="Download JSON backup file"
+                    >
+                      <Download className="h-3 w-3 text-neutral-500" />
+                      <span>Download JSON</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsImportModalOpen(true)}
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 font-mono text-[9px] font-medium uppercase tracking-wider text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                      title="Paste or upload JSON backup"
+                    >
+                      <FileUp className="h-3 w-3 text-neutral-500" />
+                      <span>Import JSON</span>
+                    </button>
+                  </div>
+                  <p className="text-[8px] font-mono text-neutral-500 leading-tight text-center">
+                    Writes directly to <span className="text-neutral-900 font-bold">src/portfolioData.ts</span> so your GitHub repo and deployed site display all updated projects.
+                  </p>
+                </div>
 
             {/* TAB CONTAINER 1: INTEGRATED PROJECT UPLOADER & LIST EDITOR */}
             {consoleTab === "uploader" && (
@@ -2031,6 +2169,122 @@ export default function AdminPanel({
           {isOpen ? "Close Studio" : "Creator Studio"}
         </span>
       </button>
+
+      {/* Import Backup JSON Modal */}
+      <AnimatePresence>
+        {isImportModalOpen && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs font-sans">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-lg rounded-3xl border border-neutral-200 bg-white p-6 shadow-2xl space-y-4"
+            >
+              <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <FileUp className="h-5 w-5 text-[#FF6A00]" />
+                  <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-900">
+                    Import Portfolio JSON
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsImportModalOpen(false);
+                    setImportError("");
+                  }}
+                  className="rounded-full p-1 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-neutral-600 leading-relaxed">
+                Restore your previous project edits or JSON backup. Importing will immediately update the live portfolio and write directly to <code className="bg-neutral-100 px-1 py-0.5 rounded text-neutral-800 font-mono font-semibold">src/portfolioData.ts</code> for GitHub.
+              </p>
+
+              {/* File upload option */}
+              <div className="rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50/50 p-4 text-center hover:border-[#FF6A00]/50 transition-colors">
+                <input
+                  type="file"
+                  id="portfolio-json-file"
+                  accept=".json,application/json"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      const file = e.target.files[0];
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const content = event.target?.result as string;
+                        if (content) {
+                          setImportJsonText(content);
+                          setImportError("");
+                        }
+                      };
+                      reader.readAsText(file);
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="portfolio-json-file"
+                  className="cursor-pointer flex flex-col items-center gap-1.5"
+                >
+                  <UploadCloud className="h-6 w-6 text-[#FF6A00]" />
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-neutral-800">
+                    Choose .json file from computer
+                  </span>
+                  <span className="text-[9px] text-neutral-400">or paste the JSON text below</span>
+                </label>
+              </div>
+
+              {/* Textarea for raw JSON */}
+              <div className="space-y-1">
+                <label className="font-mono text-[9px] uppercase tracking-wider text-neutral-500 block">
+                  JSON Data Content
+                </label>
+                <textarea
+                  rows={6}
+                  value={importJsonText}
+                  onChange={(e) => {
+                    setImportJsonText(e.target.value);
+                    setImportError("");
+                  }}
+                  placeholder='{"designs": [...], "films": [...], "videos": [...], "profile": {...}}'
+                  className="w-full rounded-xl border border-neutral-200 bg-neutral-50 p-3 font-mono text-[10px] text-neutral-800 placeholder-neutral-400 focus:border-[#FF6A00] focus:outline-none"
+                />
+              </div>
+
+              {importError && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-2.5 text-[10px] font-mono text-red-600 flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4 shrink-0" />
+                  <span>{importError}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-neutral-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsImportModalOpen(false);
+                    setImportError("");
+                  }}
+                  className="rounded-xl border border-neutral-200 px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-neutral-600 hover:bg-neutral-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!importJsonText.trim()}
+                  onClick={() => handleImportJson(importJsonText)}
+                  className="rounded-xl bg-neutral-900 px-5 py-2 font-mono text-[10px] font-bold uppercase tracking-wider text-white hover:bg-black disabled:opacity-40 cursor-pointer transition-colors"
+                >
+                  Apply & Save to Codebase
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
