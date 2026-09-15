@@ -68,6 +68,14 @@ export default function Navbar({
       link: "#contact",
       onClick: () => handleNavClick("#contact"),
     },
+    {
+      label: "Creator Studio",
+      ariaLabel: "Open Creator Studio deck",
+      link: "#studio",
+      onClick: () => {
+        window.dispatchEvent(new CustomEvent("open-creator-studio"));
+      },
+    },
   ];
 
   const socialItems = [
