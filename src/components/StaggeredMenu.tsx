@@ -55,8 +55,20 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   onMenuClose
 }) => {
   const [open, setOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const openRef = useRef(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPos = window.scrollY || document.documentElement.scrollTop;
+      setIsScrolled(scrollPos > 40);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const burgerTopRef = useRef<HTMLSpanElement>(null);
   const burgerMidRef = useRef<HTMLSpanElement>(null);
   const burgerBotRef = useRef<HTMLSpanElement>(null);
@@ -249,7 +261,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     >
       <header className="staggered-menu-header" aria-label="Main navigation header">
         <div
-          className="sm-logo cursor-pointer flex items-center gap-1.5"
+          className={`sm-logo cursor-pointer flex items-center gap-1.5 ${isScrolled ? 'is-scrolled' : ''}`}
+          data-scrolled={isScrolled}
           aria-label="Logo"
           onClick={onLogoClick}
         >
@@ -263,8 +276,23 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               height={24}
             />
           ) : (
-            <span className="text-xl md:text-2xl font-bold font-sans tracking-tight text-white select-none">
-              Sukunsh<span className="text-[#FF6A00] font-black">.</span>
+            <span className="text-lg sm:text-xl font-bold font-sans tracking-tight text-white select-none leading-none">
+              {logoText ? (
+                <>
+                  {logoText.endsWith(".") ? (
+                    <>
+                      {logoText.slice(0, -1)}
+                      <span className="text-[#FF6A00] font-black">.</span>
+                    </>
+                  ) : (
+                    logoText
+                  )}
+                </>
+              ) : (
+                <>
+                  Sukunsh<span className="text-[#FF6A00] font-black">.</span>
+                </>
+              )}
             </span>
           )}
         </div>

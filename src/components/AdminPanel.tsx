@@ -76,6 +76,10 @@ export default function AdminPanel({
     localStorage.removeItem("sukunsh_creator_studio_auth");
   };
 
+  const designsRef = useRef(designs);
+  designsRef.current = designs;
+  const handleEditSelectRef = useRef<any>(null);
+
   useEffect(() => {
     const unlockStudio = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "s") {
@@ -85,8 +89,34 @@ export default function AdminPanel({
       }
     };
 
+    const handleOpenStudio = (event: any) => {
+      setIsStudioVisible(true);
+      setIsOpen(true);
+      setIsAuthenticated(true);
+      localStorage.setItem("sukunsh_creator_studio_auth", "true");
+      setConsoleTab("uploader");
+      if (event.detail?.assetType) {
+        setActiveAssetType(event.detail.assetType);
+      } else {
+        setActiveAssetType("design");
+      }
+      if (event.detail?.subTab) {
+        setUploaderSubTab(event.detail.subTab);
+      }
+      if (event.detail?.editId) {
+        const item = designsRef.current.find((d: any) => d.id === event.detail.editId);
+        if (item && handleEditSelectRef.current) {
+          handleEditSelectRef.current(item, "design");
+        }
+      }
+    };
+
     window.addEventListener("keydown", unlockStudio);
-    return () => window.removeEventListener("keydown", unlockStudio);
+    window.addEventListener("open-creator-studio", handleOpenStudio);
+    return () => {
+      window.removeEventListener("keydown", unlockStudio);
+      window.removeEventListener("open-creator-studio", handleOpenStudio);
+    };
   }, []);
 
   const handleExportChanges = () => {
@@ -216,6 +246,7 @@ export default function AdminPanel({
 
   // Slide drag/drop uploader states (for currently edited design project)
   const [dragActive, setDragActive] = useState(false);
+  const [newDesignGallery, setNewDesignGallery] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
@@ -238,6 +269,7 @@ export default function AdminPanel({
     setEditingItemId(null);
     setBulkFiles([]);
     setExplorationMode("single");
+    setNewDesignGallery([]);
   };
 
   const handleEditSelect = (item: any, type: "film" | "design" | "video" | "exploration") => {
@@ -259,6 +291,7 @@ export default function AdminPanel({
     setPdfUrl(type === "design" ? item.pdfUrl || "" : "");
     setUploadedPdfName(type === "design" ? item.uploadedPdfName || "" : "");
     setBehanceEmbedUrl(type === "design" ? item.behanceEmbedUrl || "" : "");
+    setNewDesignGallery([]);
     
     // Smooth scroll inside panel to form
     const container = document.getElementById("admin-form-container");
@@ -266,6 +299,7 @@ export default function AdminPanel({
       container.scrollIntoView({ behavior: "smooth" });
     }
   };
+  handleEditSelectRef.current = handleEditSelect;
 
   const handleDeleteItem = (id: string, type: "film" | "design" | "video" | "exploration") => {
     if (type === "film") {
@@ -395,7 +429,7 @@ export default function AdminPanel({
           year,
           description: desc || "Branding layouts, typography exercises, and publications.",
           image: resolvedThumbnail,
-          galleryImages: [resolvedThumbnail],
+          galleryImages: newDesignGallery.length > 0 ? newDesignGallery : [resolvedThumbnail],
           tools: toolsInput ? toolsInput.split(",").map(t => t.trim()).filter(Boolean) : ["Photoshop", "Illustrator"],
           link: resolvedLink || "#",
           client: client || "Sukunsh Labs Inc.",
@@ -463,7 +497,7 @@ export default function AdminPanel({
 
   // Convert files locally to Base64 and inject to active design project
   const processUploadedFiles = (files: FileList) => {
-    if (!editingItemId || activeAssetType !== "design") return;
+    if (activeAssetType !== "design") return;
     
     Array.from(files).forEach(file => {
       if (!file.type.startsWith("image/")) {
@@ -476,18 +510,26 @@ export default function AdminPanel({
         const base64Url = event.target?.result as string;
         if (!base64Url) return;
 
-        const original = designs.find(d => d.id === editingItemId);
-        if (!original) return;
+        if (editingItemId) {
+          const original = designs.find(d => d.id === editingItemId);
+          if (!original) return;
 
-        const existingGallery = original.galleryImages || [original.image];
-        const updatedGallery = [...existingGallery, base64Url];
+          const existingGallery = original.galleryImages || [original.image];
+          const updatedGallery = [...existingGallery, base64Url];
 
-        onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
-          ...d,
-          image: updatedGallery[0] || d.image,
-          galleryImages: updatedGallery
-        } : d));
-        setThumbnail(updatedGallery[0] || original.image || "");
+          onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
+            ...d,
+            image: updatedGallery[0] || d.image,
+            galleryImages: updatedGallery
+          } : d));
+          setThumbnail(updatedGallery[0] || original.image || "");
+        } else {
+          setNewDesignGallery((prev) => {
+            const next = [...prev, base64Url];
+            if (!thumbnail) setThumbnail(next[0]);
+            return next;
+          });
+        }
       };
       reader.readAsDataURL(file);
     });
@@ -558,58 +600,88 @@ export default function AdminPanel({
   };
 
   const deleteGalleryImage = (imageIndex: number) => {
-    const original = designs.find(d => d.id === editingItemId);
-    if (!original) return;
+    if (editingItemId) {
+      const original = designs.find(d => d.id === editingItemId);
+      if (!original) return;
 
-    const existingGallery = original.galleryImages || [original.image];
-    const updatedGallery = existingGallery.filter((_: any, idx: number) => idx !== imageIndex);
+      const existingGallery = original.galleryImages || [original.image];
+      const updatedGallery = existingGallery.filter((_: any, idx: number) => idx !== imageIndex);
 
-    onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
-      ...d,
-      galleryImages: updatedGallery,
-      image: updatedGallery[0] || d.image
-    } : d));
-    setThumbnail(updatedGallery[0] || original.image || "");
+      onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
+        ...d,
+        galleryImages: updatedGallery,
+        image: updatedGallery[0] || d.image
+      } : d));
+      setThumbnail(updatedGallery[0] || original.image || "");
+    } else {
+      setNewDesignGallery((prev) => {
+        const updated = prev.filter((_, idx) => idx !== imageIndex);
+        setThumbnail(updated[0] || "");
+        return updated;
+      });
+    }
   };
 
   const reorderGalleryImage = (imageIndex: number, direction: "up" | "down") => {
-    const original = designs.find(d => d.id === editingItemId);
-    if (!original) return;
+    if (editingItemId) {
+      const original = designs.find(d => d.id === editingItemId);
+      if (!original) return;
 
-    const existingGallery = [...(original.galleryImages || [original.image]).filter(Boolean)];
-    const newIndex = direction === "up" ? imageIndex - 1 : imageIndex + 1;
+      const existingGallery = [...(original.galleryImages || [original.image]).filter(Boolean)];
+      const newIndex = direction === "up" ? imageIndex - 1 : imageIndex + 1;
 
-    if (newIndex < 0 || newIndex >= existingGallery.length) return;
+      if (newIndex < 0 || newIndex >= existingGallery.length) return;
 
-    // Swap elements
-    const temp = existingGallery[imageIndex];
-    existingGallery[imageIndex] = existingGallery[newIndex];
-    existingGallery[newIndex] = temp;
+      // Swap elements
+      const temp = existingGallery[imageIndex];
+      existingGallery[imageIndex] = existingGallery[newIndex];
+      existingGallery[newIndex] = temp;
 
-    onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
-      ...d,
-      galleryImages: existingGallery,
-      image: existingGallery[0] || d.image
-    } : d));
-    setThumbnail(existingGallery[0] || original.image || "");
+      onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
+        ...d,
+        galleryImages: existingGallery,
+        image: existingGallery[0] || d.image
+      } : d));
+      setThumbnail(existingGallery[0] || original.image || "");
+    } else {
+      setNewDesignGallery((prev) => {
+        const existing = [...prev];
+        const newIndex = direction === "up" ? imageIndex - 1 : imageIndex + 1;
+        if (newIndex < 0 || newIndex >= existing.length) return prev;
+        const temp = existing[imageIndex];
+        existing[imageIndex] = existing[newIndex];
+        existing[newIndex] = temp;
+        setThumbnail(existing[0] || "");
+        return existing;
+      });
+    }
   };
 
   const handleAddRemoteGalleryUrl = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!remoteGalleryUrl.trim()) return;
+    const cleanUrl = remoteGalleryUrl.trim();
+    if (!cleanUrl) return;
 
-    const original = designs.find(d => d.id === editingItemId);
-    if (!original) return;
+    if (editingItemId) {
+      const original = designs.find(d => d.id === editingItemId);
+      if (!original) return;
 
-    const existingGallery = original.galleryImages || [original.image];
-    const updatedGallery = [...existingGallery, remoteGalleryUrl.trim()];
+      const existingGallery = original.galleryImages || [original.image];
+      const updatedGallery = [...existingGallery, cleanUrl];
 
-    onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
-      ...d,
-      image: updatedGallery[0] || d.image,
-      galleryImages: updatedGallery
-    } : d));
-    setThumbnail(updatedGallery[0] || original.image || "");
+      onUpdateDesigns(designs.map(d => d.id === editingItemId ? {
+        ...d,
+        image: updatedGallery[0] || d.image,
+        galleryImages: updatedGallery
+      } : d));
+      setThumbnail(updatedGallery[0] || original.image || "");
+    } else {
+      setNewDesignGallery((prev) => {
+        const next = [...prev, cleanUrl];
+        if (!thumbnail) setThumbnail(next[0]);
+        return next;
+      });
+    }
     setRemoteGalleryUrl("");
   };
 
@@ -1577,7 +1649,7 @@ export default function AdminPanel({
                     )}
 
                     {/* Integrated Slides Management directly within active edit form for Design projects */}
-                    {editingItemId && activeAssetType === "design" && (
+                    {activeAssetType === "design" && (
                       <div className="space-y-3 pt-3 border-t border-neutral-100 bg-neutral-50 p-3 rounded-2xl border border-neutral-200">
                         <span className="text-[9px] font-mono uppercase tracking-widest text-[#FF6A00] font-bold block">
                           Design Case Study Slides & Gallery Show
@@ -1627,53 +1699,62 @@ export default function AdminPanel({
                         </div>
 
                         {/* Thumbnails of current active design slide images with reordering handles */}
-                        <div>
-                          <span className="text-[8px] uppercase tracking-widest font-mono text-neutral-500 block mb-1">
-                            Gallery Images list ({designs.find(d => d.id === editingItemId)?.galleryImages?.length || 1})
-                          </span>
-                          <div className="grid grid-cols-4 gap-2 max-h-[160px] overflow-y-auto pr-1">
-                            {(designs.find(d => d.id === editingItemId)?.galleryImages || [designs.find(d => d.id === editingItemId)?.image]).map((img: string, idx: number) => {
-                              const galleryLength = (designs.find(d => d.id === editingItemId)?.galleryImages || [designs.find(d => d.id === editingItemId)?.image]).length;
-                              return (
-                                <div key={idx} className="relative aspect-square rounded-lg border border-neutral-200 overflow-hidden group bg-white shadow-3xs">
-                                  <img src={img} alt="slide preview" className="w-full h-full object-cover" />
-                                  <div className="absolute inset-0 bg-white/95 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-1 gap-1">
-                                    <button
-                                      onClick={() => deleteGalleryImage(idx)}
-                                      type="button"
-                                      className="p-1 w-full rounded bg-red-600 text-white text-[7px] font-mono uppercase tracking-widest hover:bg-red-700 transition-all cursor-pointer text-center"
-                                    >
-                                      Delete
-                                    </button>
-                                    <div className="flex gap-1 w-full">
-                                      <button
-                                        onClick={() => reorderGalleryImage(idx, "up")}
-                                        disabled={idx === 0}
-                                        type="button"
-                                        className="flex-1 p-0.5 rounded bg-neutral-200 text-neutral-800 hover:bg-neutral-300 text-[8px] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer text-center font-bold"
-                                        title="Move index left"
-                                      >
-                                        &lt;
-                                      </button>
-                                      <button
-                                        onClick={() => reorderGalleryImage(idx, "down")}
-                                        disabled={idx === galleryLength - 1}
-                                        type="button"
-                                        className="flex-1 p-0.5 rounded bg-neutral-200 text-neutral-800 hover:bg-neutral-300 text-[8px] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer text-center font-bold"
-                                        title="Move index right"
-                                      >
-                                        &gt;
-                                      </button>
+                        {(() => {
+                          const activeGallery = (editingItemId
+                            ? (designs.find(d => d.id === editingItemId)?.galleryImages || [designs.find(d => d.id === editingItemId)?.image])
+                            : newDesignGallery
+                          ).filter(Boolean);
+
+                          return (
+                            <div>
+                              <span className="text-[8px] uppercase tracking-widest font-mono text-neutral-500 block mb-1">
+                                Gallery Images list ({activeGallery.length})
+                              </span>
+                              <div className="grid grid-cols-4 gap-2 max-h-[160px] overflow-y-auto pr-1">
+                                {activeGallery.map((img: string, idx: number) => {
+                                  const galleryLength = activeGallery.length;
+                                  return (
+                                    <div key={idx} className="relative aspect-square rounded-lg border border-neutral-200 overflow-hidden group bg-white shadow-3xs">
+                                      <img src={img} alt="slide preview" className="w-full h-full object-cover" />
+                                      <div className="absolute inset-0 bg-white/95 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-1 gap-1">
+                                        <button
+                                          onClick={() => deleteGalleryImage(idx)}
+                                          type="button"
+                                          className="p-1 w-full rounded bg-red-600 text-white text-[7px] font-mono uppercase tracking-widest hover:bg-red-700 transition-all cursor-pointer text-center"
+                                        >
+                                          Delete
+                                        </button>
+                                        <div className="flex gap-1 w-full">
+                                          <button
+                                            onClick={() => reorderGalleryImage(idx, "up")}
+                                            disabled={idx === 0}
+                                            type="button"
+                                            className="flex-1 p-0.5 rounded bg-neutral-200 text-neutral-800 hover:bg-neutral-300 text-[8px] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer text-center font-bold"
+                                            title="Move index left"
+                                          >
+                                            &lt;
+                                          </button>
+                                          <button
+                                            onClick={() => reorderGalleryImage(idx, "down")}
+                                            disabled={idx === galleryLength - 1}
+                                            type="button"
+                                            className="flex-1 p-0.5 rounded bg-neutral-200 text-neutral-800 hover:bg-neutral-300 text-[8px] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer text-center font-bold"
+                                            title="Move index right"
+                                          >
+                                            &gt;
+                                          </button>
+                                        </div>
+                                      </div>
+                                      <span className="absolute bottom-1 right-1 px-1 py-[0.5px] rounded bg-white/90 border border-neutral-200 text-[6px] font-mono text-neutral-900 shadow-3xs">
+                                        #{idx + 1}
+                                      </span>
                                     </div>
-                                  </div>
-                                  <span className="absolute bottom-1 right-1 px-1 py-[0.5px] rounded bg-white/90 border border-neutral-200 text-[6px] font-mono text-neutral-900 shadow-3xs">
-                                    #{idx + 1}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                     )}
 

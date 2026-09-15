@@ -38,6 +38,7 @@ export function UserCursor(props: UserCursorProps) {
   const [mounted, setMounted] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [isInteractive, setIsInteractive] = useState(false);
+  const [cursorTag, setCursorTag] = useState<string | null>(null);
   const [pressed, setPressed] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
@@ -104,12 +105,13 @@ export function UserCursor(props: UserCursorProps) {
     return () => controls.stop();
   }, [pressed, isInteractive, pressScale, scaleMV]);
 
-  // Check if hovering over clickable / interactive target
+  // Check if hovering over clickable / interactive target and custom cursor text
   const checkInteractiveTarget = useCallback((clientX: number, clientY: number) => {
     if (typeof document === "undefined") return;
     const el = document.elementFromPoint(clientX, clientY);
     if (!el) {
       setIsInteractive(false);
+      setCursorTag(null);
       return;
     }
 
@@ -117,6 +119,15 @@ export function UserCursor(props: UserCursorProps) {
       'a, button, [role="button"], input, select, textarea, [data-project-card], .project-card, .wave-reel-card, .ai-film-card, .interactive-target, [tabindex="0"]'
     );
     setIsInteractive(isClickable);
+
+    // Read dedicated cursor tag or text
+    const tagEl = el.closest("[data-cursor-tag], [data-cursor-text]");
+    if (tagEl) {
+      const tagVal = tagEl.getAttribute("data-cursor-tag") || tagEl.getAttribute("data-cursor-text");
+      setCursorTag(tagVal || null);
+    } else {
+      setCursorTag(null);
+    }
   }, []);
 
   // Global pointer listeners across the entire document & window
@@ -136,19 +147,24 @@ export function UserCursor(props: UserCursorProps) {
     const onLeave = () => {
       setHovering(false);
       setIsInteractive(false);
+      setCursorTag(null);
     };
 
+    let scrollCheckRaf: number | null = null;
     const onScroll = () => {
-      // Recheck element under mouse after scroll
-      const currentX = mouseX.get();
-      const currentY = mouseY.get();
-      if (currentX >= 0 && currentY >= 0) {
-        checkInteractiveTarget(currentX, currentY);
-      }
+      // Throttle element check during scrolling via requestAnimationFrame to avoid synchronous layout reflows
+      if (scrollCheckRaf !== null) return;
+      scrollCheckRaf = requestAnimationFrame(() => {
+        scrollCheckRaf = null;
+        const currentX = mouseX.get();
+        const currentY = mouseY.get();
+        if (currentX >= 0 && currentY >= 0) {
+          checkInteractiveTarget(currentX, currentY);
+        }
+      });
     };
 
-    window.addEventListener("mousemove", onMove, { passive: true, capture: true });
-    window.addEventListener("pointermove", onMove, { passive: true, capture: true });
+    window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("mousedown", onDown, { capture: true });
     window.addEventListener("mouseup", onUp, { capture: true });
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -156,8 +172,8 @@ export function UserCursor(props: UserCursorProps) {
     window.addEventListener("blur", onLeave);
 
     return () => {
-      window.removeEventListener("mousemove", onMove, { capture: true });
-      window.removeEventListener("pointermove", onMove, { capture: true });
+      if (scrollCheckRaf !== null) cancelAnimationFrame(scrollCheckRaf);
+      window.removeEventListener("pointermove", onMove);
       window.removeEventListener("mousedown", onDown, { capture: true });
       window.removeEventListener("mouseup", onUp, { capture: true });
       window.removeEventListener("scroll", onScroll);
@@ -221,6 +237,23 @@ export function UserCursor(props: UserCursorProps) {
             strokeLinejoin="round"
           />
         </svg>
+
+        {/* Floating Custom Cursor Tag (e.g. 'Click to see') */}
+        {cursorTag && (
+          <div
+            style={{
+              position: "absolute",
+              left: 18,
+              top: 18,
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+            }}
+            className="px-2.5 py-1 rounded-full bg-neutral-950/95 text-white text-[10px] font-mono tracking-wider shadow-xl border border-white/20 select-none uppercase font-semibold flex items-center gap-1.5"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-pulse" />
+            <span>{cursorTag}</span>
+          </div>
+        )}
       </motion.div>
     </div>
   );

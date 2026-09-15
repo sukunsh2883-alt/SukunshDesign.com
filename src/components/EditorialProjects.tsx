@@ -1,16 +1,21 @@
 import { DesignProject } from "../portfolioData";
+import ContinuousLoopVideo from "./ContinuousLoopVideo";
 
 interface EditorialProjectsProps {
   projects: DesignProject[];
   onSelectProject?: (proj: DesignProject) => void;
   onOpenProjectsExplorer?: () => void;
   onOpenAIWork?: () => void;
+  onOpenDesignShowcase?: () => void;
   profile?: any;
 }
 
 export default function EditorialProjects({
   projects,
   onSelectProject,
+  onOpenProjectsExplorer,
+  onOpenAIWork,
+  onOpenDesignShowcase,
   profile,
 }: EditorialProjectsProps) {
   // Safe project slots (7 projects for full column balancing)
@@ -71,41 +76,59 @@ export default function EditorialProjects({
           </span>
         </div>
 
-        {/* 1. Hero Full-Width Card (Spans the entire screen width with fluid responsiveness) */}
+        {/* 1. Hero Motion Graphic View (Uncropped video with natural sizing, no surrounding text, cursor hover tag) */}
         {p0 && (
           <div className="mb-8 sm:mb-12 md:mb-14">
             <div
-              onClick={() => onSelectProject?.(p0)}
+              data-cursor-tag="See all projects"
+              data-cursor-text="See all projects"
+              onClick={() => {
+                if (onOpenDesignShowcase) {
+                  onOpenDesignShowcase();
+                } else {
+                  onSelectProject?.(p0);
+                }
+              }}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p0)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  if (onOpenDesignShowcase) {
+                    onOpenDesignShowcase();
+                  } else {
+                    onSelectProject?.(p0);
+                  }
+                }
+              }}
               className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
             >
-              <div className="relative w-full aspect-[16/9] sm:aspect-[16/8] md:aspect-[21/9] lg:aspect-[2.4/1] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
-                <img
-                  src={p0.image}
-                  alt={p0.title}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
+              <div 
+                className="relative w-full aspect-[1728/1116] overflow-hidden rounded-[4px] bg-neutral-50 shadow-xs hover:shadow-md transition-shadow duration-300"
+                style={{
+                  transform: "translateZ(0)",
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                }}
+              >
+                <ContinuousLoopVideo
+                  src="/design-illustration-loop.mp4"
+                  fallbackSrc="https://res.cloudinary.com/dylv5m3jk/video/upload/v1789396420/MacBook_Pro_16-_-_1_4_f7ttaj.mp4"
+                  poster="https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
+                  alt={p0.title || "Design & Illustration Showcase"}
+                  className="w-full h-full block object-contain select-none transition-transform duration-700 ease-out group-hover:scale-[1.01]"
                 />
               </div>
-              {renderCardMeta(
-                p0.type || "Web Architecture",
-                getProjectLines(p0, "Spatial Architecture &", "Minimal Editorial Storytelling.").line1,
-                getProjectLines(p0, "Spatial Architecture &", "Minimal Editorial Storytelling.").line2
-              )}
             </div>
           </div>
         )}
 
-        {/* 2. Staggered 2-Column Grid (Fills full width, dynamically adjusting to mobile, tablet, desktop) */}
+        {/* 2. Staggered 2-Column Grid (Original 7 Projects Balanced Composition) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-14 xl:gap-16">
           
-          {/* Left Column: [Tall Card] -> [Landscape Card] -> [Balanced Card] */}
+          {/* Left Column */}
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14">
             
-            {/* Left Item 1: Tall Card */}
+            {/* Left Item 1: p1 (Landscape) */}
             {p1 && (
               <div
                 onClick={() => onSelectProject?.(p1)}
@@ -114,7 +137,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p1)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[4/3] sm:aspect-[4/4] md:aspect-[4/4.8] lg:aspect-[4/4.9] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
                     src={p1.image}
                     alt={p1.title}
@@ -124,14 +147,14 @@ export default function EditorialProjects({
                   />
                 </div>
                 {renderCardMeta(
-                  p1.type || "UI/UX & Web",
-                  getProjectLines(p1, "Design System Tokens &", "Tactile Micro-Interactions.").line1,
-                  getProjectLines(p1, "Design System Tokens &", "Tactile Micro-Interactions.").line2
+                  p1.type || "Branding",
+                  getProjectLines(p1, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p1, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
 
-            {/* Left Item 2: Landscape Card */}
+            {/* Left Item 2: p2 (Landscape) */}
             {p2 && (
               <div
                 onClick={() => onSelectProject?.(p2)}
@@ -150,14 +173,14 @@ export default function EditorialProjects({
                   />
                 </div>
                 {renderCardMeta(
-                  p2.type || "SaaS & Web",
-                  getProjectLines(p2, "Real-Time Visual Metrics &", "Financial Intelligence.").line1,
-                  getProjectLines(p2, "Real-Time Visual Metrics &", "Financial Intelligence.").line2
+                  p2.type || "Branding",
+                  getProjectLines(p2, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p2, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
 
-            {/* Left Item 3: Balancing Card (Eliminates negative space at the bottom) */}
+            {/* Left Item 3: p6 (Bottom Balancer Card) */}
             {p6 && (
               <div
                 onClick={() => onSelectProject?.(p6)}
@@ -176,19 +199,19 @@ export default function EditorialProjects({
                   />
                 </div>
                 {renderCardMeta(
-                  p6.type || "Visual System",
-                  getProjectLines(p6, "Identity Typography &", "Contemporary Spatial Branding.").line1,
-                  getProjectLines(p6, "Identity Typography &", "Contemporary Spatial Branding.").line2
+                  p6.type || "Branding",
+                  getProjectLines(p6, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p6, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
 
           </div>
 
-          {/* Right Column: [Landscape Card] -> [Square/Taller Card] -> [Landscape Card] */}
+          {/* Right Column */}
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14">
             
-            {/* Right Item 1: Landscape Card */}
+            {/* Right Item 1: p3 (Landscape) */}
             {p3 && (
               <div
                 onClick={() => onSelectProject?.(p3)}
@@ -207,14 +230,14 @@ export default function EditorialProjects({
                   />
                 </div>
                 {renderCardMeta(
-                  p3.type || "Digital Web",
-                  getProjectLines(p3, "Kinetic Brand Narrative &", "Modular UI Engineering.").line1,
-                  getProjectLines(p3, "Kinetic Brand Narrative &", "Modular UI Engineering.").line2
+                  p3.type || "Design",
+                  getProjectLines(p3, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p3, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
 
-            {/* Right Item 2: Square/Taller Card */}
+            {/* Right Item 2: p4 (Square/Taller format) */}
             {p4 && (
               <div
                 onClick={() => onSelectProject?.(p4)}
@@ -233,14 +256,14 @@ export default function EditorialProjects({
                   />
                 </div>
                 {renderCardMeta(
-                  p4.type || "E-Commerce",
-                  getProjectLines(p4, "Fluid Mobile Checkout &", "Tactile Product Architecture.").line1,
-                  getProjectLines(p4, "Fluid Mobile Checkout &", "Tactile Product Architecture.").line2
+                  p4.type || "Design",
+                  getProjectLines(p4, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p4, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
 
-            {/* Right Item 3: Landscape Card */}
+            {/* Right Item 3: p5 (Landscape) */}
             {p5 && (
               <div
                 onClick={() => onSelectProject?.(p5)}
@@ -259,9 +282,9 @@ export default function EditorialProjects({
                   />
                 </div>
                 {renderCardMeta(
-                  p5.type || "Editorial Media",
-                  getProjectLines(p5, "Dynamic Typographic Grid &", "Immersive Content Flow.").line1,
-                  getProjectLines(p5, "Dynamic Typographic Grid &", "Immersive Content Flow.").line2
+                  p5.type || "Design",
+                  getProjectLines(p5, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p5, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}

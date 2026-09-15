@@ -17,6 +17,7 @@ import FullResumeModal from "./components/FullResumeModal";
 import AboutMeModal from "./components/AboutMeModal";
 import ScrollShowcase from "./components/ScrollShowcase";
 import GitHubExplorer from "./components/GitHubExplorer";
+import DesignIllustrationShowcase from "./components/DesignIllustrationShowcase";
 
 // State Engines and Credentials
 import {
@@ -62,15 +63,18 @@ export default function App() {
     try {
       const saved = localStorage.getItem("portfolio_films");
       if (saved) {
-        const savedFilms = JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        const savedFilms = (Array.isArray(parsed) ? parsed : []).filter(
+          (film: AIFilm) =>
+            film &&
+            !film.videoUrl?.includes("mixkit.co") &&
+            !film.thumbnail?.includes("unsplash.com")
+        );
         const savedFilmIds = new Set(savedFilms.map((film: AIFilm) => film.id));
         const missingInitialFilms = initialFilms.filter((film) => !savedFilmIds.has(film.id));
 
-        if (missingInitialFilms.length > 0) {
-          return [...missingInitialFilms, ...savedFilms];
-        }
-
-        return savedFilms;
+        const merged = [...savedFilms, ...missingInitialFilms];
+        return merged.length > 0 ? merged : initialFilms;
       }
       return initialFilms;
     } catch (e) {
@@ -83,17 +87,27 @@ export default function App() {
       const saved = localStorage.getItem("portfolio_designs");
       if (saved) {
         const savedDesigns = JSON.parse(saved);
-        return savedDesigns.map((d: DesignProject) => {
+        const mapped = savedDesigns.map((d: DesignProject) => {
           const matchInitial = initialDesigns.find(init => init.id === d.id);
-          if (matchInitial && (d.image.includes("unsplash.com") || d.image.includes("images.unsplash.com"))) {
+          if (matchInitial) {
             return {
               ...d,
-              image: matchInitial.image,
-              galleryImages: matchInitial.galleryImages || d.galleryImages
+              video: matchInitial.video || (d.video?.includes("f7ttaj.mp4") || d.video?.includes(".webp") ? "/design-illustration-loop.mp4" : d.video),
+              image: (d.image.includes("unsplash.com") || d.image.includes("images.unsplash.com")) ? matchInitial.image : d.image,
+              galleryImages: (d.galleryImages && d.galleryImages.length > (matchInitial.galleryImages?.length || 0))
+                ? d.galleryImages
+                : (matchInitial.galleryImages || d.galleryImages)
             };
           }
           return d;
         });
+
+        const savedDesignIds = new Set(mapped.map((d: DesignProject) => d.id));
+        const missingInitial = initialDesigns.filter((d) => !savedDesignIds.has(d.id));
+        if (missingInitial.length > 0) {
+          return [...mapped, ...missingInitial];
+        }
+        return mapped;
       }
       return initialDesigns;
     } catch (e) {
@@ -105,15 +119,18 @@ export default function App() {
     try {
       const saved = localStorage.getItem("portfolio_videos");
       if (saved) {
-        const savedVideos = JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        const savedVideos = (Array.isArray(parsed) ? parsed : []).filter(
+          (video: VideoCard) =>
+            video &&
+            !video.videoUrl?.includes("mixkit.co") &&
+            !video.thumbnail?.includes("unsplash.com")
+        );
         const savedVideoIds = new Set(savedVideos.map((video: VideoCard) => video.id));
         const missingInitialVideos = initialVideos.filter((video) => !savedVideoIds.has(video.id));
 
-        if (missingInitialVideos.length > 0) {
-          return [...missingInitialVideos, ...savedVideos];
-        }
-
-        return savedVideos;
+        const merged = [...savedVideos, ...missingInitialVideos];
+        return merged.length > 0 ? merged : initialVideos;
       }
       return initialVideos;
     } catch (e) {
@@ -139,6 +156,7 @@ export default function App() {
   const [isAboutMeOpen, setIsAboutMeOpen] = useState(false);
   const [isScrollShowcaseOpen, setIsScrollShowcaseOpen] = useState(false);
   const [isGitHubExplorerOpen, setIsGitHubExplorerOpen] = useState(false);
+  const [isDesignShowcaseOpen, setIsDesignShowcaseOpen] = useState(false);
 
   const lenisRef = useRef<Lenis | null>(null);
 
@@ -147,7 +165,8 @@ export default function App() {
     isAIWorkExplorerOpen || 
     isResumeOpen || 
     isAboutMeOpen || 
-    isGitHubExplorerOpen;
+    isGitHubExplorerOpen ||
+    isDesignShowcaseOpen;
 
   const closePortals = () => {
     setIsProjectsExplorerOpen(false);
@@ -156,10 +175,11 @@ export default function App() {
     setIsAboutMeOpen(false);
     setIsScrollShowcaseOpen(false);
     setIsGitHubExplorerOpen(false);
+    setIsDesignShowcaseOpen(false);
     setSelectedDesignProject(null);
   };
 
-  const openPortal = (portal: "projects" | "ai-work" | "resume" | "about" | "scroll-demo" | "github") => {
+  const openPortal = (portal: "projects" | "ai-work" | "resume" | "about" | "scroll-demo" | "github" | "design-showcase") => {
     closePortals();
 
     if (portal === "projects") {
@@ -172,6 +192,8 @@ export default function App() {
       setIsScrollShowcaseOpen(true);
     } else if (portal === "github") {
       setIsGitHubExplorerOpen(true);
+    } else if (portal === "design-showcase") {
+      setIsDesignShowcaseOpen(true);
     } else {
       setIsAboutMeOpen(true);
     }
@@ -201,6 +223,7 @@ export default function App() {
           setIsAboutMeOpen(false);
           setIsScrollShowcaseOpen(false);
           setIsGitHubExplorerOpen(false);
+          setIsDesignShowcaseOpen(false);
           return;
         }
       }
@@ -235,6 +258,7 @@ export default function App() {
       setIsAboutMeOpen(false);
       setIsScrollShowcaseOpen(false);
       setIsGitHubExplorerOpen(false);
+      setIsDesignShowcaseOpen(false);
     }
   }, [designs]);
 
@@ -247,19 +271,20 @@ export default function App() {
     gsap.registerPlugin(ScrollTrigger);
 
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1.0,
-      touchMultiplier: 1.1,
+      touchMultiplier: 1.0,
+      syncTouch: false,
       infinite: false,
     });
 
     lenisRef.current = lenis;
 
-    // Connect Lenis scroll updates to GSAP ScrollTrigger
+    // Connect Lenis scroll updates directly to GSAP ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
 
     const updateTicker = (time: number) => {
@@ -267,7 +292,8 @@ export default function App() {
     };
 
     gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(0);
+    // Smooth out dropped frames / momentary CPU pauses to prevent scroll jumping or jerking
+    gsap.ticker.lagSmoothing(500, 33);
 
     const refresh = () => ScrollTrigger.refresh();
     const refreshTimer = window.setTimeout(refresh, 250);
@@ -390,6 +416,8 @@ export default function App() {
       openPortal("github");
     } else if (targetId === "#ai-work" || targetId === "#showreel") {
       openPortal("ai-work");
+    } else if (targetId === "#design-showcase" || targetId === "#showcase") {
+      openPortal("design-showcase");
     } else {
       // Small delay to allow any transition state to settle, then scroll to section
       setTimeout(() => {
@@ -483,6 +511,7 @@ export default function App() {
     setIsAboutMeOpen(false);
     setIsScrollShowcaseOpen(false);
     setIsGitHubExplorerOpen(false);
+    setIsDesignShowcaseOpen(false);
     window.history.pushState({ projectId: project.id }, "", `/project/${encodeURIComponent(project.id)}`);
     window.scrollTo({ top: 0 });
   };
@@ -500,7 +529,7 @@ export default function App() {
   };
 
   return (
-    <div className="app page relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300">
+    <div className="app page relative min-h-screen overflow-x-clip overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300 touch-pan-y">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
@@ -531,9 +560,6 @@ export default function App() {
                     }
                   }, 60);
                 }}
-                onUpdateProject={(updatedProj) => {
-                  setDesigns((prev) => prev.map(p => p.id === updatedProj.id ? updatedProj : p));
-                }}
               />
             ) : (
             <>
@@ -558,16 +584,17 @@ export default function App() {
               />
             )}
 
-            <div className={selectedDesignProject ? "project-scroll-wrapper" : "app-viewport-wrapper w-full"}>
-              <div className="flex min-h-screen flex-col w-full">
+            <div className={selectedDesignProject ? "project-scroll-wrapper" : "app-viewport-wrapper w-full touch-pan-y"}>
+              <div className="flex min-h-screen flex-col w-full touch-pan-y">
                 {/* Main view container */}
-                <main className="main flex-grow overflow-x-hidden overflow-y-visible">
+                <main className="main flex-grow overflow-x-clip overflow-y-visible touch-pan-y">
 
                    {isScrollShowcaseOpen ? (
                     <ScrollShowcase
                       onClose={() => setIsScrollShowcaseOpen(false)}
                       onOpenProjects={() => window.open(profileState?.behance || "https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
                       onOpenAIWork={() => openPortal("ai-work")}
+                      onOpenDesignShowcase={() => openPortal("design-showcase")}
                       designs={designs}
                       profile={profileState}
                       onSelectProject={handleSelectProject}
@@ -601,6 +628,7 @@ export default function App() {
                           designs={designs}
                           profile={profileState}
                           onSelectProject={handleSelectProject}
+                          onOpenDesignShowcase={() => openPortal("design-showcase")}
                           onOpenProjects={() => window.open(profileState?.behance || "https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
                           onOpenAIWork={() => openPortal("ai-work")}
                           onOpenVideo={(videoUrl, title) => {
@@ -721,6 +749,26 @@ export default function App() {
                 <GitHubExplorer
                   isOpen={isGitHubExplorerOpen}
                   onClose={closePortalWithHistory}
+                />
+              )}
+            </AnimatePresence>
+
+            {/* Design & Illustration Showcase Screen */}
+            <AnimatePresence>
+              {isDesignShowcaseOpen && (
+                <DesignIllustrationShowcase
+                  isOpen={isDesignShowcaseOpen}
+                  onClose={closePortalWithHistory}
+                  projects={designs}
+                  onSelectProject={handleSelectProject}
+                  onAddDesign={handleAddDesign}
+                  onOpenCreatorStudio={() => {
+                    window.dispatchEvent(
+                      new CustomEvent("open-creator-studio", {
+                        detail: { tab: "uploader", assetType: "design", subTab: "add" }
+                      })
+                    );
+                  }}
                 />
               )}
             </AnimatePresence>

@@ -91,20 +91,20 @@ export default function AboutMist() {
           {/* Main Large Title */}
           <h2 className="text-[34px] sm:text-5xl md:text-[62px] lg:text-[72px] font-sans leading-[1.05] tracking-[-0.03em] text-black">
             <span className="block flex flex-wrap gap-x-[0.24em] mb-1">
-              {"I'm a".split(" ").map((word, idx) => (
+              {"I am a".split(" ").map((word, idx) => (
                 <span key={`i-am-${idx}`} className="about-heading-word font-normal">
                   {word}
                 </span>
               ))}
-              {"Delhi-based".split(" ").map((word, idx) => (
+              {"Delhi based".split(" ").map((word, idx) => (
                 <span key={`delhi-${idx}`} className="about-heading-word font-bold">
                   {word}
                 </span>
               ))}
             </span>
             <span className="block flex flex-wrap gap-x-[0.24em]">
-              {"Web Designer".split(" ").map((word, idx) => (
-                <span key={`web-${idx}`} className="about-heading-word font-medium">
+              {"visual designer.".split(" ").map((word, idx) => (
+                <span key={`vis-${idx}`} className="about-heading-word font-medium">
                   {word}
                 </span>
               ))}

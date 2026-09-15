@@ -29,6 +29,7 @@ export interface DesignProject {
   aboutProject?: string;
   client?: string;
   galleryImages?: string[];
+  video?: string;
   isAI?: boolean;
   pdfUrl?: string;
   uploadedPdfName?: string;
@@ -107,84 +108,81 @@ export const aiFilms: AIFilm[] = [
     isAI: true
   },
   {
-    id: "ai-film-1",
-    title: "Hyper Motion Visual",
-    category: "AI Video",
+    id: "ai-film-kenerate-commercial",
+    title: "Kenerate Commercial",
+    category: "AI Commercial / Motion",
     year: "2026",
-    description: "Dynamic storytelling using AI video generation, vector effects, and cinematic motion.",
-    thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-futuristic-subway-station-with-neon-lights-43958-large.mp4",
-    tags: ["AI Video", "Cinematic Visual", "Motion"]
+    description: "High-impact brand commercial with AI motion simulation and cinematic editing.",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780264091/kenerate-ad-1779833779917_w0ndh7.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780264091/kenerate-ad-1779833779917_w0ndh7.mp4",
+    tags: ["AI Film", "Commercial", "Motion"],
+    isAI: true
   },
   {
-    id: "ai-film-2",
-    title: "Cinematic Brand Visual",
-    category: "AI Film / Brand Story",
+    id: "ai-film-kenerate-motion-ad",
+    title: "Kenerate Motion Ad",
+    category: "AI Film / Brand Ad",
     year: "2026",
-    description: "A cinematic AI-generated brand film with dramatic lighting, movement, and storytelling.",
-    thumbnail: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-neon-light-from-a-tunnel-in-a-futuristic-city-43282-large.mp4",
-    tags: ["Brand", "AI Film", "Cinematic", "Branding"]
+    description: "AI-generated promotional motion visual with fluid transitions and refined color grading.",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260451/kenerate-ad-1779796765745_1_njywwd.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260451/kenerate-ad-1779796765745_1_njywwd.mp4",
+    tags: ["AI Film", "Brand", "Motion"],
+    isAI: true
   },
   {
-    id: "ai-film-music-video",
-    title: "Synthwave AI Music Journey",
-    category: "AI Music Video",
+    id: "ai-film-sequence-01-5",
+    title: "Sequence 01 Film 05",
+    category: "AI Sequence Study",
     year: "2026",
-    description: "Retro-futuristic music video using prompt-guided clip loops, neon light streams, and audio-reactive pacing.",
-    thumbnail: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-32115-large.mp4",
-    tags: ["Music Video", "Synthwave", "AI Video"]
+    description: "Atmospheric narrative sequence exploring cinematic depth and pacing.",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260423/Sequence_01_5_ktappc.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260423/Sequence_01_5_ktappc.mp4",
+    tags: ["AI Film", "Sequence", "Cinematic"],
+    isAI: true
   },
   {
-    id: "ai-film-3",
-    title: "Storyboard to AI Film",
-    category: "Storyboard / Motion",
+    id: "ai-film-sequence-01-6",
+    title: "Sequence 01 Film 06",
+    category: "AI Sequence Study",
     year: "2026",
-    description: "Visual storytelling experiment moving from storyboard frames to AI-generated motion.",
-    thumbnail: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-32115-large.mp4",
-    tags: ["Storyboard", "Motion", "AI", "Story"]
+    description: "Cinematic exploration of light, texture, and continuity across frames.",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260408/Sequence_01_6_c32bs3.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780260408/Sequence_01_6_c32bs3.mp4",
+    tags: ["AI Film", "Sequence", "Cinematic"],
+    isAI: true
   },
   {
-    id: "ai-film-action",
-    title: "Neon Heist Tokyo Sequence",
-    category: "AI Action Sequence",
+    id: "ai-film-visual-exp-01",
+    title: "AI Visual Experiment 01",
+    category: "AI Visual Lab",
     year: "2026",
-    description: "High-octane dramatic action sequence rendered in a cinematic cyberpunk Tokyo utilizing extreme camera pans.",
-    thumbnail: "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-cyberpunk-look-of-a-woman-neon-lighting-43284-large.mp4",
-    tags: ["Action", "AI Film", "Cyberpunk"]
+    description: "Creative visual experiment leveraging state-of-the-art generative motion models.",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469510/1779188840357_o77qqi_emmrp5.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469510/1779188840357_o77qqi_emmrp5.mp4",
+    tags: ["AI Film", "Experiment", "Motion"],
+    isAI: true
   },
   {
-    id: "ai-film-glass-bottle",
-    title: "Cyber Glass Bottle Concept",
-    category: "AI Packaging Design",
+    id: "ai-film-visual-exp-02",
+    title: "AI Visual Experiment 02",
+    category: "AI Visual Lab",
     year: "2026",
-    description: "Glass fluid material simulation of standard beverage containers casting realistic colored shadows.",
-    thumbnail: "https://images.unsplash.com/photo-1527061011665-3652c757a4d4?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-metallic-fluid-flow-abstract-texture-40078-large.mp4",
-    tags: ["Packaging", "AI Design", "3D"]
+    description: "Generative video investigation into kinetic typography, light, and fluid camera trajectories.",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469385/1779095774772_lmmytk_hnbcwi.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469385/1779095774772_lmmytk_hnbcwi.mp4",
+    tags: ["AI Film", "Experiment", "Motion"],
+    isAI: true
   },
   {
-    id: "ai-film-poster-art",
-    title: "Chroma Monolith Poster",
-    category: "AI Poster Art",
+    id: "ai-film-visual-exp-03",
+    title: "AI Visual Experiment 03",
+    category: "AI Visual Lab",
     year: "2026",
-    description: "Prismatic graphic posters designed by fusing Midjourney layout queries with custom vector typography.",
-    thumbnail: "https://images.unsplash.com/photo-1618005198143-d366800ee4ef?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-spinning-metallic-object-shining-abstract-animation-40082-large.mp4",
-    tags: ["Poster", "AI Design", "Typography"]
-  },
-  {
-    id: "ai-film-ad-poster",
-    title: "Midnight Energy Ad Campaign",
-    category: "Ad Poster Design",
-    year: "2026",
-    description: "Futuristic commercial poster layouts for an experimental midnight beverage brand showing extreme fluid mechanics.",
-    thumbnail: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=1200&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-mysterious-neon-lights-in-rainy-city-streets-43288-large.mp4",
-    tags: ["Ad Poster", "Ads", "Design"]
+    description: "Short-form AI visual exploration focusing on dynamic camera movement and cinematic composition.",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469345/1779197811307_n2mlxu_zz5t4u.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469345/1779197811307_n2mlxu_zz5t4u.mp4",
+    tags: ["AI Film", "Experiment", "Motion"],
+    isAI: true
   }
 ];
 
@@ -196,15 +194,26 @@ export const designProjects: DesignProject[] = [
     type: "Web Design",
     year: "2026",
     description: "Editorial web portal showcasing spatial architectures, interactive blueprints, and minimal typography.",
-    image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop",
-    tools: ["React", "Tailwind CSS", "Figma", "Web Design"],
+    video: "/design-illustration-loop.mp4",
+    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+    tools: ["Design System", "Illustration", "UI/UX"],
     link: "mailto:Sukunsh2883@gmail.com",
-    client: "Studio Arch & Design",
-    aboutProject: "A high-performance editorial web platform designed for architectural storytelling. Built with responsive grid systems, tactile micro-interactions, and expansive full-bleed media layouts that adapt effortlessly to mobile, tablet, and ultra-wide displays.",
+    client: "Studio Showcase",
+    aboutProject: "A showcase of design and illustration works.",
     galleryImages: [
-      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1400&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop"
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_2_blrh5x.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216478/MacBook_Pro_16__-_3_kgldoh.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_4_a6fb8w.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_5_eqbzcs.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_6_hzk4ov.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216479/MacBook_Pro_16__-_7_jklgij.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_8_fnzrwj.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_13_dzwa3e.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_16_gop309.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300044/Slide_16_9_-_29_nwaotj.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_11_lwzl3p.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216481/MacBook_Pro_16__-_19_syziya.png"
     ]
   },
   {
@@ -317,11 +326,22 @@ export const designProjects: DesignProject[] = [
   }
 ];
 
-// Motion Archive Section List
+// Motion Archive Section List - Sukunsh's Real AI Videos Only
 export const videos: VideoCard[] = [
   {
+    id: "video-kenerate-ad-02",
+    title: "Kenerate Commercial",
+    format: "9:16",
+    type: "AI Ad Reel",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780264091/kenerate-ad-1779833779917_w0ndh7.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780264091/kenerate-ad-1779833779917_w0ndh7.mp4",
+    duration: "00:15",
+    year: "2026",
+    isAI: true
+  },
+  {
     id: "video-kenerate-ad",
-    title: "Kenerate Ad Reel",
+    title: "Kenerate Motion Ad",
     format: "9:16",
     type: "AI Ad Reel",
     thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260451/kenerate-ad-1779796765745_1_njywwd.jpg",
@@ -332,7 +352,7 @@ export const videos: VideoCard[] = [
   },
   {
     id: "video-sequence-01-5",
-    title: "Sequence 01 Ad Reel",
+    title: "Sequence 01 Film 05",
     format: "9:16",
     type: "AI Ad Reel",
     thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260423/Sequence_01_5_ktappc.jpg",
@@ -343,7 +363,7 @@ export const videos: VideoCard[] = [
   },
   {
     id: "video-sequence-01-6",
-    title: "Sequence 01 Reel 06",
+    title: "Sequence 01 Film 06",
     format: "9:16",
     type: "AI Ad Reel",
     thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260408/Sequence_01_6_c32bs3.jpg",
@@ -353,48 +373,37 @@ export const videos: VideoCard[] = [
     isAI: true
   },
   {
-    id: "video-kenerate-ad-02",
-    title: "Kenerate Ad Reel 02",
+    id: "video-ai-exp-1",
+    title: "AI Visual Experiment 01",
     format: "9:16",
     type: "AI Ad Reel",
-    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780264091/kenerate-ad-1779833779917_w0ndh7.jpg",
-    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780264091/kenerate-ad-1779833779917_w0ndh7.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469510/1779188840357_o77qqi_emmrp5.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469510/1779188840357_o77qqi_emmrp5.mp4",
     duration: "00:15",
     year: "2026",
     isAI: true
   },
   {
-    id: "video-1",
-    title: "AI Product Ad Reel",
-    format: "16:9",
-    type: "AI Ad",
-    // Replace "/videos/video-1.jpg" with your own image when ready. Public CDN URL used as a high-quality fallback.
-    thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-cyberpunk-look-of-a-woman-neon-lighting-43284-large.mp4",
-    duration: "00:15",
-    year: "2026"
-  },
-  {
-    id: "video-2",
-    title: "Motion Poster Experiment",
+    id: "video-ai-exp-2",
+    title: "AI Visual Experiment 02",
     format: "9:16",
-    type: "Motion Design",
-    // Replace "/videos/video-2.jpg" with your own image when ready. Public CDN URL used as a high-quality fallback.
-    thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-spinning-metallic-object-shining-abstract-animation-40082-large.mp4",
-    duration: "00:10",
-    year: "2026"
+    type: "AI Ad Reel",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469385/1779095774772_lmmytk_hnbcwi.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469385/1779095774772_lmmytk_hnbcwi.mp4",
+    duration: "00:15",
+    year: "2026",
+    isAI: true
   },
   {
-    id: "video-3",
-    title: "Cinematic Visual Test",
-    format: "16:9",
-    type: "AI Film",
-    // Replace "/videos/video-3.jpg" with your own image when ready. Public CDN URL used as a high-quality fallback.
-    thumbnail: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=800&auto=format&fit=crop",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-mysterious-neon-lights-in-rainy-city-streets-43288-large.mp4",
-    duration: "00:20",
-    year: "2026"
+    id: "video-ai-exp-3",
+    title: "AI Visual Experiment 03",
+    format: "9:16",
+    type: "AI Ad Reel",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469345/1779197811307_n2mlxu_zz5t4u.jpg",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1789469345/1779197811307_n2mlxu_zz5t4u.mp4",
+    duration: "00:15",
+    year: "2026",
+    isAI: true
   }
 ];
 

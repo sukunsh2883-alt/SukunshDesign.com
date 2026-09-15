@@ -981,14 +981,15 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         };
 
         const handleFollowCursor = (event: PointerEvent) => {
+          if (event.pointerType === "touch") return;
           if (flyToFlowerTimeline) {
             flyToFlowerTimeline.kill();
             flyToFlowerTimeline = null;
           }
 
-          const elementUnderCursor = document.elementFromPoint(event.clientX, event.clientY);
-          const isInHero = elementUnderCursor ? !!elementUnderCursor.closest("#home") : false;
-          const isInFooter = elementUnderCursor ? !!elementUnderCursor.closest("#contact") : false;
+          const target = (event.target as HTMLElement | null);
+          const isInHero = target ? !!target.closest("#home") : false;
+          const isInFooter = target ? !!target.closest("#contact") : false;
 
           if (!isInHero && !isInFooter) {
             if (currentState === "flying") {
@@ -1164,14 +1165,14 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       ref={sectionRef}
       id="home"
       data-cursor-tag="Home"
-      className="hero relative h-[100dvh] md:h-screen min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none overflow-hidden bg-[#050505] text-white select-none"
+      className="hero relative h-[100dvh] md:h-screen min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none overflow-hidden bg-[#050505] text-white select-none touch-pan-y"
     >
       {/* Central Interactive Artwork Canvas with Character & PORTFOLIO Typography */}
-      <div className="hero-inner relative flex h-full min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none items-center justify-center px-0 pt-0 md:pt-16">
-        <div className="hero-art relative flex justify-center items-center w-full">
+      <div className="hero-inner relative flex h-full min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none items-center justify-center px-0 pt-0 md:pt-16 touch-pan-y">
+        <div className="hero-art relative flex justify-center items-center w-full touch-pan-y">
           <div
             ref={stageRef}
-            className="svg-stage relative mb-0 aspect-[1728.2/758.1] origin-center overflow-visible"
+            className="svg-stage relative mb-0 aspect-[1728.2/758.1] origin-center overflow-visible touch-pan-y"
             style={{
               "--svg-scale-multiplier": heroMetrics.stageScale,
               "--svg-y-offset": `${heroMetrics.stageY}vh`,

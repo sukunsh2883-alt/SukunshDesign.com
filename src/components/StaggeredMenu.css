@@ -23,9 +23,39 @@
 }
 
 .sm-logo {
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
+  gap: 0.25rem;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  cursor: pointer;
+  color: #fff;
+  line-height: 1;
+  overflow: visible;
+  box-shadow: none;
+  mix-blend-mode: difference;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
+}
+
+.sm-logo[data-scrolled="true"],
+.sm-logo.is-scrolled {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+}
+
+.sm-logo:hover:not(.is-scrolled) {
+  opacity: 0.8;
+}
+
+.sm-logo:active:not(.is-scrolled) {
+  transform: scale(0.97);
 }
 
 .sm-logo-img {

@@ -1,6 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Search, Play, Film, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Search, Play, Film, Image as ImageIcon, ChevronLeft, ChevronRight, ArrowLeft, ArrowUp } from "lucide-react";
+import Lenis from "lenis";
+import gsap from "gsap";
 import { AIFilm, VideoCard, ExplorationItem } from "../portfolioData";
 
 interface AIWorkExplorerProps {
@@ -31,16 +33,76 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
   const [activePlayingId, setActivePlayingId] = useState<string | null>(null);
   const [selectedImgUrl, setSelectedImgUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
 
-  React.useEffect(() => {
-    if (isOpen) {
-      window.scrollTo(0, 0);
-      if (containerRef.current) {
-        containerRef.current.scrollTop = 0;
-      }
-    }
+  // Initialize Lenis smooth scroll for silky-smooth browsing without jank
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const wrapper = containerRef.current;
+    const content = contentRef.current;
+    if (!wrapper || !content) return;
+
+    wrapper.scrollTop = 0;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    const lenis = new Lenis({
+      wrapper,
+      content,
+      duration: 1.25,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.2,
+      infinite: false,
+    });
+
+    lenisRef.current = lenis;
+
+    const updateTicker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(updateTicker);
+
+    return () => {
+      gsap.ticker.remove(updateTicker);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
   }, [isOpen]);
+
+  // Recalculate Lenis scroll dimensions on tab switch or search
+  useEffect(() => {
+    if (lenisRef.current) {
+      setTimeout(() => {
+        lenisRef.current?.resize();
+      }, 50);
+    }
+  }, [selectedTab, searchQuery]);
+
+  // Escape key handler for intuitive closing
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (selectedImgUrl) {
+          setSelectedImgUrl(null);
+        } else if (activePlayingId) {
+          setActivePlayingId(null);
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, selectedImgUrl, activePlayingId, onClose]);
 
   const [archiveImages] = useState<ArchiveImageItem[]>(() => {
     try {
@@ -124,21 +186,49 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
           activePlayingId ? "bg-neutral-950 text-white" : "bg-white text-neutral-900"
         }`}
       >
-        {/* Main Immersive Canvas */}
-        <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-24 pb-12 md:pt-32 md:pb-20 relative">
-          
-          {/* Main Back / Close Button */}
+        {/* Sticky Top Navigation Bar with Prominent Back Button */}
+        <header
+          className={`sticky top-0 z-40 flex items-center justify-between border-b px-5 py-3.5 sm:px-8 sm:py-4 backdrop-blur-md transition-colors duration-300 ${
+            activePlayingId
+              ? "bg-neutral-950/90 border-neutral-800 text-white"
+              : "bg-white/90 border-neutral-200/80 text-neutral-900"
+          }`}
+        >
           <button
+            type="button"
             onClick={onClose}
-            className={`absolute top-6 right-6 md:top-12 md:right-12 p-3 rounded-full transition-all scale-95 hover:scale-100 active:scale-90 cursor-pointer border ${
+            className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-normal shadow-xs transition-all cursor-pointer select-none active:scale-95 ${
               activePlayingId
-                ? "bg-neutral-900 border-neutral-800 text-neutral-200 hover:bg-neutral-800"
-                : "bg-white border-neutral-200 text-neutral-800 hover:bg-neutral-100"
+                ? "border-neutral-800 bg-neutral-900 text-neutral-200 hover:bg-neutral-800 hover:text-white"
+                : "border-neutral-200 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-neutral-950"
             }`}
-            aria-label="Close page"
           >
-            <X className="w-5 h-5" />
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to portfolio</span>
           </button>
+
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-wider text-neutral-500">
+              AI Cinema Archive ({films.length + videos.filter((v) => v.isAI || v.type.toLowerCase().includes("ai")).length})
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              className={`p-2 rounded-full border transition-all cursor-pointer select-none active:scale-90 ${
+                activePlayingId
+                  ? "border-neutral-800 bg-neutral-900 text-neutral-200 hover:bg-neutral-800 hover:text-white"
+                  : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950"
+              }`}
+              aria-label="Close archive"
+              title="Close (Esc)"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </header>
+
+        {/* Main Immersive Canvas Content */}
+        <div ref={contentRef} className="w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-8 pb-16 md:pt-12 md:pb-24 relative">
 
           {/* Section Heading Title matching Projects Explorer style */}
           <div className={`mb-8 md:mb-12 flex items-start justify-between border-b pb-6 transition-colors duration-500 ${
@@ -228,19 +318,15 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
             {selectedTab === "film" && (
               <div className="w-full">
                 {filteredFilms.length > 0 ? (
-                  <div className="space-y-10">
+                  <div className="space-y-8 md:space-y-12">
                     {filteredFilms.map((film) => {
                       return (
-                        <motion.article
+                        <article
                           key={film.id}
-                          initial={{ opacity: 0, y: 90, scale: 0.96 }}
-                          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                          viewport={{ once: false, amount: 0.45 }}
-                          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
                           onClick={() => {
                             setActivePlayingId(film.id);
                           }}
-                          className="group relative flex min-h-[86vh] cursor-pointer items-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950"
+                          className="group relative flex min-h-[65vh] sm:min-h-[75vh] md:min-h-[82vh] cursor-pointer items-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 transition-all duration-300 hover:border-neutral-400 hover:shadow-xl"
                         >
                           <video
                             src={film.videoUrl}
@@ -249,31 +335,40 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                             loop
                             autoPlay
                             playsInline
-                            preload="auto"
+                            preload="metadata"
                             aria-label={film.title}
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                           />
-                          <div className="absolute inset-0 bg-linear-to-r from-black via-black/45 to-transparent" />
-                          <div className="absolute left-6 top-6 rounded-full bg-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-black">
-                            AI Film
+                          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/55 to-transparent" />
+                          <div className="absolute left-6 top-6 flex items-center gap-2">
+                            <span className="rounded-full bg-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-black">
+                              AI Film
+                            </span>
+                            <span className="rounded-full bg-black/50 backdrop-blur-md px-3 py-1 font-mono text-[9px] font-semibold uppercase tracking-widest text-neutral-300 border border-white/10">
+                              {film.year}
+                            </span>
                           </div>
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="rounded-full bg-white p-4 text-black opacity-0 scale-90 transition-all group-hover:opacity-100 group-hover:scale-100">
+                            <div className="rounded-full bg-white p-4 text-black opacity-0 scale-90 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 shadow-2xl">
                               <Play className="h-5 w-5 translate-x-0.5 fill-black" />
                             </div>
                           </div>
                           <div className="relative z-10 max-w-2xl p-7 md:p-12">
-                            <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.35em] text-neutral-300">
-                              {film.year} / {film.category}
+                            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.3em] text-neutral-300">
+                              {film.category}
                             </p>
-                            <h2 className="font-sans text-4xl font-black uppercase leading-[0.95] text-white md:text-7xl">
+                            <h2 className="font-sans text-3xl font-black uppercase leading-[0.95] text-white sm:text-5xl md:text-6xl lg:text-7xl">
                               {film.title}
                             </h2>
-                            <p className="mt-6 max-w-md text-base leading-relaxed text-neutral-200">
+                            <p className="mt-5 max-w-md text-sm sm:text-base leading-relaxed text-neutral-200 line-clamp-3">
                               {film.description}
                             </p>
+                            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-mono font-medium tracking-wider text-white uppercase backdrop-blur-sm group-hover:bg-white group-hover:text-black transition-colors">
+                              <span>Watch Film</span>
+                              <Play className="h-3 w-3 fill-current" />
+                            </div>
                           </div>
-                        </motion.article>
+                        </article>
                       );
                     })}
                   </div>
@@ -307,7 +402,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                           loop
                           autoPlay
                           playsInline
-                          preload="auto"
+                          preload="metadata"
                           aria-label={video.title}
                           className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                         />
@@ -395,6 +490,37 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
               </div>
             )}
 
+          </div>
+
+          {/* Bottom Action Navigation */}
+          <div className="mt-16 sm:mt-20 pt-8 border-t border-neutral-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex items-center gap-2 rounded-full border border-neutral-900 bg-neutral-950 px-6 py-2.5 text-xs font-semibold text-white transition-all hover:bg-neutral-800 active:scale-95 cursor-pointer shadow-xs"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span>Back to portfolio</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (lenisRef.current) {
+                    lenisRef.current.scrollTo(0, { duration: 1.2 });
+                  } else if (containerRef.current) {
+                    containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-xs font-semibold text-neutral-800 transition-all hover:bg-neutral-100 active:scale-95 cursor-pointer"
+              >
+                <ArrowUp className="h-3.5 w-3.5" />
+                <span>Back to top</span>
+              </button>
+            </div>
+            <p className="text-xs font-mono text-neutral-400 uppercase tracking-wider">
+              Sukunsh Sharma / AI Motion Archive
+            </p>
           </div>
 
         </div>

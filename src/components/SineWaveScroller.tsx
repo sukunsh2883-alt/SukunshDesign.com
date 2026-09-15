@@ -115,10 +115,10 @@ export default function SineWaveScroller({
   return (
     <div
       ref={containerRef}
-      className="sine-wave-scroller-container relative w-full h-screen bg-black text-white select-none border-t border-neutral-900 overflow-hidden"
+      className="sine-wave-scroller-container relative w-full h-screen bg-black text-white select-none border-t border-neutral-900 overflow-hidden touch-pan-y"
     >
       {/* Moving ShapeGrid Background on Dark Canvas */}
-      <div className="absolute inset-0 z-0 opacity-40 pointer-events-auto">
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
         <ShapeGrid
           direction="diagonal"
           speed={0.35}

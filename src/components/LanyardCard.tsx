@@ -72,6 +72,7 @@ export default function LanyardCard({ portraitImage }: LanyardCardProps) {
 
   useEffect(() => {
     let animId: number;
+    let isVisible = true;
 
     const updatePhysics = () => {
       const s = state.current;
@@ -283,11 +284,36 @@ export default function LanyardCard({ portraitImage }: LanyardCardProps) {
         `;
       }
 
-      animId = requestAnimationFrame(updatePhysics);
+      if (isVisible) {
+        animId = requestAnimationFrame(updatePhysics);
+      }
     };
 
-    animId = requestAnimationFrame(updatePhysics);
-    return () => cancelAnimationFrame(animId);
+    const container = containerRef.current;
+    let observer: IntersectionObserver | null = null;
+    if (container && typeof window !== "undefined" && "IntersectionObserver" in window) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const wasVisible = isVisible;
+            isVisible = entry.isIntersecting;
+            if (!wasVisible && isVisible) {
+              cancelAnimationFrame(animId);
+              animId = requestAnimationFrame(updatePhysics);
+            }
+          });
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(container);
+    } else {
+      animId = requestAnimationFrame(updatePhysics);
+    }
+
+    return () => {
+      observer?.disconnect();
+      cancelAnimationFrame(animId);
+    };
   }, []);
 
   // Pointer event handlers for Mouse & Touch Dragging
@@ -387,7 +413,7 @@ export default function LanyardCard({ portraitImage }: LanyardCardProps) {
   return (
     <div
       ref={containerRef}
-      className="relative flex h-[620px] min-h-[70vh] w-full max-w-[440px] items-center justify-center select-none touch-none overflow-visible py-6"
+      className="relative flex h-[620px] min-h-[70vh] w-full max-w-[440px] items-center justify-center select-none touch-pan-y overflow-visible py-6"
       onPointerEnter={() => {
         state.current.isHovered = true;
       }}

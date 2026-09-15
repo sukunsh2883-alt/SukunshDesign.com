@@ -19,8 +19,55 @@ interface ScrollShowcaseProps {
   onOpenAIWork?: () => void;
   onOpenVideo?: (videoUrl: string, title: string) => void;
   onSelectProject?: (proj: DesignProject) => void;
+  onOpenDesignShowcase?: () => void;
   profile?: any;
 }
+
+// Sukunsh's AI Promotion Reel Videos - strictly user-provided Cloudinary assets only
+const AI_PROMOTION_REEL_VIDEOS = [
+  {
+    id: "promo-kenerate-1",
+    title: "Kenerate Commercial",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1780264091/kenerate-ad-1779833779917_w0ndh7.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780264091/kenerate-ad-1779833779917_w0ndh7.jpg",
+  },
+  {
+    id: "promo-kenerate-2",
+    title: "Kenerate Motion Ad",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1780260451/kenerate-ad-1779796765745_1_njywwd.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260451/kenerate-ad-1779796765745_1_njywwd.jpg",
+  },
+  {
+    id: "promo-seq-5",
+    title: "Sequence 01 Film 05",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1780260423/Sequence_01_5_ktappc.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260423/Sequence_01_5_ktappc.jpg",
+  },
+  {
+    id: "promo-seq-6",
+    title: "Sequence 01 Film 06",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1780260408/Sequence_01_6_c32bs3.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1780260408/Sequence_01_6_c32bs3.jpg",
+  },
+  {
+    id: "promo-exp-1",
+    title: "AI Visual Experiment 01",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1789469510/1779188840357_o77qqi_emmrp5.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469510/1779188840357_o77qqi_emmrp5.jpg",
+  },
+  {
+    id: "promo-exp-2",
+    title: "AI Visual Experiment 02",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1789469385/1779095774772_lmmytk_hnbcwi.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469385/1779095774772_lmmytk_hnbcwi.jpg",
+  },
+  {
+    id: "promo-exp-3",
+    title: "AI Visual Experiment 03",
+    videoUrl: "https://res.cloudinary.com/dylv5m3jk/video/upload/v1789469345/1779197811307_n2mlxu_zz5t4u.mp4",
+    thumbnail: "https://res.cloudinary.com/dylv5m3jk/video/upload/so_0,q_auto,f_jpg/v1789469345/1779197811307_n2mlxu_zz5t4u.jpg",
+  },
+];
 
 export default function ScrollShowcase({
   onClose,
@@ -30,6 +77,7 @@ export default function ScrollShowcase({
   onOpenAIWork,
   onOpenVideo,
   onSelectProject,
+  onOpenDesignShowcase,
   profile,
 }: ScrollShowcaseProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -41,12 +89,13 @@ export default function ScrollShowcase({
   const [isPlayingInline, setIsPlayingInline] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const reelTweenRef = useRef<gsap.core.Tween | null>(null);
 
   const allProjects = designs && designs.length > 0 ? designs : designProjects;
 
   const film = aiFilms[filmIndex % aiFilms.length];
-  // 12 items for seamless continuous reel stream
-  const reelItems = Array.from({ length: 14 }, (_, index) => aiFilms[index % aiFilms.length]);
+  // 14 items (repeating the 7 user Cloudinary videos twice) for seamless continuous infinite reel stream with zero random images
+  const reelItems = Array.from({ length: 14 }, (_, index) => AI_PROMOTION_REEL_VIDEOS[index % AI_PROMOTION_REEL_VIDEOS.length]);
   const portraitImage =
     "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
@@ -231,12 +280,19 @@ export default function ScrollShowcase({
       });
 
       // Seamless left-to-right straight horizontal track motion for AI Reel cards
-      gsap.to(".seamless-reel-track", {
+      const reelTween = gsap.to(".seamless-reel-track", {
         xPercent: -50,
-        duration: 25,
+        duration: 30,
         repeat: -1,
         ease: "none",
       });
+      reelTweenRef.current = reelTween;
+
+      const trackEl = document.querySelector(".seamless-reel-track");
+      if (trackEl) {
+        trackEl.addEventListener("mouseenter", () => reelTween.pause());
+        trackEl.addEventListener("mouseleave", () => reelTween.play());
+      }
 
       ScrollTrigger.refresh();
     }, containerRef);
@@ -270,6 +326,7 @@ export default function ScrollShowcase({
         onSelectProject={onSelectProject}
         onOpenProjectsExplorer={onOpenProjects}
         onOpenAIWork={onOpenAIWork}
+        onOpenDesignShowcase={onOpenDesignShowcase}
         profile={profile}
       />
 
@@ -446,9 +503,10 @@ export default function ScrollShowcase({
               <button
                 type="button"
                 onClick={onOpenAIWork}
-                className="border border-neutral-900 bg-white px-8 sm:px-10 py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-normal text-neutral-950 hover:bg-neutral-950 hover:text-white active:scale-95 transition-all duration-200 cursor-pointer select-none"
+                className="inline-flex items-center gap-2.5 rounded-full border border-neutral-900 bg-white px-7 sm:px-9 py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-normal text-neutral-950 hover:bg-neutral-950 hover:text-white active:scale-95 transition-all duration-200 cursor-pointer select-none shadow-xs group"
               >
                 <span>See all AI Films</span>
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
               </button>
             </div>
           </div>
@@ -501,9 +559,31 @@ export default function ScrollShowcase({
         </div>
 
         <div className="mt-6 flex items-center justify-center gap-7 text-sm text-neutral-500">
-          <ChevronLeft className="h-4 w-4 cursor-pointer hover:text-neutral-900" />
-          <span className="text-xs uppercase tracking-widest font-mono">DRAG / HOVER TO EXPLORE</span>
-          <ChevronRight className="h-4 w-4 cursor-pointer hover:text-neutral-900" />
+          <button
+            type="button"
+            aria-label="Previous reel"
+            onClick={() => {
+              if (reelTweenRef.current) {
+                reelTweenRef.current.time(reelTweenRef.current.time() - 3);
+              }
+            }}
+            className="p-1 text-neutral-500 hover:text-neutral-950 transition-colors cursor-pointer"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="text-xs uppercase tracking-widest font-mono select-none">HOVER TO PAUSE / EXPLORE</span>
+          <button
+            type="button"
+            aria-label="Next reel"
+            onClick={() => {
+              if (reelTweenRef.current) {
+                reelTweenRef.current.time(reelTweenRef.current.time() + 3);
+              }
+            }}
+            className="p-1 text-neutral-500 hover:text-neutral-950 transition-colors cursor-pointer"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
       </section>
 
@@ -530,9 +610,9 @@ export default function ScrollShowcase({
               </div>
             </div>
             <h2 className="select-none text-4xl font-normal leading-[1.06] tracking-normal text-neutral-950 sm:text-6xl md:text-7xl lg:text-[76px]">
-              I'm a Delhi-based
+              I am a Delhi based
               <br />
-              Web Designer.
+              visual designer.
             </h2>
             <p className="max-w-xl text-base font-normal leading-relaxed text-neutral-600 sm:text-lg md:text-[21px]">
               Blending fine art sensibilities with contemporary design,

@@ -76,8 +76,8 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
 
               {/* Main Heading */}
               <h1 className="text-[clamp(2.25rem,6vw,4.75rem)] font-sans font-normal leading-[1.06] tracking-[-0.035em] text-neutral-950 select-none">
-                I'm a Delhi-based<br />
-                Web Designer.
+                I am a Delhi based<br />
+                visual designer.
               </h1>
 
               {/* Intro Paragraph */}

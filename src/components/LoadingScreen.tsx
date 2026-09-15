@@ -15,7 +15,7 @@ export default function LoadingScreen({ onComplete, profile }: LoadingScreenProp
   const hasFinishedRef = useRef(false);
   const startTimeRef = useRef<number>(Date.now());
 
-  const brandName = profile?.brandName || "SUKUNSH";
+  const brandName = (profile?.brandName || "SUKUNSH").toUpperCase();
 
   const finishLoading = useCallback(() => {
     if (hasFinishedRef.current) return;
@@ -24,13 +24,13 @@ export default function LoadingScreen({ onComplete, profile }: LoadingScreenProp
 
     setTimeout(() => {
       onComplete();
-    }, 650);
+    }, 550);
   }, [onComplete]);
 
-  // Keyboard shortcut to skip (Spacebar or Enter)
+  // Keyboard shortcut to skip (Space, Enter, or Escape)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space" || e.code === "Enter") {
+      if (e.code === "Space" || e.code === "Enter" || e.code === "Escape") {
         e.preventDefault();
         finishLoading();
       }
@@ -39,34 +39,34 @@ export default function LoadingScreen({ onComplete, profile }: LoadingScreenProp
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [finishLoading]);
 
-  // Smooth realistic progress animation
+  // Smooth realistic progress animation (~1.5s)
   useEffect(() => {
     let animationFrame: number;
-    const duration = 1800; // 1.8 seconds - crisp, modern and responsive
+    const duration = 1500;
 
     const updateProgress = () => {
       const elapsed = Date.now() - startTimeRef.current;
-      const rawProgress = Math.min(elapsed / duration, 1);
+      const raw = Math.min(elapsed / duration, 1);
 
-      // Smooth custom easing
+      // Smooth futuristic logarithmic-to-linear curve
       const eased = Math.min(
         100,
         Math.floor(
-          rawProgress < 0.6
-            ? 60 * Math.pow(rawProgress / 0.6, 1.1)
-            : 60 + 40 * Math.pow((rawProgress - 0.6) / 0.4, 0.9)
+          raw < 0.65
+            ? 70 * Math.pow(raw / 0.65, 0.95)
+            : 70 + 30 * Math.pow((raw - 0.65) / 0.35, 1.1)
         )
       );
 
       setProgress(eased);
 
-      if (rawProgress < 1) {
+      if (raw < 1) {
         animationFrame = requestAnimationFrame(updateProgress);
       } else {
         setProgress(100);
         setTimeout(() => {
           finishLoading();
-        }, 150);
+        }, 120);
       }
     };
 
@@ -83,136 +83,152 @@ export default function LoadingScreen({ onComplete, profile }: LoadingScreenProp
     <div
       ref={containerRef}
       id="custom-loading-screen"
-      className="fixed inset-0 z-[99999] flex flex-col justify-between overflow-hidden bg-[#0A0A0C] text-[#EDEDED] select-none font-sans px-8 py-8 sm:px-14 sm:py-12"
+      className="fixed inset-0 z-[99999] flex flex-col justify-between overflow-hidden bg-[#030305] text-[#EDEDED] select-none px-6 py-6 sm:px-12 sm:py-10 cursor-pointer"
       onClick={finishLoading}
       role="progressbar"
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
+      style={{
+        fontFamily: '"Clash Display Local", "Clash Display", sans-serif',
+      }}
     >
-      {/* Top Header: Pure Minimalist Editorial Details */}
-      <div className="flex items-center justify-between">
+      {/* Subtle Futuristic Radial Background Accent */}
+      <div 
+        className="pointer-events-none absolute inset-0 opacity-40"
+        style={{
+          background: "radial-gradient(circle at 50% 50%, rgba(255, 106, 0, 0.07) 0%, transparent 60%)",
+        }}
+      />
+
+      {/* Minimal HUD Corner Crosshairs */}
+      <div className="pointer-events-none absolute top-4 left-4 sm:top-8 sm:left-8 font-mono text-[11px] text-white/20 select-none">
+        +
+      </div>
+      <div className="pointer-events-none absolute top-4 right-4 sm:top-8 sm:right-8 font-mono text-[11px] text-white/20 select-none">
+        +
+      </div>
+      <div className="pointer-events-none absolute bottom-4 left-4 sm:bottom-8 sm:left-8 font-mono text-[11px] text-white/20 select-none">
+        +
+      </div>
+      <div className="pointer-events-none absolute bottom-4 right-4 sm:bottom-8 sm:right-8 font-mono text-[11px] text-white/20 select-none">
+        +
+      </div>
+
+      {/* Top Bar: Ultra Minimalist Status */}
+      <div className="relative z-10 flex items-center justify-between">
         <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-400"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] text-neutral-500 uppercase"
         >
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />
-          <span>PORTFOLIO — 2026</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A00] animate-pulse" />
+          <span>INIT</span>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="font-mono text-[10px] tracking-[0.25em] text-neutral-500 hover:text-white transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             finishLoading();
           }}
         >
-          SKIP [SPACE]
+          [ SKIP ]
         </motion.div>
       </div>
 
-      {/* Center: Hero Typography & Minimal Counter */}
-      <div className="mx-auto w-full max-w-5xl my-auto">
+      {/* Center: Futuristic Brand Title + Precision Telemetry */}
+      <div className="relative z-10 mx-auto w-full max-w-4xl my-auto">
         <div className="overflow-hidden">
-          <h1 className="flex items-baseline justify-between text-[clamp(2.5rem,8.5vw,7.5rem)] font-bold uppercase leading-[0.88] tracking-[-0.04em] text-white">
+          <h1 
+            className="flex items-baseline justify-center text-[clamp(2.75rem,10vw,8rem)] font-bold uppercase tracking-[-0.03em] text-white leading-none"
+            style={{
+              fontFamily: '"Clash Display Local", "Clash Display", sans-serif',
+            }}
+          >
             <span className="flex">
               {letters.map((char, index) => (
                 <motion.span
                   key={`${char}-${index}`}
-                  initial={{ y: "105%" }}
-                  animate={{ y: "0%" }}
+                  initial={{ y: "110%", opacity: 0 }}
+                  animate={{ y: "0%", opacity: 1 }}
                   transition={{
-                    duration: 0.65,
-                    delay: 0.05 + index * 0.04,
+                    duration: 0.6,
+                    delay: 0.04 + index * 0.035,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="inline-block"
-                  style={{
-                    fontFamily:
-                      '"Clash Display Local", "Clash Display", system-ui, sans-serif',
-                  }}
                 >
                   {char}
                 </motion.span>
               ))}
+              <motion.span
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                className="text-[#FF6A00] ml-0.5"
+              >
+                .
+              </motion.span>
             </span>
-
-            {/* Micro Monospace Counter aligned with baseline */}
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="font-mono text-base sm:text-2xl font-light tracking-tight text-neutral-400 self-end mb-2 sm:mb-4"
-            >
-              {String(progress).padStart(3, "0")}
-            </motion.span>
           </h1>
         </div>
 
-        {/* Minimalist Sub-discipline Rule */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.18em] text-neutral-400"
-        >
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span>Visual Design</span>
-            <span className="text-neutral-600">/</span>
-            <span>AI Creative</span>
-            <span className="text-neutral-600">/</span>
-            <span>Motion Direction</span>
-          </div>
-
-          <div className="text-neutral-500">
-            LOADING EXPERIENCE
-          </div>
-        </motion.div>
-
-        {/* Hairline Progress Rule */}
-        <div className="relative mt-8 h-[1px] w-full bg-white/15 overflow-hidden">
+        {/* Futuristic Laser Progress Line with Glow */}
+        <div className="relative mt-8 sm:mt-10 h-[2px] w-full bg-white/10 overflow-visible rounded-full">
           <motion.div
-            className="absolute left-0 top-0 bottom-0 bg-white"
-            style={{ width: `${progress}%` }}
-            transition={{ ease: "linear", duration: 0.05 }}
+            className="absolute left-0 top-0 bottom-0 bg-white rounded-full"
+            style={{
+              width: `${progress}%`,
+              boxShadow: "0 0 12px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 106, 0, 0.5)",
+            }}
           />
+          {/* Laser Head Beam */}
+          {progress > 0 && progress < 100 && (
+            <motion.div
+              className="absolute top-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-[#FF6A00]"
+              style={{
+                left: `calc(${progress}% - 5px)`,
+                boxShadow: "0 0 16px #FF6A00, 0 0 24px #FF6A00",
+              }}
+            />
+          )}
+        </div>
+
+        {/* Minimal HUD Counter Readout */}
+        <div className="mt-4 flex items-center justify-between text-xs sm:text-sm font-mono tracking-widest text-neutral-400">
+          <span className="text-[11px] text-neutral-600 tracking-[0.2em]">
+            SYSTEM.READY
+          </span>
+          <span className="text-white font-semibold tabular-nums text-sm sm:text-base">
+            {String(progress).padStart(3, "0")}%
+          </span>
         </div>
       </div>
 
-      {/* Bottom Footer: Minimalist Coordinates & System Status */}
-      <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          DELHI, IN
-        </motion.span>
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-        >
-          © 2026 ALL RIGHTS RESERVED
-        </motion.span>
+      {/* Bottom Minimal HUD Grid Markers */}
+      <div className="relative z-10 flex items-center justify-between font-mono text-[9px] tracking-[0.25em] text-neutral-600 uppercase">
+        <span>EST. 2026</span>
+        <span>TOUCH / SPACE TO ENTER</span>
       </div>
 
-      {/* Smooth Minimalist Curtain Reveal */}
+      {/* Futuristic Clean Exit Wipe */}
       <AnimatePresence>
         {isExiting && (
           <motion.div
-            initial={{ y: "0%" }}
-            animate={{ y: "-100%" }}
+            initial={{ scaleY: 1 }}
+            animate={{ scaleY: 0 }}
+            exit={{ scaleY: 0 }}
             transition={{
-              duration: 0.6,
+              duration: 0.5,
               ease: [0.76, 0, 0.24, 1],
             }}
-            className="absolute inset-0 z-50 bg-[#0A0A0C]"
+            style={{ transformOrigin: "top" }}
+            className="absolute inset-0 z-50 bg-[#030305]"
           />
         )}
       </AnimatePresence>

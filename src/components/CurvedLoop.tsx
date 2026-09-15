@@ -59,12 +59,26 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
     }
   }, [text, className]);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isVisibleRef = useRef(true);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isVisibleRef.current = entry.isIntersecting;
+      });
+    }, { threshold: 0.05 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!spacing) return;
     if (textPathRef.current) {
       const initial = -spacing;
       textPathRef.current.setAttribute('startOffset', initial + 'px');
-      setOffset(initial);
     }
   }, [spacing]);
 
@@ -72,7 +86,7 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
     if (!spacing || !ready) return;
     let frame = 0;
     const step = () => {
-      if (!dragRef.current && textPathRef.current) {
+      if (isVisibleRef.current && !dragRef.current && textPathRef.current) {
         const delta = dirRef.current === 'right' ? speed : -speed;
         const currentOffset = parseFloat(textPathRef.current.getAttribute('startOffset') || '0');
         let newOffset = currentOffset + delta;
@@ -82,7 +96,6 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
         if (newOffset > 0) newOffset -= wrapPoint;
 
         textPathRef.current.setAttribute('startOffset', newOffset + 'px');
-        setOffset(newOffset);
       }
       frame = requestAnimationFrame(step);
     };
@@ -112,7 +125,6 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
     if (newOffset > 0) newOffset -= wrapPoint;
 
     textPathRef.current.setAttribute('startOffset', newOffset + 'px');
-    setOffset(newOffset);
   };
 
   const endDrag = () => {
@@ -125,6 +137,7 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className="curved-loop-jacket"
       style={{ visibility: ready ? 'visible' : 'hidden', cursor: cursorStyle }}
       onPointerDown={onPointerDown}
@@ -141,7 +154,7 @@ const CurvedLoop: React.FC<CurvedLoopProps> = ({
         </defs>
         {ready && (
           <text fontWeight="bold" xmlSpace="preserve" className={className}>
-            <textPath ref={textPathRef} href={`#${pathId}`} startOffset={offset + 'px'} xmlSpace="preserve">
+            <textPath ref={textPathRef} href={`#${pathId}`} xmlSpace="preserve">
               {totalText}
             </textPath>
           </text>

@@ -54,8 +54,8 @@ export default function AboutMe({ profile }: AboutMeProps) {
 
           {/* Main Heading */}
           <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-sans font-normal leading-[1.06] tracking-[-0.035em] text-neutral-950 select-none">
-            I'm a Delhi-based<br />
-            Web Designer.
+            I am a Delhi based<br />
+            visual designer.
           </h1>
 
           {/* Intro Paragraph */}

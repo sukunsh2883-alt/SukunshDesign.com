@@ -277,8 +277,28 @@ const ShapeGrid: React.FC<ShapeGridProps> = ({
 
       updateCellOpacities();
       drawGrid();
-      requestRef.current = requestAnimationFrame(updateAnimation);
+      if (isVisible) {
+        requestRef.current = requestAnimationFrame(updateAnimation);
+      }
     };
+
+    let isVisible = true;
+    let observer: IntersectionObserver | null = null;
+    if (typeof window !== "undefined" && "IntersectionObserver" in window) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const wasVisible = isVisible;
+          isVisible = entry.isIntersecting;
+          if (!wasVisible && isVisible) {
+            if (requestRef.current !== null) cancelAnimationFrame(requestRef.current);
+            requestRef.current = requestAnimationFrame(updateAnimation);
+          }
+        });
+      }, { threshold: 0.05 });
+      observer.observe(canvas);
+    } else {
+      requestRef.current = requestAnimationFrame(updateAnimation);
+    }
 
     const handleMouseMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -385,9 +405,8 @@ const ShapeGrid: React.FC<ShapeGridProps> = ({
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseleave', handleMouseLeave);
 
-    requestRef.current = requestAnimationFrame(updateAnimation);
-
     return () => {
+      observer?.disconnect();
       window.removeEventListener('resize', resizeCanvas);
       if (requestRef.current !== null) {
         cancelAnimationFrame(requestRef.current);

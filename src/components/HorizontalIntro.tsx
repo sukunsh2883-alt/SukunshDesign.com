@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const introText =
-  "I’m a Delhi-based Web Designer, blending fine art sensibilities with contemporary design, crafting evocative visual stories through motion, typography and creative precision.";
+  "I’m a Delhi-based Visual Designer, blending fine art sensibilities with contemporary design, crafting evocative visual stories through motion, typography and creative precision.";
 
 export default function HorizontalIntro() {
   const sectionRef = useRef<HTMLElement | null>(null);
