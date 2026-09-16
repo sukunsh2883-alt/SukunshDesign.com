@@ -87,32 +87,44 @@ export default function App() {
       const saved = localStorage.getItem("portfolio_designs");
       if (saved) {
         const savedDesigns = JSON.parse(saved);
-        if (Array.isArray(savedDesigns)) {
-          const validInitialIds = new Set(initialDesigns.map(init => init.id));
-          const filtered = savedDesigns.filter((d: DesignProject) => d && validInitialIds.has(d.id));
-          if (filtered.length > 0) {
-            return initialDesigns.map((init) => {
-              const d = filtered.find((item: DesignProject) => item.id === init.id);
-              if (!d) return init;
-              const hasLegacyPlaceholder = d.image?.includes("unsplash.com") || d.image?.includes("images.unsplash.com");
-              return {
-                ...init,
-                ...d,
-                title: hasLegacyPlaceholder ? init.title : d.title,
-                type: hasLegacyPlaceholder ? init.type : d.type,
-                year: hasLegacyPlaceholder ? init.year : d.year,
-                description: hasLegacyPlaceholder ? init.description : d.description,
-                aboutProject: hasLegacyPlaceholder ? init.aboutProject : d.aboutProject,
-                client: hasLegacyPlaceholder ? init.client : d.client,
-                video: init.video || (d.video?.includes("f7ttaj.mp4") || d.video?.includes(".webp") ? "/design-illustration-loop.mp4" : d.video),
-                image: hasLegacyPlaceholder ? init.image : d.image,
-                galleryImages: hasLegacyPlaceholder ? init.galleryImages : ((d.galleryImages && d.galleryImages.length > (init.galleryImages?.length || 0))
-                  ? d.galleryImages
-                  : (init.galleryImages || d.galleryImages))
-              };
-            });
-          }
+        const validInitialIds = new Set(initialDesigns.map(init => init.id));
+
+        // Keep strictly the active curated projects that match initialDesigns
+        const filtered = (Array.isArray(savedDesigns) ? savedDesigns : [])
+          .filter((d: DesignProject) => d && validInitialIds.has(d.id));
+
+        if (filtered.length === 0) {
+          return initialDesigns;
         }
+
+        const mapped = filtered.map((d: DesignProject) => {
+          const matchInitial = initialDesigns.find(init => init.id === d.id);
+          if (matchInitial) {
+            return {
+              ...matchInitial,
+              ...d,
+              title: matchInitial.title,
+              type: matchInitial.type,
+              description: matchInitial.description,
+              image: matchInitial.image,
+              galleryImages: (d.galleryImages && d.galleryImages.length > (matchInitial.galleryImages?.length || 0))
+                ? d.galleryImages
+                : (matchInitial.galleryImages || d.galleryImages),
+              video: matchInitial.video || d.video
+            };
+          }
+          return d;
+        });
+
+        const savedDesignIds = new Set(mapped.map((d: DesignProject) => d.id));
+        const missingInitial = initialDesigns.filter((d) => !savedDesignIds.has(d.id));
+        const finalDesigns = missingInitial.length > 0 ? [...mapped, ...missingInitial] : mapped;
+
+        try {
+          localStorage.setItem("portfolio_designs", JSON.stringify(finalDesigns));
+        } catch {}
+
+        return finalDesigns;
       }
       return initialDesigns;
     } catch (e) {

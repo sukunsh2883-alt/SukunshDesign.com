@@ -46,12 +46,12 @@ export default function AdminPanel({
   const shouldShowStudio = () => {
     return true; // Permanently visible for easy access
   };
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isStudioVisible, setIsStudioVisible] = useState(true);
 
   // Admin Login States
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem("sukunsh_creator_studio_auth") !== "false";
+    return localStorage.getItem("sukunsh_creator_studio_auth") === "true";
   });
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -778,7 +778,7 @@ export default function AdminPanel({
   if (!isStudioVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[160] flex flex-col items-end font-sans pointer-events-none">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
       
       {/* Dynamic Accessible Console Overlay (Light theme) */}
       <AnimatePresence>
@@ -788,7 +788,7 @@ export default function AdminPanel({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="w-[92vw] sm:w-[460px] max-h-[85vh] overflow-y-auto rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.2)] mb-4 text-neutral-950 flex flex-col scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-neutral-50 pointer-events-auto"
+            className="w-[92vw] sm:w-[460px] max-h-[85vh] overflow-y-auto rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.15)] mb-4 text-neutral-950 flex flex-col scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-neutral-50"
             role="dialog"
             aria-label="Sukunsh Portfolio Manager Console"
           >
@@ -2153,18 +2153,19 @@ export default function AdminPanel({
         )}
       </AnimatePresence>
 
-      {/* Primary Floating Button */}
+      {/* Primary Floating Button (Hidden per user request) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-neutral-900/95 text-white hover:bg-black backdrop-blur-md border border-neutral-700/60 shadow-2xl hover:shadow-[0_0_20px_rgba(255,106,0,0.3)] hover:border-[#FF6A00]/50 transition-all duration-300 cursor-pointer group"
-        aria-label="Toggle creator studio deck"
+        className="hidden"
+        style={{ display: "none" }}
+        aria-label="Toggle admin controller deck"
       >
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6A00] opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6A00]"></span>
         </span>
         <Settings className={`h-4 w-4 text-[#FF6A00] ${isOpen ? "rotate-90" : "group-hover:rotate-45"} transition-transform duration-500`} />
-        <span className="text-[10px] tracking-widest uppercase font-mono font-bold text-white">
+        <span className="text-[10px] tracking-widest uppercase font-mono font-bold text-neutral-900">
           {isOpen ? "Close Studio" : "Creator Studio"}
         </span>
       </button>

@@ -18,12 +18,14 @@ export default function EditorialProjects({
   onOpenDesignShowcase,
   profile,
 }: EditorialProjectsProps) {
-  // Safe project slots for the 4 active visual projects
-  const heroProject = projects[0];
-  const pLeft1 = projects[0];  // Top-Left: Architectural Studio Web Platform
-  const pRight1 = projects[1]; // Top-Right: Creative Agency Web Portal
-  const pLeft2 = projects[2];  // Bottom-Left: NextGen Design System & Web App
-  const pRight2 = projects[3]; // Bottom-Right: Luxury E-Commerce Web Store
+  // Safe project slots (7 projects for full column balancing)
+  const p0 = projects[0]; // Hero full-width banner
+  const p1 = projects[1]; // Left Column - Tall
+  const p2 = projects[2]; // Left Column - Landscape
+  const p6 = projects[6] || projects[1]; // Left Column - Bottom Balancer Card
+  const p3 = projects[3]; // Right Column - Landscape
+  const p4 = projects[4]; // Right Column - Square/Taller
+  const p5 = projects[5]; // Right Column - Landscape
 
   const getProjectLines = (proj?: DesignProject, defaultLine1 = "Background in Fine Art", defaultLine2 = "and Design.") => {
     if (!proj) return { line1: defaultLine1, line2: defaultLine2 };
@@ -31,9 +33,7 @@ export default function EditorialProjects({
       // Split description into two balanced, meaningful lines
       const parts = proj.description.split(/[,.]+/).map((s) => s.trim()).filter(Boolean);
       if (parts.length >= 2) {
-        return { line1: parts[0], line2: parts.slice(1).join(", ") };
-      } else if (parts.length === 1) {
-        return { line1: parts[0], line2: proj.client ? `Client: ${proj.client} (${proj.year})` : defaultLine2 };
+        return { line1: parts[0], line2: parts[1] };
       }
     }
     return { line1: defaultLine1, line2: defaultLine2 };
@@ -47,7 +47,7 @@ export default function EditorialProjects({
       <span className="inline-block w-px self-stretch bg-neutral-900 shrink-0 my-0.5" />
       <div className="flex flex-col text-neutral-900 font-normal leading-[1.2]">
         <span>{line1}</span>
-        {line2 && <span>{line2}</span>}
+        <span>{line2}</span>
       </div>
     </div>
   );
@@ -77,7 +77,7 @@ export default function EditorialProjects({
         </div>
 
         {/* 1. Hero Motion Graphic View (Uncropped video with natural sizing, no surrounding text, cursor hover tag) */}
-        {heroProject && (
+        {p0 && (
           <div className="mb-8 sm:mb-12 md:mb-14">
             <div
               data-cursor-tag="See all projects"
@@ -86,7 +86,7 @@ export default function EditorialProjects({
                 if (onOpenDesignShowcase) {
                   onOpenDesignShowcase();
                 } else {
-                  onSelectProject?.(heroProject);
+                  onSelectProject?.(p0);
                 }
               }}
               role="button"
@@ -96,7 +96,7 @@ export default function EditorialProjects({
                   if (onOpenDesignShowcase) {
                     onOpenDesignShowcase();
                   } else {
-                    onSelectProject?.(heroProject);
+                    onSelectProject?.(p0);
                   }
                 }
               }}
@@ -114,7 +114,7 @@ export default function EditorialProjects({
                   src="/design-illustration-loop.mp4"
                   fallbackSrc="https://res.cloudinary.com/dylv5m3jk/video/upload/v1789396420/MacBook_Pro_16-_-_1_4_f7ttaj.mp4"
                   poster="https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
-                  alt={heroProject.title || "Design & Illustration Showcase"}
+                  alt={p0.title || "Design & Illustration Showcase"}
                   className="w-full h-full block object-contain select-none transition-transform duration-700 ease-out group-hover:scale-[1.01]"
                 />
               </div>
@@ -122,60 +122,86 @@ export default function EditorialProjects({
           </div>
         )}
 
-        {/* 2. Symmetrical 2-Column Grid (4 Active Projects Matching Preview) */}
+        {/* 2. Staggered 2-Column Grid (Original 7 Projects Balanced Composition) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-14 xl:gap-16">
           
           {/* Left Column */}
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14">
             
-            {/* Left Item 1: Architectural Studio Web Platform */}
-            {pLeft1 && (
+            {/* Left Item 1: p1 (Landscape) */}
+            {p1 && (
               <div
-                onClick={() => onSelectProject?.(pLeft1)}
+                onClick={() => onSelectProject?.(p1)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(pLeft1)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p1)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={pLeft1.image}
-                    alt={pLeft1.title}
+                    src={p1.image}
+                    alt={p1.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  pLeft1.type || "Web Design",
-                  getProjectLines(pLeft1, "Editorial web portal showcasing spatial architectures", "interactive blueprints, and minimal typography.").line1,
-                  getProjectLines(pLeft1, "Editorial web portal showcasing spatial architectures", "interactive blueprints, and minimal typography.").line2
+                  p1.type || "Branding",
+                  getProjectLines(p1, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p1, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
 
-            {/* Left Item 2: NextGen Design System & Web App */}
-            {pLeft2 && (
+            {/* Left Item 2: p2 (Landscape) */}
+            {p2 && (
               <div
-                onClick={() => onSelectProject?.(pLeft2)}
+                onClick={() => onSelectProject?.(p2)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(pLeft2)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p2)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={pLeft2.image}
-                    alt={pLeft2.title}
+                    src={p2.image}
+                    alt={p2.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  pLeft2.type || "UI/UX & Web",
-                  getProjectLines(pLeft2, "Concept branding for Somu Samosa", "including logo, colors, stickers, and social media designs.").line1,
-                  getProjectLines(pLeft2, "Concept branding for Somu Samosa", "including logo, colors, stickers, and social media designs.").line2
+                  p2.type || "Branding",
+                  getProjectLines(p2, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p2, "Background in Fine Art", "and Design.").line2
+                )}
+              </div>
+            )}
+
+            {/* Left Item 3: p6 (Bottom Balancer Card) */}
+            {p6 && (
+              <div
+                onClick={() => onSelectProject?.(p6)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p6)}
+                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
+              >
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
+                  <img
+                    src={p6.image}
+                    alt={p6.title}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {renderCardMeta(
+                  p6.type || "Branding",
+                  getProjectLines(p6, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p6, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
@@ -185,54 +211,80 @@ export default function EditorialProjects({
           {/* Right Column */}
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14">
             
-            {/* Right Item 1: Creative Agency Web Portal */}
-            {pRight1 && (
+            {/* Right Item 1: p3 (Landscape) */}
+            {p3 && (
               <div
-                onClick={() => onSelectProject?.(pRight1)}
+                onClick={() => onSelectProject?.(p3)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(pRight1)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p3)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={pRight1.image}
-                    alt={pRight1.title}
+                    src={p3.image}
+                    alt={p3.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  pRight1.type || "Digital Web",
-                  getProjectLines(pRight1, "Brand storytelling web screen engineered with kinetic micro-interactions", "smooth scrolling, and modular UI cards.").line1,
-                  getProjectLines(pRight1, "Brand storytelling web screen engineered with kinetic micro-interactions", "smooth scrolling, and modular UI cards.").line2
+                  p3.type || "Design",
+                  getProjectLines(p3, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p3, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
 
-            {/* Right Item 2: Luxury E-Commerce Web Store */}
-            {pRight2 && (
+            {/* Right Item 2: p4 (Square/Taller format) */}
+            {p4 && (
               <div
-                onClick={() => onSelectProject?.(pRight2)}
+                onClick={() => onSelectProject?.(p4)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(pRight2)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p4)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[1/1] sm:aspect-[1/1] md:aspect-[4/4.2] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={pRight2.image}
-                    alt={pRight2.title}
+                    src={p4.image}
+                    alt={p4.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  pRight2.type || "E-Commerce",
-                  getProjectLines(pRight2, "Seamless e-commerce web platform showcasing luxury product cards", "fluid cart drawer, and high-performance navigation.").line1,
-                  getProjectLines(pRight2, "Seamless e-commerce web platform showcasing luxury product cards", "fluid cart drawer, and high-performance navigation.").line2
+                  p4.type || "Design",
+                  getProjectLines(p4, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p4, "Background in Fine Art", "and Design.").line2
+                )}
+              </div>
+            )}
+
+            {/* Right Item 3: p5 (Landscape) */}
+            {p5 && (
+              <div
+                onClick={() => onSelectProject?.(p5)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p5)}
+                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
+              >
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-[#d8d8d8] shadow-xs hover:shadow-md transition-shadow duration-300">
+                  <img
+                    src={p5.image}
+                    alt={p5.title}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {renderCardMeta(
+                  p5.type || "Design",
+                  getProjectLines(p5, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p5, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
