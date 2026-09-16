@@ -84,6 +84,7 @@ export default function ScrollShowcase({
   const aboutStageRef = useRef<HTMLDivElement | null>(null);
   const aiSectionRef = useRef<HTMLElement | null>(null);
   const videoWrapperRef = useRef<HTMLDivElement | null>(null);
+  const videoFrameRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [filmIndex, setFilmIndex] = useState(0);
   const [isPlayingInline, setIsPlayingInline] = useState(true);
@@ -99,7 +100,29 @@ export default function ScrollShowcase({
   const portraitImage =
     "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
+  const isYouTubeUrl = (url?: string) => {
+    if (!url) return false;
+    return url.includes("youtube.com") || url.includes("youtu.be");
+  };
+
+  const getYouTubeEmbedUrl = (url?: string) => {
+    if (!url) return "";
+    if (url.includes("/embed/")) {
+      // Ensure enablejsapi=1 & autoplay/mute flags if needed
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}enablejsapi=1&rel=0`;
+    }
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[2].length === 11 ? match[2] : null;
+    return videoId ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0` : url;
+  };
+
+  const isCurrentYouTube = isYouTubeUrl(film?.videoUrl);
+  const currentYouTubeEmbedUrl = isCurrentYouTube ? getYouTubeEmbedUrl(film?.videoUrl) : "";
+
   const togglePlayInline = () => {
+    if (isCurrentYouTube) return;
     if (!videoRef.current) return;
     if (videoRef.current.paused) {
       videoRef.current.play();
@@ -203,6 +226,15 @@ export default function ScrollShowcase({
     };
   }, []);
 
+  // Ensure fullscreen cleanly clears GSAP scale transforms
+  useEffect(() => {
+    if (isFullscreen && videoFrameRef.current) {
+      gsap.set(videoFrameRef.current, { clearProps: "scale,borderRadius,boxShadow,transform" });
+    } else if (!isFullscreen) {
+      ScrollTrigger.refresh();
+    }
+  }, [isFullscreen]);
+
   // Keyboard shortcuts (f for fullscreen, Escape to exit, Space to toggle play)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -294,6 +326,62 @@ export default function ScrollShowcase({
         trackEl.addEventListener("mouseleave", () => reelTween.play());
       }
 
+      // Scroll-driven animation for AI Film video frame:
+      // When scrolling down, appears small -> grows large and fits to screen -> sets back to actual frame size
+      if (videoFrameRef.current) {
+        const isMobile = window.innerWidth < 640;
+        const isTablet = window.innerWidth < 1024;
+        const startScale = isMobile ? 0.88 : 0.82;
+        const peakScale = isMobile ? 1.05 : isTablet ? 1.08 : 1.10;
+
+        const videoTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: videoFrameRef.current,
+            start: "top 95%",      // When entering from bottom of viewport
+            end: "top 20%",        // When settling in view
+            scrub: 0.8,            // Fluidly responsive to scroll speed
+            invalidateOnRefresh: true,
+          },
+        });
+
+        videoTimeline
+          .fromTo(
+            videoFrameRef.current,
+            {
+              scale: startScale,
+              borderRadius: isMobile ? "20px" : "28px",
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.08)",
+              transformOrigin: "center center",
+            },
+            {
+              scale: peakScale,
+              borderRadius: isMobile ? "8px" : "12px",
+              boxShadow: "0 30px 60px -12px rgba(0, 0, 0, 0.35)",
+              duration: 1,
+              ease: "power2.out",
+            }
+          )
+          .to(
+            videoFrameRef.current,
+            {
+              scale: peakScale,
+              borderRadius: isMobile ? "8px" : "12px",
+              duration: 0.25, // Holds at screen-fit during peak viewing
+              ease: "none",
+            }
+          )
+          .to(
+            videoFrameRef.current,
+            {
+              scale: 1.0,
+              borderRadius: isMobile ? "12px" : "16px",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+              duration: 0.9,
+              ease: "power2.inOut",
+            }
+          );
+      }
+
       ScrollTrigger.refresh();
     }, containerRef);
 
@@ -335,11 +423,11 @@ export default function ScrollShowcase({
         id="ai-work"
         ref={aiSectionRef}
         data-cursor-tag="AI Works"
-        className="folio-reveal relative w-full bg-white px-5 py-12 sm:px-8 sm:py-16 md:px-14 md:py-20 border-t border-neutral-100"
+        className="relative w-full bg-white px-5 py-12 sm:px-8 sm:py-16 md:px-14 md:py-20 border-t border-neutral-100"
       >
         <div className="mx-auto w-full max-w-[1400px]">
           {/* Section Header: AI Film ↙ */}
-          <div className="mb-6 sm:mb-8 flex items-center justify-between">
+          <div className="folio-reveal mb-6 sm:mb-8 flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
               <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold tracking-[-0.035em] text-neutral-950 leading-none select-none">
                 AI Film
@@ -372,37 +460,60 @@ export default function ScrollShowcase({
             }`}
           >
             <div
+              ref={videoFrameRef}
               onClick={togglePlayInline}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && togglePlayInline()}
-              className={`group relative block w-full bg-black cursor-pointer text-left outline-none transition-all duration-300 ${
+              role={isCurrentYouTube ? undefined : "button"}
+              tabIndex={isCurrentYouTube ? undefined : 0}
+              onKeyDown={(e) => !isCurrentYouTube && (e.key === "Enter" || e.key === " ") && togglePlayInline()}
+              style={{
+                willChange: "transform",
+                transformOrigin: "center center",
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+              }}
+              className={`group relative block w-full bg-black ${isCurrentYouTube ? "" : "cursor-pointer"} text-left outline-none ${
                 isFullscreen
                   ? "h-full w-full flex items-center justify-center rounded-none shadow-none"
-                  : "aspect-[16/8] sm:aspect-[16/7.5] md:aspect-[2.2/1] min-h-[260px] sm:min-h-[380px] md:min-h-[480px] lg:min-h-[540px] overflow-hidden rounded-[8px] sm:rounded-[12px] md:rounded-[16px] shadow-md focus-visible:ring-2 focus-visible:ring-neutral-950"
+                  : "aspect-[16/8] sm:aspect-[16/7.5] md:aspect-[2.2/1] min-h-[260px] sm:min-h-[380px] md:min-h-[480px] lg:min-h-[540px] overflow-hidden rounded-[8px] sm:rounded-[12px] md:rounded-[16px] shadow-md hover:shadow-xl transition-shadow duration-300 focus-visible:ring-2 focus-visible:ring-neutral-950"
               }`}
             >
-              <video
-                ref={videoRef}
-                key={film?.id}
-                src={film?.videoUrl}
-                poster={film?.thumbnail}
-                muted={isMuted}
-                loop
-                playsInline
-                autoPlay
-                preload="auto"
-                className={`w-full transition-opacity group-hover:opacity-95 ${
-                  isFullscreen
-                    ? "h-full max-h-screen object-contain bg-black"
-                    : "h-full object-cover opacity-100"
-                }`}
-              />
+              {isCurrentYouTube ? (
+                <iframe
+                  key={film?.id}
+                  src={currentYouTubeEmbedUrl}
+                  title={film?.title || "AI Film"}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  className={`w-full h-full border-0 ${
+                    isFullscreen
+                      ? "max-h-screen object-contain"
+                      : "object-cover"
+                  }`}
+                />
+              ) : (
+                <video
+                  ref={videoRef}
+                  key={film?.id}
+                  src={film?.videoUrl}
+                  poster={film?.thumbnail}
+                  muted={isMuted}
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="auto"
+                  className={`w-full transition-opacity group-hover:opacity-95 ${
+                    isFullscreen
+                      ? "h-full max-h-screen object-contain bg-black"
+                      : "h-full object-cover opacity-100"
+                  }`}
+                />
+              )}
 
               {/* Top Title Overlay in Fullscreen */}
               {isFullscreen && film && (
                 <div
-                  className="absolute top-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex items-center justify-between z-30 transition-opacity duration-300"
+                  className="absolute top-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex items-center justify-between z-30 transition-opacity duration-300 pointer-events-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="text-white">
@@ -422,37 +533,41 @@ export default function ScrollShowcase({
                 </div>
               )}
 
-              {/* Center Play/Pause Indicator (Smoothly fades when playing, appears on hover or pause) */}
-              <div
-                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
-                  isPlayingInline ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-                }`}
-              >
-                <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur-md text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
-                  {isPlayingInline ? (
-                    <Pause className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white" />
-                  ) : (
-                    <Play className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white ml-1" />
-                  )}
-                </span>
-              </div>
+              {/* Center Play/Pause Indicator for HTML5 video */}
+              {!isCurrentYouTube && (
+                <div
+                  className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
+                    isPlayingInline ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                  }`}
+                >
+                  <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur-md text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
+                    {isPlayingInline ? (
+                      <Pause className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white" />
+                    ) : (
+                      <Play className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white ml-1" />
+                    )}
+                  </span>
+                </div>
+              )}
 
-              {/* Bottom Right Controls: Sound Unmute/Mute & Fullscreen Button */}
+              {/* Bottom Right Controls: Fullscreen button & Mute (for HTML5 video) */}
               <div
                 className={`absolute z-30 flex items-center gap-2.5 ${
                   isFullscreen ? "bottom-6 right-6" : "bottom-4 right-4"
                 }`}
                 onClick={(e) => e.stopPropagation()}
               >
-                <button
-                  type="button"
-                  onClick={toggleMute}
-                  aria-label={isMuted ? "Unmute audio (m)" : "Mute audio (m)"}
-                  title={isMuted ? "Unmute (m)" : "Mute (m)"}
-                  className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
-                >
-                  {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                </button>
+                {!isCurrentYouTube && (
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    aria-label={isMuted ? "Unmute audio (m)" : "Mute audio (m)"}
+                    title={isMuted ? "Unmute (m)" : "Mute (m)"}
+                    className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
+                  >
+                    {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                  </button>
+                )}
 
                 <button
                   type="button"

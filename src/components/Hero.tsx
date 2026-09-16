@@ -9,15 +9,35 @@ interface HeroProps {
   onOpenAIWork?: () => void;
   onOpenAboutMe?: () => void;
   onOpenContact?: () => void;
+  onHeroLoaded?: () => void;
 }
 
 const SVG_URL = "/artwork/main artwork.svg";
 
-type HeroMetrics = {
-  stageScale: number;
-  stageY: number;
-  sukunshScale: number;
-};
+let cachedSvgMarkup: string | null = null;
+let svgPreloadPromise: Promise<string> | null = null;
+
+export function preloadHeroSvg(): Promise<string> {
+  if (cachedSvgMarkup) return Promise.resolve(cachedSvgMarkup);
+  if (!svgPreloadPromise) {
+    svgPreloadPromise = fetch(SVG_URL)
+      .then((response) => response.text())
+      .then((svg) => {
+        cachedSvgMarkup = cleanSvg(svg);
+        return cachedSvgMarkup;
+      })
+      .catch((error) => {
+        console.error("Hero SVG failed to load.", error);
+        return "";
+      });
+  }
+  return svgPreloadPromise;
+}
+
+// Preload SVG immediately on client
+if (typeof window !== "undefined") {
+  preloadHeroSvg();
+}
 
 const flowerIds = Array.from({ length: 9 }, (_, index) => `flower_${index + 1}`);
 const leafIds = [...Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`), "leaf_10-2"];
@@ -44,36 +64,9 @@ function findSvgElement<T extends Element>(svg: SVGSVGElement | null, id: string
   return Array.from(svg.querySelectorAll<T>("[id]")).find((element) => element.id === id) || null;
 }
 
-function getHeroMetrics(): HeroMetrics {
-  const width = typeof window !== "undefined" ? window.innerWidth : 1440;
-
-  if (width < 768) {
-    return { stageScale: 1, stageY: 0, sukunshScale: 1 };
-  }
-
-  if (width < 1024) {
-    return { stageScale: 1.28, stageY: 2, sukunshScale: 1 };
-  }
-
-  if (width < 1440) {
-    return { stageScale: 1.38, stageY: 3, sukunshScale: 1 };
-  }
-
-  return { stageScale: 1.48, stageY: 4, sukunshScale: 1 };
-}
-
-export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAboutMe, onOpenContact }: HeroProps) {
+export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAboutMe, onOpenContact, onHeroLoaded }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
-
-  const [heroMetrics, setHeroMetrics] = useState<HeroMetrics>(() => getHeroMetrics());
-
-  useEffect(() => {
-    const updateHeroMetrics = () => setHeroMetrics(getHeroMetrics());
-    updateHeroMetrics();
-    window.addEventListener("resize", updateHeroMetrics);
-    return () => window.removeEventListener("resize", updateHeroMetrics);
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -276,26 +269,18 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         };
 
         if (!reduceMotion) {
-          gsap.from(svgElement, {
-            y: 18,
-            scale: 0.985,
-            duration: 0.9,
-            ease: "power3.out",
-          });
-
           const parallaxTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
               start: "top top",
               end: "bottom top",
               scrub: 0.9,
-              invalidateOnRefresh: true,
             },
           });
 
           parallaxTimeline
             .to(".hero-scroll-base", { yPercent: 0, ease: "none" }, 0)
-            .to(sukunshParallax, { yPercent: -9, scale: 1.025, opacity: 0.86, ease: "none" }, 0)
+            .to(sukunshParallax, { yPercent: -9, opacity: 0.86, ease: "none" }, 0)
             .to(characterParallax, { xPercent: 0.8, yPercent: -5, ease: "none" }, 0)
             .to(flowerParallax, { xPercent: -0.9, yPercent: -10, ease: "none" }, 0)
             .to(leafParallax, { xPercent: 1.1, yPercent: -8, ease: "none" }, 0);
@@ -304,7 +289,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           if (characterGroup) {
             timelines.push(gsap.to(characterGroup, {
               y: -0.8,
-              scale: 1.001,
               duration: 3.5,
               repeat: -1,
               yoyo: true,
@@ -312,24 +296,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
               overwrite: "auto",
             }));
           }
-
-          timelines.push(gsap.to(tagRects, {
-            scale: 1.018,
-            duration: 2.6,
-            repeat: -1,
-            yoyo: true,
-            stagger: 0.25,
-            ease: "sine.inOut",
-          }));
-
-          timelines.push(gsap.from([...leaves, ...flowers], {
-            autoAlpha: 0,
-            y: 8,
-            duration: 0.75,
-            stagger: 0.025,
-            ease: "power2.out",
-            overwrite: "auto",
-          }));
         }
 
         flowers.forEach((flower, index) => {
@@ -1126,24 +1092,38 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       }, stage);
     };
 
-    fetch(SVG_URL)
-      .then((response) => response.text())
-      .then((svg) => {
-        const stage = stageRef.current;
-        const svgMarkup = cleanSvg(svg);
-        if (stage && !cancelled) stage.innerHTML = svgMarkup;
+    const applySvg = (svgMarkup: string) => {
+      const stage = stageRef.current;
+      if (!stage || cancelled || !svgMarkup) return;
+      stage.innerHTML = svgMarkup;
 
-        try {
-          setupHero(svgMarkup);
-        } catch (error) {
-          console.error("Hero animation setup failed; keeping static artwork.", error);
-        }
-      })
-      .catch((error) => {
-        console.error("Hero SVG failed to load.", error);
-        const stage = stageRef.current;
-        if (stage && !cancelled) stage.innerHTML = "";
-      });
+      try {
+        setupHero(svgMarkup);
+      } catch (error) {
+        console.error("Hero animation setup failed; keeping static artwork.", error);
+      } finally {
+        onHeroLoaded?.();
+      }
+    };
+
+    if (cachedSvgMarkup) {
+      applySvg(cachedSvgMarkup);
+    } else {
+      preloadHeroSvg()
+        .then((svgMarkup) => {
+          if (!cancelled && svgMarkup) {
+            applySvg(svgMarkup);
+          } else {
+            onHeroLoaded?.();
+          }
+        })
+        .catch((error) => {
+          console.error("Hero SVG failed to load.", error);
+          const stage = stageRef.current;
+          if (stage && !cancelled) stage.innerHTML = "";
+          onHeroLoaded?.();
+        });
+    }
 
     return () => {
       cancelled = true;
@@ -1173,11 +1153,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           <div
             ref={stageRef}
             className="svg-stage relative mb-0 aspect-[1728.2/758.1] origin-center overflow-visible touch-pan-y"
-            style={{
-              "--svg-scale-multiplier": heroMetrics.stageScale,
-              "--svg-y-offset": `${heroMetrics.stageY}vh`,
-              "--sukunsh-scale": heroMetrics.sukunshScale,
-            } as React.CSSProperties}
           />
         </div>
       </div>

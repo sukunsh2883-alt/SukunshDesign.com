@@ -23,6 +23,23 @@ export default function AIWorks({
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [expandedData, setExpandedData] = useState<any>(null);
 
+  const isYouTubeUrl = (url?: string) => {
+    if (!url) return false;
+    return url.includes("youtube.com") || url.includes("youtu.be");
+  };
+
+  const getYouTubeEmbedUrl = (url?: string) => {
+    if (!url) return "";
+    if (url.includes("/embed/")) {
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}enablejsapi=1&rel=0`;
+    }
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[2].length === 11 ? match[2] : null;
+    return videoId ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0` : url;
+  };
+
   // Get first film as hero card, rest as grid
   const heroFilm = films[0];
   const restFilms = films.slice(1, 4);
@@ -145,16 +162,25 @@ export default function AIWorks({
             onClick={() => handleExpandCard(heroFilm)}
           >
             {/* Video/Image Background */}
-            <video
-              src={heroFilm.videoUrl}
-              poster={heroFilm.thumbnail}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              autoPlay
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            />
+            {isYouTubeUrl(heroFilm.videoUrl) ? (
+              <img
+                src={heroFilm.thumbnail}
+                alt={heroFilm.title}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <video
+                src={heroFilm.videoUrl}
+                poster={heroFilm.thumbnail}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                autoPlay
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+            )}
 
             {/* Dark Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
@@ -197,15 +223,24 @@ export default function AIWorks({
                 className="ai-grid-card group relative aspect-[4/5] overflow-hidden rounded-2xl bg-black cursor-pointer transform-gpu will-change-transform hover:scale-105 transition-transform duration-500"
                 onClick={() => handleExpandCard(film)}
               >
-                <video
-                  src={film.videoUrl}
-                  poster={film.thumbnail}
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
+                {isYouTubeUrl(film.videoUrl) ? (
+                  <img
+                    src={film.thumbnail}
+                    alt={film.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <video
+                    src={film.videoUrl}
+                    poster={film.thumbnail}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
                   <p className="text-xs md:text-sm font-mono tracking-widest text-white/70 uppercase mb-1">
@@ -270,16 +305,27 @@ export default function AIWorks({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Video */}
-            <video
-              src={expandedData.videoUrl}
-              poster={expandedData.thumbnail}
-              autoPlay
-              loop
-              muted
-              playsInline
-              controls
-              className="w-full h-full object-contain"
-            />
+            {isYouTubeUrl(expandedData.videoUrl) ? (
+              <iframe
+                src={getYouTubeEmbedUrl(expandedData.videoUrl)}
+                title={expandedData.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+                className="w-full h-full border-0"
+              />
+            ) : (
+              <video
+                src={expandedData.videoUrl}
+                poster={expandedData.thumbnail}
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                className="w-full h-full object-contain"
+              />
+            )}
 
             {/* Close Button */}
             <button

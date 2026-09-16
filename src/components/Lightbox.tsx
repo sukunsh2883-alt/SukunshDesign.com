@@ -44,9 +44,22 @@ export default function Lightbox({
     };
   }, [isOpen, onClose]);
 
+  const isYouTube = src?.includes("youtube.com") || src?.includes("youtu.be");
+  const getYouTubeEmbedUrl = (url?: string) => {
+    if (!url) return "";
+    if (url.includes("/embed/")) {
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}autoplay=1&rel=0`;
+    }
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[2].length === 11 ? match[2] : null;
+    return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0` : url;
+  };
+
   // Handle Video Loading (including HLS)
   useEffect(() => {
-    if (!isOpen || mediaType !== "video" || !src) return;
+    if (!isOpen || mediaType !== "video" || !src || isYouTube) return;
 
     const videoElement = videoRef.current;
     if (!videoElement) return;
@@ -175,14 +188,25 @@ export default function Lightbox({
                 <p className="mt-4 text-xs tracking-widest text-muted uppercase">Buffering Stream...</p>
               </div>
             )}
-            <video
-              ref={videoRef}
-              className="h-full w-full object-contain"
-              playsInline
-              loop
-              autoPlay
-              onClick={togglePlay}
-            />
+            {isYouTube ? (
+              <iframe
+                src={getYouTubeEmbedUrl(src)}
+                title={title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+                className="h-full w-full border-0"
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                className="h-full w-full object-contain"
+                playsInline
+                loop
+                autoPlay
+                onClick={togglePlay}
+              />
+            )}
 
             {/* Custom overlay controls */}
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-xl bg-black/60 backdrop-blur-md px-4 py-2 border border-white/5 opacity-0 hover:opacity-100 transition-opacity duration-300">

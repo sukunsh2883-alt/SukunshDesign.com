@@ -34,7 +34,31 @@ import {
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isHeroReady, setIsHeroReady] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+
+  // Prevent scrolling while initial loading screen is active without shifting scrollbar gutter
+  useEffect(() => {
+    if (!isLoading) {
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+      return;
+    }
+
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+    };
+
+    window.scrollTo(0, 0);
+    window.addEventListener("wheel", preventScroll, { passive: false });
+    window.addEventListener("touchmove", preventScroll, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+    };
+  }, [isLoading]);
 
   // Dynamic portfolio item states for local uploader simulations with localStorage persistence
   const [profileState, setProfileState] = useState<any>(() => {
@@ -73,7 +97,8 @@ export default function App() {
         const savedFilmIds = new Set(savedFilms.map((film: AIFilm) => film.id));
         const missingInitialFilms = initialFilms.filter((film) => !savedFilmIds.has(film.id));
 
-        const merged = [...savedFilms, ...missingInitialFilms];
+        // Keep newly added default initial films at the top
+        const merged = [...missingInitialFilms, ...savedFilms];
         return merged.length > 0 ? merged : initialFilms;
       }
       return initialFilms;
@@ -621,18 +646,20 @@ export default function App() {
 
   return (
     <div className="app page relative min-h-screen overflow-x-clip overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300 touch-pan-y">
-      <AnimatePresence mode="wait">
-        {isLoading ? (
-          <LoadingScreen key="loader" profile={profileState} onComplete={() => setIsLoading(false)} />
-        ) : (
-          <motion.div
-            key="content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="flex flex-col min-h-screen"
-          >
-            {selectedDesignProject ? (
+      {/* Smooth Curtain Loading Overlay: sits cleanly on top and peels up when ready */}
+      <div id="loading-overlay-root">
+        {isLoading && (
+          <LoadingScreen
+            profile={profileState}
+            isHeroReady={isHeroReady}
+            onComplete={() => setIsLoading(false)}
+          />
+        )}
+      </div>
+
+      {/* Main page content - rendered immediately underneath the loading overlay so Hero is 100% ready */}
+      <div className="flex flex-col min-h-screen">
+        {selectedDesignProject ? (
               <ProjectCaseStudy
                 project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
                 allProjects={designs}
@@ -705,6 +732,7 @@ export default function App() {
                       {/* Cinematic hero section */}
                       <Hero
                         profile={profileState}
+                        onHeroLoaded={() => setIsHeroReady(true)}
                         onWatchShowreel={handleLaunchShowreel}
                         onOpenProjects={() => handleNavigate("#projects")}
                         onOpenAIWork={() => handleNavigate("#ai-work")}
@@ -866,9 +894,7 @@ export default function App() {
 
             </>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }

@@ -84,6 +84,38 @@ export interface ExplorationItem {
 // AI Film Works Section List
 export const aiFilms: AIFilm[] = [
   {
+    "id": "ai-film-youtube-pas8molsxwk",
+    "title": "AI Cinematic Film 01",
+    "category": "AI Film / Cinematic Direction",
+    "year": "2026",
+    "description": "High-concept generative cinema exploring narrative framing, atmospheric depth, and fluid motion design.",
+    "thumbnail": "https://img.youtube.com/vi/pas8MolSxWk/maxresdefault.jpg",
+    "videoUrl": "https://www.youtube.com/embed/pas8MolSxWk?si=QI65yKJc2cns4Suk",
+    "tags": [
+      "AI Film",
+      "Cinematic",
+      "Generative Video",
+      "Direction"
+    ],
+    "isAI": true
+  },
+  {
+    "id": "ai-film-youtube-3rxeure-hk",
+    "title": "AI Cinematic Film 02",
+    "category": "AI Film / Visual Narrative",
+    "year": "2026",
+    "description": "AI visual exploration focusing on dynamic lighting, character pacing, and cutting-edge visual composition.",
+    "thumbnail": "https://img.youtube.com/vi/3rXeuRE-_hk/maxresdefault.jpg",
+    "videoUrl": "https://www.youtube.com/embed/3rXeuRE-_hk?si=7EWe3idYqntDK0pq",
+    "tags": [
+      "AI Film",
+      "Narrative",
+      "Visual Story",
+      "AI Motion"
+    ],
+    "isAI": true
+  },
+  {
     "id": "ai-film-rivr-ad",
     "title": "RIVR Ad Film",
     "category": "AI Film / Product Ad",
@@ -447,7 +479,7 @@ export const designProjects: DesignProject[] = [
     "pdfUrl": "",
     "uploadedPdfName": "",
     "behanceEmbedUrl": ""
-  },
+  }
 ];
 
 // Motion Archive Section List - Sukunsh's Real AI Videos Only

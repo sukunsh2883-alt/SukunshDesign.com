@@ -149,6 +149,7 @@ html {
   min-height: 100%;
   width: 100%;
   overflow-x: clip;
+  scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   scroll-padding-top: 72px;
@@ -508,22 +509,71 @@ html.lenis, html.lenis body {
   position: relative;
   transform: translateY(0);
   touch-action: pan-y;
+  transition: none !important;
 }
 
-.hero-svg,
-#Layer_1,
-div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1) {
+/* Mobile Hero SVG (<768px): Centered & responsive */
+@media (max-width: 767px) {
+  .hero-svg,
+  section#home #Layer_1 {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    margin: 0 auto;
+    padding: 0;
+    flex-shrink: 0;
+    touch-action: pan-y;
+  }
+}
+
+/* Fixed single sizing for Hero SVG element - prevents resize shift when loading overlay peels up */
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1),
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1),
+section#home .svg-stage svg#Layer_1,
+section#home .hero-svg {
   display: block;
-  height: 100%;
-  width: auto;
+  width: 1600px;
+  height: auto;
   max-width: none;
-  margin-top: 2px;
-  margin-right: -2px;
-  margin-bottom: -100px;
-  margin-left: 20px;
-  padding: 0;
-  flex-shrink: 0;
-  touch-action: pan-y;
+  margin-top: 100px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  padding-left: 3px;
+  flex-shrink: 1;
+  transition: none !important;
+  animation: none !important;
+}
+
+:root {
+  --svg-scale-multiplier: 1;
+  --svg-y-offset: 0vh;
+  --sukunsh-scale: 1;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --svg-scale-multiplier: 1.28;
+    --svg-y-offset: 2vh;
+    --sukunsh-scale: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --svg-scale-multiplier: 1.38;
+    --svg-y-offset: 3vh;
+    --sukunsh-scale: 1;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --svg-scale-multiplier: 1.48;
+    --svg-y-offset: 4vh;
+    --sukunsh-scale: 1;
+  }
 }
 
 .hero-portfolio-text {
@@ -561,23 +611,29 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-t
   .svg-stage {
     max-height: none;
     height: auto;
-    width: calc(min(220vw, 3200px, calc((100svh - 20px) * 2.1)) * var(--svg-scale-multiplier, 1.35));
+    width: calc(min(220vw, 3200px, calc((100vh - 20px) * 2.1)) * var(--svg-scale-multiplier, 1.35));
     transform: translateY(var(--svg-y-offset, 1vh));
     flex-shrink: 1;
+    transition: none !important;
+    animation: none !important;
   }
 
-  #Layer_1,
-  .hero-svg,
-  div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div#smooth-wrapper:nth-of-type(2) > div#smooth-content:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1) {
+  section#home #Layer_1,
+  section#home .hero-svg,
+  div:nth-of-type(1) > div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div#smooth-wrapper:nth-of-type(2) > div#smooth-content:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1),
+  div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > main:nth-of-type(1) > section#home:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg#Layer_1:nth-of-type(1) {
     display: block;
     width: 1600px;
     height: auto;
     max-width: none;
     margin-top: 100px;
     margin-right: 0px;
+    margin-bottom: 0px;
     margin-left: 0px;
     padding-left: 3px;
     flex-shrink: 1;
+    transition: none !important;
+    animation: none !important;
   }
 }
 
