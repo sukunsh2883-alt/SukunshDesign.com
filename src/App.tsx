@@ -114,9 +114,17 @@ export default function App() {
         const savedDesigns = JSON.parse(saved);
         const validInitialIds = new Set(initialDesigns.map(init => init.id));
 
+        // Map old Samozaa ID directly to WOKO
+        const sanitizedSaved = (Array.isArray(savedDesigns) ? savedDesigns : []).map((d: DesignProject) => {
+          if (d && d.id === "design-illustrative-riso") {
+            const woko = initialDesigns.find(init => init.id === "woko-noodle-brand-identity");
+            return woko || d;
+          }
+          return d;
+        });
+
         // Keep strictly the active curated projects that match initialDesigns
-        const filtered = (Array.isArray(savedDesigns) ? savedDesigns : [])
-          .filter((d: DesignProject) => d && validInitialIds.has(d.id));
+        const filtered = sanitizedSaved.filter((d: DesignProject) => d && validInitialIds.has(d.id));
 
         if (filtered.length === 0) {
           return initialDesigns;
@@ -126,15 +134,15 @@ export default function App() {
           const matchInitial = initialDesigns.find(init => init.id === d.id);
           if (matchInitial) {
             return {
-              ...matchInitial,
               ...d,
+              ...matchInitial,
               title: matchInitial.title,
               type: matchInitial.type,
               description: matchInitial.description,
               image: matchInitial.image,
-              galleryImages: (d.galleryImages && d.galleryImages.length > (matchInitial.galleryImages?.length || 0))
-                ? d.galleryImages
-                : (matchInitial.galleryImages || d.galleryImages),
+              tools: matchInitial.tools,
+              aboutProject: matchInitial.aboutProject,
+              galleryImages: matchInitial.galleryImages || d.galleryImages,
               video: matchInitial.video || d.video
             };
           }
@@ -145,11 +153,19 @@ export default function App() {
         const missingInitial = initialDesigns.filter((d) => !savedDesignIds.has(d.id));
         const finalDesigns = missingInitial.length > 0 ? [...mapped, ...missingInitial] : mapped;
 
+        // Preserve curated index ordering from initialDesigns
+        const initialOrderMap = new Map(initialDesigns.map((init, index) => [init.id, index]));
+        const orderedDesigns = [...finalDesigns].sort((a, b) => {
+          const orderA = initialOrderMap.has(a.id) ? (initialOrderMap.get(a.id) ?? 999) : 999;
+          const orderB = initialOrderMap.has(b.id) ? (initialOrderMap.get(b.id) ?? 999) : 999;
+          return orderA - orderB;
+        });
+
         try {
-          localStorage.setItem("portfolio_designs", JSON.stringify(finalDesigns));
+          localStorage.setItem("portfolio_designs", JSON.stringify(orderedDesigns));
         } catch {}
 
-        return finalDesigns;
+        return orderedDesigns;
       }
       return initialDesigns;
     } catch (e) {
