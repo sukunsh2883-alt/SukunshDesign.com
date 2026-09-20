@@ -33,13 +33,13 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
   ];
 
   return (
-    <section id="contact" data-cursor-tag="Contact" className="w-full bg-white text-neutral-900 border-t border-neutral-200 pt-16 sm:pt-20 md:pt-28 pb-16 sm:pb-20">
+    <section id="contact" data-cursor-tag="Contact" className="w-full bg-white text-neutral-900 border-t border-neutral-200 pt-16 sm:pt-20 md:pt-28 pb-16 sm:pb-20 font-sans">
       <div className="w-full max-w-[1380px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16">
         
         {/* Editorial Heading: LET'S TALK with Circular Rotating Badge directly beside it */}
         <div className="text-left">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-8">
-            <h2 className="font-['Big_Shoulders_Display',sans-serif] text-[clamp(4.25rem,13vw,11.5rem)] font-black uppercase tracking-tight text-neutral-950 leading-[0.85] select-none">
+            <h2 className="text-[clamp(3.75rem,11.5vw,9.5rem)] font-bold uppercase tracking-[-0.035em] text-neutral-950 leading-[0.88] select-none">
               LET'S TALK
             </h2>
 
@@ -73,11 +73,11 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
             <div className="space-y-1.5">
               <a
                 href={`mailto:${email}`}
-                className="block text-neutral-900 hover:underline transition-colors font-mono"
+                className="block text-neutral-900 hover:underline transition-colors font-medium tracking-normal lowercase"
               >
                 {email}
               </a>
-              <p className="text-neutral-500">{location}</p>
+              <p className="text-neutral-500 font-normal">{location}</p>
             </div>
 
             <div className="sm:text-right flex sm:justify-end items-start">
@@ -89,7 +89,7 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
 
           {/* Social Links Row: LinkedIn (Sukunsh Sharma), Behance, Instagram */}
           <div className="mt-10 sm:mt-12 pt-8 border-t border-neutral-200">
-            <p className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-4">Connect & Follow</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-4">Connect & Follow</p>
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               {socialLinks.map((social) => (
                 <a
@@ -100,7 +100,7 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
                   className="group inline-flex items-center gap-2 rounded-[6px] border border-neutral-300 bg-white px-4 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-medium text-neutral-900 shadow-2xs transition-all duration-200 hover:border-neutral-950 hover:bg-neutral-950 hover:text-white active:scale-95"
                 >
                   <span className="font-semibold">{social.name}</span>
-                  <span className="text-[11px] text-neutral-400 group-hover:text-neutral-300 font-mono hidden sm:inline">
+                  <span className="text-[11px] text-neutral-400 group-hover:text-neutral-300 font-normal hidden sm:inline">
                     ({social.handle})
                   </span>
                   <ArrowUpRight className="h-3.5 w-3.5 stroke-[2] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

@@ -302,7 +302,7 @@ export const designProjects: DesignProject[] = [
     "type": "Branding",
     "year": "2026",
     "description": "WOKO is a playful, bold noodle brand built around wok energy, fluid typography, and the joy of getting tangled in flavour.",
-    "image": "https://mir-cdn.behance.net/v1/rendition/project_modules/source/e54b39255966613.6aaf0a4c36b33.jpg",
+    "image": "https://mir-cdn.behance.net/v1/rendition/project_modules/source/cd449c255966613.6aafd2bb2531d.jpg",
     "tools": [
       "Adobe Illustrator",
       "Photoshop",
@@ -313,7 +313,7 @@ export const designProjects: DesignProject[] = [
     "client": "WOKO",
     "aboutProject": "WOKO is a playful, bold noodle brand built around wok energy, fluid typography, and the joy of getting tangled in flavour.",
     "galleryImages": [
-      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/e54b39255966613.6aaf0a4c36b33.jpg",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/cd449c255966613.6aafd2bb2531d.jpg",
       "https://mir-cdn.behance.net/v1/rendition/project_modules/source/68fd51255966613.6aaf0a4c362ca.jpg",
       "https://mir-cdn.behance.net/v1/rendition/project_modules/source/493f3e255966613.6aaf0a4c372c9.png",
       "https://mir-cdn.behance.net/v1/rendition/project_modules/source/4567e4255966613.6aaf0a4c35e7b.jpg",
