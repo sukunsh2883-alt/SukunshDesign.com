@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownLeft, ArrowLeft, ArrowRight, ArrowUpRight, Maximize, Maximize2, Minimize2, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DesignProject, designProjects, aiFilms } from "../portfolioData";
+import { DesignProject, designProjects, AIFilm, aiFilms } from "../portfolioData";
 import ShapeGrid from "./ShapeGrid";
 import CurvedLoop from "./CurvedLoop";
 import LanyardCard from "./LanyardCard";
+import CinematicEditorialScroll from "./CinematicEditorialScroll";
 import EditorialProjects from "./EditorialProjects";
 import LetsTalk from "./LetsTalk";
 
@@ -15,6 +16,7 @@ interface ScrollShowcaseProps {
   onClose?: () => void;
   isInline?: boolean;
   designs?: DesignProject[];
+  films?: AIFilm[];
   onOpenProjects?: () => void;
   onOpenAIWork?: () => void;
   onOpenVideo?: (videoUrl: string, title: string) => void;
@@ -73,6 +75,7 @@ export default function ScrollShowcase({
   onClose,
   isInline = false,
   designs = [],
+  films,
   onOpenProjects,
   onOpenAIWork,
   onOpenVideo,
@@ -92,37 +95,40 @@ export default function ScrollShowcase({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const reelTweenRef = useRef<gsap.core.Tween | null>(null);
 
-  const allProjects = designs && designs.length > 0 ? designs : designProjects;
+  const allProjects = useMemo(() => {
+    const list = designs && designs.length > 0 ? designs : designProjects;
+    const hasNou = list.some((p) => p.id === "nou-visual-identity");
+    if (!hasNou) {
+      const initialNou = designProjects.find((p) => p.id === "nou-visual-identity");
+      if (initialNou) {
+        const wokoIdx = list.findIndex((p) => p.id === "woko-noodle-brand-identity");
+        const next = [...list];
+        if (wokoIdx !== -1) {
+          next.splice(wokoIdx + 1, 0, initialNou);
+        } else {
+          next.push(initialNou);
+        }
+        return next;
+      }
+    }
+    return list;
+  }, [designs]);
 
-  const film = aiFilms[filmIndex % aiFilms.length];
+  const activeFilms = useMemo(() => {
+    const source = films && films.length > 0 ? films : aiFilms;
+    const list = source.filter(
+      (f) => !f.videoUrl.includes("youtube.com") && !f.videoUrl.includes("youtu.be")
+    );
+    return list.length > 0 ? list : source;
+  }, [films]);
+
+  const film = activeFilms[filmIndex % activeFilms.length];
   // 14 items (repeating the 7 user Cloudinary videos twice) for seamless continuous infinite reel stream with zero random images
   const reelItems = Array.from({ length: 14 }, (_, index) => AI_PROMOTION_REEL_VIDEOS[index % AI_PROMOTION_REEL_VIDEOS.length]);
   const portraitImage =
     "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
 
-  const isYouTubeUrl = (url?: string) => {
-    if (!url) return false;
-    return url.includes("youtube.com") || url.includes("youtu.be");
-  };
-
-  const getYouTubeEmbedUrl = (url?: string) => {
-    if (!url) return "";
-    if (url.includes("/embed/")) {
-      // Ensure enablejsapi=1 & autoplay/mute flags if needed
-      const separator = url.includes("?") ? "&" : "?";
-      return `${url}${separator}enablejsapi=1&rel=0`;
-    }
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = match && match[2].length === 11 ? match[2] : null;
-    return videoId ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0` : url;
-  };
-
-  const isCurrentYouTube = isYouTubeUrl(film?.videoUrl);
-  const currentYouTubeEmbedUrl = isCurrentYouTube ? getYouTubeEmbedUrl(film?.videoUrl) : "";
-
   const togglePlayInline = () => {
-    if (isCurrentYouTube) return;
     if (!videoRef.current) return;
     if (videoRef.current.paused) {
       videoRef.current.play();
@@ -189,17 +195,25 @@ export default function ScrollShowcase({
     }
   };
 
-  // Switch film reset & auto-play
+  // Switch film reset & auto-play in "already played way"
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().then(() => {
-        setIsPlayingInline(true);
-      }).catch(() => {
-        setIsPlayingInline(false);
-      });
+    const vid = videoRef.current;
+    if (vid) {
+      vid.defaultMuted = isMuted;
+      vid.muted = isMuted;
+      vid.currentTime = 0;
+      const playPromise = vid.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlayingInline(true))
+          .catch(() => {
+            vid.muted = true;
+            setIsMuted(true);
+            vid.play().then(() => setIsPlayingInline(true)).catch(() => {});
+          });
+      }
     }
-  }, [filmIndex]);
+  }, [filmIndex, isMuted]);
 
   // Sync with native fullscreen changes
   useEffect(() => {
@@ -393,14 +407,14 @@ export default function ScrollShowcase({
   };
 
   return (
-    <div ref={containerRef} className="scroll-showcase w-full bg-white text-[#1d1e1e] select-none">
+    <div ref={containerRef} className="scroll-showcase w-full bg-[#050505] text-white select-none">
       {!isInline && onClose && (
-        <nav className="fixed left-5 right-5 top-5 z-[120] flex items-center justify-between rounded-full border border-neutral-200 bg-white/85 px-5 py-3 backdrop-blur-md">
-          <span className="text-xs font-medium">Sukunsh.</span>
+        <nav className="fixed left-5 right-5 top-5 z-[120] flex items-center justify-between rounded-full border border-neutral-800 bg-neutral-900/85 px-5 py-3 backdrop-blur-md">
+          <span className="text-xs font-medium text-white">Sukunsh.</span>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1.5 text-xs hover:border-neutral-900"
+            className="inline-flex items-center gap-2 rounded-full border border-neutral-700 px-3 py-1.5 text-xs text-white hover:border-white"
           >
             <span>Close</span>
             <X className="h-3.5 w-3.5" />
@@ -408,7 +422,16 @@ export default function ScrollShowcase({
         </nav>
       )}
 
-      {/* PROJECTS SECTION */}
+      {/* 1. CINEMATIC SCROLL EDITORIAL SECTION (REFERENCE-INSPIRED EXPANDING VIDEO) */}
+      <CinematicEditorialScroll
+        line1Text="PLEASE DON'T ASK WHAT"
+        line2Prefix="LAYER 82"
+        line2Suffix="DOES."
+        videoSrc="/design-illustration-loop.mp4"
+        onExploreClick={onOpenDesignShowcase}
+      />
+
+      {/* 2. PROJECTS SECTION */}
       <EditorialProjects
         projects={allProjects}
         onSelectProject={onSelectProject}
@@ -423,16 +446,16 @@ export default function ScrollShowcase({
         id="ai-work"
         ref={aiSectionRef}
         data-cursor-tag="AI Works"
-        className="relative w-full bg-white px-5 py-12 sm:px-8 sm:py-16 md:px-14 md:py-20 border-t border-neutral-100"
+        className="relative w-full bg-[#050505] px-5 py-12 sm:px-8 sm:py-16 md:px-14 md:py-20 border-t border-neutral-850"
       >
         <div className="mx-auto w-full max-w-[1400px]">
           {/* Section Header: AI Film ↙ */}
           <div className="folio-reveal mb-6 sm:mb-8 flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold tracking-[-0.035em] text-neutral-950 leading-none select-none">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
                 AI Film
               </h2>
-              <span className="inline-flex items-center text-neutral-950 transform translate-y-1">
+              <span className="inline-flex items-center text-white transform translate-y-1">
                 <svg
                   className="w-[clamp(1.5rem,3.5vw,2.75rem)] h-[clamp(1.5rem,3.5vw,2.75rem)] stroke-current stroke-[2.2] fill-none"
                   viewBox="0 0 24 24"
@@ -443,10 +466,10 @@ export default function ScrollShowcase({
             </div>
 
             {/* Film count index indicator */}
-            <div className="hidden sm:flex items-center gap-2 text-xs font-mono tracking-widest text-neutral-500 uppercase">
-              <span className="text-neutral-950 font-bold">0{(filmIndex % aiFilms.length) + 1}</span>
+            <div className="hidden sm:flex items-center gap-2 text-xs font-mono tracking-widest text-neutral-400 uppercase">
+              <span className="text-white font-bold">0{(filmIndex % activeFilms.length) + 1}</span>
               <span>/</span>
-              <span>0{aiFilms.length}</span>
+              <span>0{activeFilms.length}</span>
             </div>
           </div>
 
@@ -462,53 +485,38 @@ export default function ScrollShowcase({
             <div
               ref={videoFrameRef}
               onClick={togglePlayInline}
-              role={isCurrentYouTube ? undefined : "button"}
-              tabIndex={isCurrentYouTube ? undefined : 0}
-              onKeyDown={(e) => !isCurrentYouTube && (e.key === "Enter" || e.key === " ") && togglePlayInline()}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && togglePlayInline()}
               style={{
                 willChange: "transform",
                 transformOrigin: "center center",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
               }}
-              className={`group relative block w-full bg-black ${isCurrentYouTube ? "" : "cursor-pointer"} text-left outline-none ${
+              className={`group relative block w-full bg-black cursor-pointer text-left outline-none ${
                 isFullscreen
                   ? "h-full w-full flex items-center justify-center rounded-none shadow-none"
-                  : "aspect-[16/8] sm:aspect-[16/7.5] md:aspect-[2.2/1] min-h-[260px] sm:min-h-[380px] md:min-h-[480px] lg:min-h-[540px] overflow-hidden rounded-[8px] sm:rounded-[12px] md:rounded-[16px] shadow-md hover:shadow-xl transition-shadow duration-300 focus-visible:ring-2 focus-visible:ring-neutral-950"
+                  : "aspect-[16/8] sm:aspect-[16/7.5] md:aspect-[2.2/1] min-h-[260px] sm:min-h-[380px] md:min-h-[480px] lg:min-h-[540px] overflow-hidden rounded-[8px] sm:rounded-[12px] md:rounded-[16px] shadow-md hover:shadow-xl transition-shadow duration-300 focus-visible:ring-2 focus-visible:ring-white"
               }`}
             >
-              {isCurrentYouTube ? (
-                <iframe
-                  key={film?.id}
-                  src={currentYouTubeEmbedUrl}
-                  title={film?.title || "AI Film"}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  className={`w-full h-full border-0 ${
-                    isFullscreen
-                      ? "max-h-screen object-contain"
-                      : "object-cover"
-                  }`}
-                />
-              ) : (
-                <video
-                  ref={videoRef}
-                  key={film?.id}
-                  src={film?.videoUrl}
-                  poster={film?.thumbnail}
-                  muted={isMuted}
-                  loop
-                  playsInline
-                  autoPlay
-                  preload="auto"
-                  className={`w-full transition-opacity group-hover:opacity-95 ${
-                    isFullscreen
-                      ? "h-full max-h-screen object-contain bg-black"
-                      : "h-full object-cover opacity-100"
-                  }`}
-                />
-              )}
+              {/* Native Continuous Auto-Playing Video Screen (No YouTube branding/logo) */}
+              <video
+                ref={videoRef}
+                key={film?.id}
+                src={film?.videoUrl}
+                poster={film?.thumbnail}
+                muted={isMuted}
+                loop
+                playsInline
+                autoPlay
+                preload="auto"
+                className={`w-full transition-opacity group-hover:opacity-95 ${
+                  isFullscreen
+                    ? "h-full max-h-screen object-contain bg-black"
+                    : "h-full object-cover opacity-100"
+                }`}
+              />
 
               {/* Top Title Overlay in Fullscreen */}
               {isFullscreen && film && (
@@ -534,40 +542,36 @@ export default function ScrollShowcase({
               )}
 
               {/* Center Play/Pause Indicator for HTML5 video */}
-              {!isCurrentYouTube && (
-                <div
-                  className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
-                    isPlayingInline ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-                  }`}
-                >
-                  <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur-md text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
-                    {isPlayingInline ? (
-                      <Pause className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white" />
-                    ) : (
-                      <Play className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white ml-1" />
-                    )}
-                  </span>
-                </div>
-              )}
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
+                  isPlayingInline ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                }`}
+              >
+                <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur-md text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
+                  {isPlayingInline ? (
+                    <Pause className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white" />
+                  ) : (
+                    <Play className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white ml-1" />
+                  )}
+                </span>
+              </div>
 
-              {/* Bottom Right Controls: Fullscreen button & Mute (for HTML5 video) */}
+              {/* Bottom Right Controls: Fullscreen button & Mute */}
               <div
                 className={`absolute z-30 flex items-center gap-2.5 ${
                   isFullscreen ? "bottom-6 right-6" : "bottom-4 right-4"
                 }`}
                 onClick={(e) => e.stopPropagation()}
               >
-                {!isCurrentYouTube && (
-                  <button
-                    type="button"
-                    onClick={toggleMute}
-                    aria-label={isMuted ? "Unmute audio (m)" : "Mute audio (m)"}
-                    title={isMuted ? "Unmute (m)" : "Mute (m)"}
-                    className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
-                  >
-                    {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Unmute audio (m)" : "Mute audio (m)"}
+                  title={isMuted ? "Unmute (m)" : "Mute (m)"}
+                  className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
+                >
+                  {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </button>
 
                 <button
                   type="button"
@@ -585,10 +589,10 @@ export default function ScrollShowcase({
           {/* Bottom Details Row with Previous / Next Controls & Good Intention Captions */}
           <div className="mt-5 sm:mt-7 flex w-full flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="w-full max-w-[460px]">
-              <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-neutral-950">
+              <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-white">
                 {film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}
               </h3>
-              <p className="mt-1.5 text-sm sm:text-base leading-snug text-neutral-700 font-normal">
+              <p className="mt-1.5 text-sm sm:text-base leading-snug text-neutral-300 font-normal">
                 {film?.description || "High-fidelity AI generated cinematography focusing on lighting, fluid physics, and visual storytelling."}
               </p>
 
@@ -596,19 +600,19 @@ export default function ScrollShowcase({
               <div className="mt-4 flex items-center gap-4">
                 <button
                   type="button"
-                  onClick={() => setFilmIndex((value) => (value - 1 + aiFilms.length) % aiFilms.length)}
-                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-800 hover:text-neutral-950 transition-colors cursor-pointer group"
+                  onClick={() => setFilmIndex((value) => (value - 1 + activeFilms.length) % activeFilms.length)}
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-300 hover:text-white transition-colors cursor-pointer group"
                 >
                   <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-                  <span className="border-b border-neutral-300 group-hover:border-neutral-950 pb-0.5">Previous film</span>
+                  <span className="border-b border-neutral-700 group-hover:border-white pb-0.5">Previous film</span>
                 </button>
-                <span className="text-neutral-300 font-mono text-xs">/</span>
+                <span className="text-neutral-600 font-mono text-xs">/</span>
                 <button
                   type="button"
-                  onClick={() => setFilmIndex((value) => (value + 1) % aiFilms.length)}
-                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-800 hover:text-neutral-950 transition-colors cursor-pointer group"
+                  onClick={() => setFilmIndex((value) => (value + 1) % activeFilms.length)}
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-300 hover:text-white transition-colors cursor-pointer group"
                 >
-                  <span className="border-b border-neutral-300 group-hover:border-neutral-950 pb-0.5">Next film</span>
+                  <span className="border-b border-neutral-700 group-hover:border-white pb-0.5">Next film</span>
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                 </button>
               </div>
@@ -618,7 +622,7 @@ export default function ScrollShowcase({
               <button
                 type="button"
                 onClick={onOpenAIWork}
-                className="inline-flex items-center gap-2.5 rounded-full border border-neutral-900 bg-white px-7 sm:px-9 py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-normal text-neutral-950 hover:bg-neutral-950 hover:text-white active:scale-95 transition-all duration-200 cursor-pointer select-none shadow-xs group"
+                className="inline-flex items-center gap-2.5 rounded-full border border-white/30 bg-transparent px-7 sm:px-9 py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-normal text-white hover:bg-white hover:text-black active:scale-95 transition-all duration-200 cursor-pointer select-none shadow-xs group"
               >
                 <span>See all AI Films</span>
                 <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
@@ -629,16 +633,16 @@ export default function ScrollShowcase({
       </section>
 
       {/* AI Promotion Reels: Straight, Non-floating, Seamlessly Attached moving horizontally */}
-      <section id="ai-reels" data-cursor-tag="AI Works" className="relative min-h-[65vh] overflow-hidden bg-white px-5 py-14 sm:px-8 md:px-14 md:py-20 border-t border-neutral-100">
+      <section id="ai-reels" data-cursor-tag="AI Works" className="relative min-h-[65vh] overflow-hidden bg-[#050505] px-5 py-14 sm:px-8 md:px-14 md:py-20 border-t border-neutral-850">
         <div className="folio-reveal grid grid-cols-1 gap-8 md:grid-cols-[0.55fr_1fr] max-w-[1240px] mx-auto">
           <div>
-            <div className="h-px w-28 bg-neutral-700" />
-            <div className="mt-2 flex items-center gap-1.5 text-2xl font-normal text-[#1f1f1e]">
+            <div className="h-px w-28 bg-neutral-600" />
+            <div className="mt-2 flex items-center gap-1.5 text-2xl font-normal text-white">
               <span>AI Promotion Reel</span>
               <ArrowDownLeft className="h-4 w-4" />
             </div>
           </div>
-          <p className="max-w-[260px] text-[13px] leading-tight text-neutral-600">
+          <p className="max-w-[260px] text-[13px] leading-tight text-neutral-400">
             Watch more AI-powered brand promotion reels.
           </p>
         </div>
@@ -651,7 +655,7 @@ export default function ScrollShowcase({
                 key={`${item.id}-${index}`}
                 type="button"
                 onClick={() => onOpenVideo?.(item.videoUrl, item.title)}
-                className="group relative h-[280px] w-[160px] sm:h-[320px] sm:w-[185px] shrink-0 overflow-hidden rounded-xl bg-neutral-100 border border-neutral-200 transition-all duration-300 hover:border-neutral-400 hover:scale-[1.02]"
+                className="group relative h-[280px] w-[160px] sm:h-[320px] sm:w-[185px] shrink-0 overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 transition-all duration-300 hover:border-neutral-600 hover:scale-[1.02]"
               >
                 <video
                   src={item.videoUrl}
@@ -664,8 +668,8 @@ export default function ScrollShowcase({
                   className="h-full w-full object-cover opacity-95 transition-opacity group-hover:opacity-100"
                 />
                 <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-400/80 bg-white/40 backdrop-blur-xs transition-transform group-hover:scale-110">
-                    <Play className="h-4 w-4 fill-neutral-800 text-neutral-800" />
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/50 backdrop-blur-xs transition-transform group-hover:scale-110">
+                    <Play className="h-4 w-4 fill-white text-white" />
                   </span>
                 </span>
               </button>
@@ -675,14 +679,14 @@ export default function ScrollShowcase({
       </section>
 
       {/* 4. ABOUT ME SECTION (Placed after AI Reels as requested) */}
-      <section id="about" className="relative min-h-screen overflow-visible border-t border-neutral-100 bg-white px-5 py-16 sm:px-8 md:px-14 md:py-24 z-20">
+      <section id="about" className="relative min-h-screen overflow-visible border-t border-neutral-850 bg-[#050505] text-white px-5 py-16 sm:px-8 md:px-14 md:py-24 z-20">
         <div className="absolute inset-x-6 top-14 bottom-14 z-0 hidden md:block overflow-hidden pointer-events-none">
           <ShapeGrid
             direction="diagonal"
             speed={0.35}
             squareSize={34}
-            borderColor="rgba(0, 0, 0, 0.05)"
-            hoverFillColor="rgba(0, 0, 0, 0.07)"
+            borderColor="rgba(255, 255, 255, 0.04)"
+            hoverFillColor="rgba(255, 255, 255, 0.06)"
             shape="square"
             hoverTrailAmount={8}
           />
@@ -690,18 +694,18 @@ export default function ScrollShowcase({
         <div className="relative z-10 mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="folio-reveal flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12 lg:col-span-7">
             <div>
-              <div className="mb-2.5 h-[1.5px] w-12 bg-neutral-900" />
-              <div className="inline-flex items-center gap-1 text-xs font-medium tracking-wide text-neutral-900">
+              <div className="mb-2.5 h-[1.5px] w-12 bg-white" />
+              <div className="inline-flex items-center gap-1 text-xs font-medium tracking-wide text-white">
                 <span>About me</span>
-                <ArrowUpRight className="h-3.5 w-3.5 stroke-[2] text-neutral-900" />
+                <ArrowUpRight className="h-3.5 w-3.5 stroke-[2] text-white" />
               </div>
             </div>
-            <h2 className="select-none text-4xl font-normal leading-[1.06] tracking-normal text-neutral-950 sm:text-6xl md:text-7xl lg:text-[76px]">
+            <h2 className="select-none text-4xl font-normal leading-[1.06] tracking-normal text-white sm:text-6xl md:text-7xl lg:text-[76px]">
               I am a Delhi based
               <br />
               visual designer.
             </h2>
-            <p className="max-w-xl text-base font-normal leading-relaxed text-neutral-600 sm:text-lg md:text-[21px]">
+            <p className="max-w-xl text-base font-normal leading-relaxed text-neutral-300 sm:text-lg md:text-[21px]">
               Blending fine art sensibilities with contemporary design,
               <br className="hidden sm:inline" />
               crafting evocative visual stories through motion,
@@ -712,43 +716,43 @@ export default function ScrollShowcase({
             <div className="pt-2">
               <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-stretch sm:gap-0">
                 <div className="flex-1 sm:pr-8 md:pr-10">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-900 sm:text-xs">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white sm:text-xs">
                     EDUCATION
                   </div>
-                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-neutral-900" />
+                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-white" />
                   <div className="space-y-5">
                     <div>
-                      <div className="text-sm font-medium leading-snug text-neutral-900 sm:text-[15px]">
+                      <div className="text-sm font-medium leading-snug text-white sm:text-[15px]">
                         M.Des - IDC School of Design
                       </div>
-                      <div className="mt-0.5 text-xs font-normal text-neutral-500 sm:text-sm">
+                      <div className="mt-0.5 text-xs font-normal text-neutral-400 sm:text-sm">
                         IIT Bombay
                       </div>
                     </div>
-                    <div className="h-px w-full bg-neutral-200/80" />
+                    <div className="h-px w-full bg-neutral-800" />
                     <div>
-                      <div className="text-sm font-medium leading-snug text-neutral-900 sm:text-[15px]">
+                      <div className="text-sm font-medium leading-snug text-white sm:text-[15px]">
                         BFA, Visual Communication
                       </div>
-                      <div className="mt-0.5 text-xs font-normal text-neutral-500 sm:text-sm">
+                      <div className="mt-0.5 text-xs font-normal text-neutral-400 sm:text-sm">
                         College of Art, Delhi
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="relative hidden w-px shrink-0 flex-col items-center justify-center self-stretch bg-neutral-200 sm:flex">
-                  <div className="absolute top-1/2 -left-[2.5px] h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-neutral-900" />
+                <div className="relative hidden w-px shrink-0 flex-col items-center justify-center self-stretch bg-neutral-800 sm:flex">
+                  <div className="absolute top-1/2 -left-[2.5px] h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-white" />
                 </div>
                 <div className="flex-1 sm:pl-8 md:pl-10">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-900 sm:text-xs">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white sm:text-xs">
                     EXPERIENCE
                   </div>
-                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-neutral-900" />
+                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-white" />
                   <div>
-                    <div className="text-sm font-medium leading-snug text-neutral-900 sm:text-[15px]">
+                    <div className="text-sm font-medium leading-snug text-white sm:text-[15px]">
                       Visual Designer
                     </div>
-                    <div className="mt-0.5 text-xs font-normal text-neutral-500 sm:text-sm">
+                    <div className="mt-0.5 text-xs font-normal text-neutral-400 sm:text-sm">
                       ShareChat
                     </div>
                   </div>
@@ -772,7 +776,7 @@ export default function ScrollShowcase({
             curveAmount={0}
             direction="left"
             interactive={true}
-            className="fill-neutral-950 font-sans text-[32px] font-bold uppercase tracking-[0.18em]"
+            className="fill-white font-sans text-[32px] font-bold uppercase tracking-[0.18em]"
           />
         </div>
       </section>

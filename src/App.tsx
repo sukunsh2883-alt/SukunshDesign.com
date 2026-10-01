@@ -92,7 +92,9 @@ export default function App() {
           (film: AIFilm) =>
             film &&
             !film.videoUrl?.includes("mixkit.co") &&
-            !film.thumbnail?.includes("unsplash.com")
+            !film.thumbnail?.includes("unsplash.com") &&
+            !film.videoUrl?.includes("youtube.com") &&
+            !film.videoUrl?.includes("youtu.be")
         );
         const savedFilmIds = new Set(savedFilms.map((film: AIFilm) => film.id));
         const missingInitialFilms = initialFilms.filter((film) => !savedFilmIds.has(film.id));
@@ -114,11 +116,15 @@ export default function App() {
         const savedDesigns = JSON.parse(saved);
         const validInitialIds = new Set(initialDesigns.map(init => init.id));
 
-        // Map old Samozaa ID directly to WOKO
+        // Map old Samozaa ID directly to WOKO and ensure curated brand projects take fresh data
         const sanitizedSaved = (Array.isArray(savedDesigns) ? savedDesigns : []).map((d: DesignProject) => {
           if (d && d.id === "design-illustrative-riso") {
             const woko = initialDesigns.find(init => init.id === "woko-noodle-brand-identity");
             return woko || d;
+          }
+          if (d && (d.id === "woko-noodle-brand-identity" || d.id === "nou-visual-identity")) {
+            const fresh = initialDesigns.find(init => init.id === d.id);
+            return fresh || d;
           }
           return d;
         });
@@ -272,7 +278,7 @@ export default function App() {
       const match = window.location.pathname.match(/^\/project\/(.+)$/);
       if (match) {
         const projectId = decodeURIComponent(match[1]);
-        const matchedProject = designs.find((item) => item.id === projectId);
+        const matchedProject = designs.find((item) => item.id === projectId) || initialDesigns.find((item) => item.id === projectId);
         if (matchedProject) {
           setSelectedDesignProject(matchedProject);
           setIsProjectsExplorerOpen(false);
@@ -307,7 +313,7 @@ export default function App() {
     if (!match) return;
 
     const projectId = decodeURIComponent(match[1]);
-    const matchedProject = designs.find((item) => item.id === projectId);
+    const matchedProject = designs.find((item) => item.id === projectId) || initialDesigns.find((item) => item.id === projectId);
     if (matchedProject) {
       setSelectedDesignProject(matchedProject);
       setIsProjectsExplorerOpen(false);
@@ -319,6 +325,42 @@ export default function App() {
       setIsDesignShowcaseOpen(false);
     }
   }, [designs]);
+
+  // Synchronize newly curated projects on mount to ensure fresh state
+  useEffect(() => {
+    setDesigns((current) => {
+      const initialNou = initialDesigns.find((d) => d.id === "nou-visual-identity");
+      if (!initialNou) return current;
+
+      const nouIndex = current.findIndex((d) => d.id === "nou-visual-identity");
+      const next = [...current];
+
+      if (nouIndex === -1) {
+        const wokoIndex = current.findIndex((d) => d.id === "woko-noodle-brand-identity");
+        if (wokoIndex !== -1) {
+          next.splice(wokoIndex + 1, 0, initialNou);
+        } else {
+          next.push(initialNou);
+        }
+      } else {
+        next[nouIndex] = {
+          ...next[nouIndex],
+          ...initialNou,
+          image: initialNou.image,
+          galleryImages: initialNou.galleryImages,
+          title: initialNou.title,
+          description: initialNou.description,
+          type: initialNou.type,
+        };
+      }
+
+      try {
+        localStorage.setItem("portfolio_designs", JSON.stringify(next));
+      } catch {}
+
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (isLoading) return;
@@ -730,6 +772,7 @@ export default function App() {
                       onOpenAIWork={() => openPortal("ai-work")}
                       onOpenDesignShowcase={() => openPortal("design-showcase")}
                       designs={designs}
+                      films={films}
                       profile={profileState}
                       onSelectProject={handleSelectProject}
                       onOpenVideo={(videoUrl, title) => {
@@ -761,6 +804,7 @@ export default function App() {
                         <ScrollShowcase
                           isInline={true}
                           designs={designs}
+                          films={films}
                           profile={profileState}
                           onSelectProject={handleSelectProject}
                           onOpenDesignShowcase={() => openPortal("design-showcase")}

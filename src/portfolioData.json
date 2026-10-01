@@ -1,38 +1,6 @@
 {
-  "savedAt": "2026-09-20T12:48:36.496Z",
+  "savedAt": "2026-10-01T10:17:50.154Z",
   "aiFilms": [
-    {
-      "id": "ai-film-youtube-pas8molsxwk",
-      "title": "AI Cinematic Film 01",
-      "category": "AI Film / Cinematic Direction",
-      "year": "2026",
-      "description": "High-concept generative cinema exploring narrative framing, atmospheric depth, and fluid motion design.",
-      "thumbnail": "https://img.youtube.com/vi/pas8MolSxWk/maxresdefault.jpg",
-      "videoUrl": "https://www.youtube.com/embed/pas8MolSxWk?si=QI65yKJc2cns4Suk",
-      "tags": [
-        "AI Film",
-        "Cinematic",
-        "Generative Video",
-        "Direction"
-      ],
-      "isAI": true
-    },
-    {
-      "id": "ai-film-youtube-3rxeure-hk",
-      "title": "AI Cinematic Film 02",
-      "category": "AI Film / Visual Narrative",
-      "year": "2026",
-      "description": "AI visual exploration focusing on dynamic lighting, character pacing, and cutting-edge visual composition.",
-      "thumbnail": "https://img.youtube.com/vi/3rXeuRE-_hk/maxresdefault.jpg",
-      "videoUrl": "https://www.youtube.com/embed/3rXeuRE-_hk?si=7EWe3idYqntDK0pq",
-      "tags": [
-        "AI Film",
-        "Narrative",
-        "Visual Story",
-        "AI Motion"
-      ],
-      "isAI": true
-    },
     {
       "id": "ai-film-rivr-ad",
       "title": "RIVR Ad Film",
@@ -244,6 +212,41 @@
         "https://mir-cdn.behance.net/v1/rendition/project_modules/source/f9e9d2255966613.6aaf0a4c38df7.jpg",
         "https://mir-cdn.behance.net/v1/rendition/project_modules/source/147eed255966613.6aaf0bbcde0a4.png",
         "https://mir-cdn.behance.net/v1/rendition/project_modules/source/3de424255966613.6aaf0a4c395de.jpg"
+      ],
+      "isAI": false,
+      "pdfUrl": "",
+      "uploadedPdfName": "",
+      "behanceEmbedUrl": ""
+    },
+    {
+      "id": "nou-visual-identity",
+      "title": "NOU — Visual Identity",
+      "type": "Visual Identity",
+      "year": "2026",
+      "description": "NOU — Visual identity. Brand identity and design system exploring modular typography and contemporary branding.",
+      "image": "https://mir-cdn.behance.net/v1/rendition/project_modules/source/c826e1256423999.6abbf48261e8e.png",
+      "tools": [
+        "Adobe Illustrator",
+        "Photoshop",
+        "Figma",
+        "Brand Guidelines"
+      ],
+      "link": "https://www.behance.net/gallery/256423999/NOU-Visual-Identity",
+      "client": "NOU",
+      "aboutProject": "Comprehensive visual identity and brand design system for NOU, exploring modular forms, contemporary typography, and versatile brand application across print and digital media.",
+      "galleryImages": [
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/c826e1256423999.6abbf48261e8e.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/7d3f6f256423999.6abbee93c3c4d.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/609225256423999.6abbee93c0af1.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/517a09256423999.6abbefee20912.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/0186ad256423999.6abbef8399c26.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/67f71c256423999.6abbee93c26ee.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/ab7ee0256423999.6abbee93c51cb.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/2be8c1256423999.6abbee93c58aa.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/d290a4256423999.6abbee93c4209.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/d88f97256423999.6abbee93c5f62.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/c3b6dd256423999.6abbee93c4a2e.png",
+        "https://mir-cdn.behance.net/v1/rendition/project_modules/source/75e34a256423999.6abbee93c34bb.png"
       ],
       "isAI": false,
       "pdfUrl": "",

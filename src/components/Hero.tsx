@@ -96,10 +96,10 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         if (textNode) {
           textNode.textContent = "PORTFOLIO";
           textNode.setAttribute("class", "st1 st2 st3 hero-portfolio-text");
-          textNode.setAttribute("letter-spacing", "0.015em");
+          textNode.setAttribute("letter-spacing", "-0.025em");
           textNode.setAttribute("text-anchor", "middle");
           textNode.setAttribute("x", "864.1");
-          textNode.setAttribute("y", "326.6");
+          textNode.setAttribute("y", "350");
           textNode.removeAttribute("transform");
         }
       }

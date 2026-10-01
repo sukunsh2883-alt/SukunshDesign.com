@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "motion/react";
+import CreativeLoadingArtwork from "./CreativeLoadingArtwork";
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -53,11 +54,11 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [finishLoading]);
 
-  // Smooth, snappy progress animation (~1.2s)
+  // Smooth progress animation timed to allow elements to pop in rhythmically (~1.9s)
   useEffect(() => {
     let animationFrame: number;
     let fallbackTimer: NodeJS.Timeout | null = null;
-    const duration = 1200;
+    const duration = 1900;
 
     const updateProgress = () => {
       const elapsed = Date.now() - startTimeRef.current;
@@ -92,49 +93,73 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
   }, [finishLoading]);
 
   return (
-    <motion.div
+    <div
       ref={containerRef}
       id="custom-loading-screen"
-      initial={{ y: 0 }}
-      animate={isExiting ? { y: "-100%" } : { y: 0 }}
-      transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
-      onAnimationComplete={() => {
-        if (isExiting) {
-          onComplete();
-        }
-      }}
-      className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#FAFAF9] text-neutral-900 select-none px-6 cursor-pointer touch-none"
+      className="fixed inset-0 z-[99999] overflow-hidden select-none cursor-pointer touch-none pointer-events-auto"
       onClick={finishLoading}
       role="progressbar"
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
     >
-      {/* Central Minimal Loading Content */}
-      <div className="flex flex-col items-center text-center max-w-xs w-full">
-        {/* Clean Name */}
-        <h1
-          className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-neutral-950 mb-4"
-          style={{
-            fontFamily: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-          }}
-        >
-          {brandName}
-        </h1>
+      {/* TOP GATE PANEL: Slides vertically up to -100% */}
+      <motion.div
+        initial={{ y: "0%" }}
+        animate={isExiting ? { y: "-100%" } : { y: "0%" }}
+        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+        className="absolute top-0 left-0 w-full h-1/2 bg-white z-20"
+      />
 
-        {/* Minimal Progress Bar */}
-        <div className="w-36 sm:w-44 h-[2px] bg-neutral-200/80 rounded-full overflow-hidden mb-3">
-          <div
-            className="h-full bg-neutral-900 rounded-full transition-[width] duration-150 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+      {/* BOTTOM GATE PANEL: Slides vertically down to 100% */}
+      <motion.div
+        initial={{ y: "0%" }}
+        animate={isExiting ? { y: "100%" } : { y: "0%" }}
+        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+        onAnimationComplete={() => {
+          if (isExiting) {
+            onComplete();
+          }
+        }}
+        className="absolute bottom-0 left-0 w-full h-1/2 bg-white z-20"
+      />
+
+      {/* Central Minimal Loading Content: Creative elements pop up one-by-one */}
+      <motion.div
+        initial={{ opacity: 1, scale: 1 }}
+        animate={isExiting ? { opacity: 0, scale: 0.96 } : { opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="absolute inset-0 z-30 flex flex-col items-center justify-center px-4 sm:px-6 pointer-events-none"
+      >
+        {/* Playful Pop-up Artwork Cluster */}
+        <CreativeLoadingArtwork progress={progress} isExiting={isExiting} />
+
+        <div className="flex flex-col items-center text-center max-w-xs w-full mt-2">
+          {/* Clean Name */}
+          <h1
+            className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-neutral-950 mb-3"
+            style={{
+              fontFamily: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            }}
+          >
+            {brandName}
+            <span className="text-[#FF6A00]">.</span>
+          </h1>
+
+          {/* Minimal Progress Bar */}
+          <div className="w-36 sm:w-48 h-[2px] bg-neutral-200/90 rounded-full overflow-hidden mb-2.5">
+            <div
+              className="h-full bg-neutral-950 rounded-full transition-[width] duration-150 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          {/* Numeric Counter */}
+          <span className="font-mono text-xs text-neutral-500 tabular-nums tracking-widest">
+            {progress}%
+          </span>
         </div>
-
-        {/* Numeric Counter */}
-        <span className="font-mono text-xs text-neutral-400 tabular-nums tracking-wider">
-          {progress}%
-        </span>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
