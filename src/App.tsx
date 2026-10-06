@@ -694,7 +694,7 @@ export default function App() {
   };
 
   return (
-    <div className="app page relative min-h-screen overflow-x-clip overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300 touch-pan-y">
+    <div className="app page relative min-h-screen overflow-x-clip overflow-y-visible bg-[#050505] text-white transition-colors duration-300 touch-pan-y">
       {/* Site-wide interactive precision cursor with circular project hover */}
       <UserCursor />
 
