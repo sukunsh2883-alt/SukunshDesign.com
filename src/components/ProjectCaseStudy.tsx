@@ -155,35 +155,35 @@ export default function ProjectCaseStudy({
 
               {/* Title & Details */}
               <div className="max-w-[360px] pb-4">
-                <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.24em] text-neutral-400">
+                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-400">
                   Project {displayIndex}
                 </p>
-                <h1 className="text-[clamp(2.4rem,5vw,5.5rem)] font-sans font-medium leading-[0.92] tracking-normal text-neutral-950">
+                <h1 className="text-2xl sm:text-3xl font-sans font-medium leading-snug tracking-tight text-neutral-950">
                   {project.title}
                 </h1>
-                <p className="mt-6 border-b border-neutral-300 pb-5 text-[14px] leading-relaxed text-neutral-600">
+                <p className="mt-3 text-[13px] sm:text-[14px] leading-relaxed text-neutral-500 font-normal">
                   {project.description || project.aboutProject}
                 </p>
 
-                <div className="mt-5 grid grid-cols-2 gap-5 text-left">
+                <div className="mt-5 flex items-center gap-6 text-left">
                   <div>
                     <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Category</p>
-                    <p className="mt-1 text-[12px] font-medium text-neutral-950">{project.type}</p>
+                    <p className="mt-0.5 text-[12px] font-medium text-neutral-950">{project.type}</p>
                   </div>
                   <div>
                     <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Year</p>
-                    <p className="mt-1 text-[12px] font-medium text-neutral-950">{project.year}</p>
+                    <p className="mt-0.5 text-[12px] font-medium text-neutral-950">{project.year}</p>
                   </div>
                 </div>
 
-                <div className="mt-8 flex flex-wrap items-center gap-3">
+                <div className="mt-6 flex flex-wrap items-center gap-3">
                   <button
                     type="button"
                     onClick={scrollToGallery}
-                    className="inline-flex items-center gap-2 text-[12px] font-medium text-neutral-950 hover:text-[#FF6A00] transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-medium text-neutral-950 hover:text-neutral-600 transition-colors cursor-pointer"
                   >
-                    <span>Scroll to Gallery</span>
-                    <ChevronDown className="h-4 w-4" />
+                    <span>View Work</span>
+                    <ChevronDown className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>

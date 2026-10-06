@@ -35,6 +35,7 @@ export interface DesignProject {
   pdfUrl?: string;
   uploadedPdfName?: string;
   behanceEmbedUrl?: string;
+  tags?: string[];
 }
 
 export interface VideoCard {
@@ -239,25 +240,48 @@ export const aiFilms: AIFilm[] = [
 // Selected Design Works List
 export const designProjects: DesignProject[] = [
   {
-    "id": "AI film",
-    "title": "Ai short Film",
-    "type": "Film",
+    "id": "claro-ai-information-intelligence",
+    "title": "CLARO",
+    "type": "Branding / UI/UX",
     "year": "2026",
-    "description": "Academic photo communication study capturing extreme body elasticity, suspension leaps, and somatic contour lighting.",
-    "image": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216477/MacBook_Pro_16__-_1_bsd6qe.png",
+    "description": "AI information intelligence platform and design system.",
+    "image": "https://mir-cdn.behance.net/v1/rendition/project_modules/source/35292f256676601.6ac3aa0a40890.png",
     "tools": [
-      "Studio Spotlight Rigging",
-      "Motion Capture",
-      "Contrast Optimization",
-      "Academic Layouts"
+      "Figma",
+      "Adobe Illustrator",
+      "Adobe Photoshop",
+      "After Effects",
+      "AI Tools"
     ],
-    "link": "mailto:Sukunsh2883@gmail.com",
-    "client": "College of Art, Delhi University",
-    "aboutProject": "Action photography is an incredibly exciting genre to shoot. Under the guidance of Mr. Parveen Kumar, the study explores body contouring using high-density side lighting and extreme raw athleticism. It illustrates suspension, equilibrium, and spatial trajectory transitions in darkness.",
+    "link": "https://www.behance.net/gallery/256676601/CLARO-AI-Information-Intelligence",
+    "client": "CLARO",
+    "aboutProject": "AI information intelligence platform and design system.",
     "galleryImages": [
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216477/MacBook_Pro_16__-_1_bsd6qe.png",
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
-      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png"
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/35292f256676601.6ac3aa0a40890.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/866e28256676601.6ac3aa0a40013.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/933cdb256676601.6ac3a8874f8f7.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/6b047b256676601.6ac3a88750f84.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/6223c6256676601.6ac3b3b7a4292.jpg",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/e355a3256676601.6ac3a8874f539.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/7872a8256676601.6ac3a88750ade.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/3bb793256676601.6ac3a8875021c.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/77e49c256676601.6ac3a8875068e.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/6958e1256676601.6ac3a887518a7.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/8414a0256676601.6ac3aa0a40890.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/ed4943256676601.6ac3a8874fda1.png",
+      "https://mir-cdn.behance.net/v1/rendition/project_modules/source/75a17d256676601.6ac3a8875141d.png"
+    ],
+    "tags": [
+      "AI",
+      "Branding",
+      "Visual Identity",
+      "Information Design",
+      "UX/UI",
+      "Data Visualization",
+      "SaaS",
+      "Technology",
+      "Research",
+      "Creative Technology"
     ],
     "isAI": true,
     "pdfUrl": "",
@@ -333,6 +357,32 @@ export const designProjects: DesignProject[] = [
       "https://mir-cdn.behance.net/v1/rendition/project_modules/source/75e34a256423999.6abbee93c34bb.png"
     ],
     "isAI": false,
+    "pdfUrl": "",
+    "uploadedPdfName": "",
+    "behanceEmbedUrl": ""
+  },
+  {
+    "id": "AI film",
+    "title": "Ai short Film",
+    "type": "Film",
+    "year": "2026",
+    "description": "Academic photo communication study capturing extreme body elasticity, suspension leaps, and somatic contour lighting.",
+    "image": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216477/MacBook_Pro_16__-_1_bsd6qe.png",
+    "tools": [
+      "Studio Spotlight Rigging",
+      "Motion Capture",
+      "Contrast Optimization",
+      "Academic Layouts"
+    ],
+    "link": "mailto:Sukunsh2883@gmail.com",
+    "client": "College of Art, Delhi University",
+    "aboutProject": "Action photography is an incredibly exciting genre to shoot. Under the guidance of Mr. Parveen Kumar, the study explores body contouring using high-density side lighting and extreme raw athleticism. It illustrates suspension, equilibrium, and spatial trajectory transitions in darkness.",
+    "galleryImages": [
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789216477/MacBook_Pro_16__-_1_bsd6qe.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png",
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1782300043/Slide_16_9_-_28_dy5t4r.png"
+    ],
+    "isAI": true,
     "pdfUrl": "",
     "uploadedPdfName": "",
     "behanceEmbedUrl": ""

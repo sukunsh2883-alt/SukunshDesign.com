@@ -122,7 +122,7 @@ export default function App() {
             const woko = initialDesigns.find(init => init.id === "woko-noodle-brand-identity");
             return woko || d;
           }
-          if (d && (d.id === "woko-noodle-brand-identity" || d.id === "nou-visual-identity")) {
+          if (d && (d.id === "woko-noodle-brand-identity" || d.id === "nou-visual-identity" || d.id === "claro-ai-information-intelligence")) {
             const fresh = initialDesigns.find(init => init.id === d.id);
             return fresh || d;
           }
@@ -326,33 +326,23 @@ export default function App() {
     }
   }, [designs]);
 
-  // Synchronize newly curated projects on mount to ensure fresh state
+  // Synchronize newly curated projects on mount to ensure fresh state with CLARO 1st, WOKO 2nd, NOU 3rd
   useEffect(() => {
     setDesigns((current) => {
+      const initialClaro = initialDesigns.find((d) => d.id === "claro-ai-information-intelligence");
+      const initialWoko = initialDesigns.find((d) => d.id === "woko-noodle-brand-identity");
       const initialNou = initialDesigns.find((d) => d.id === "nou-visual-identity");
-      if (!initialNou) return current;
 
-      const nouIndex = current.findIndex((d) => d.id === "nou-visual-identity");
-      const next = [...current];
+      const rest = current.filter(
+        (d) => d && d.id !== "claro-ai-information-intelligence" && d.id !== "woko-noodle-brand-identity" && d.id !== "nou-visual-identity"
+      );
 
-      if (nouIndex === -1) {
-        const wokoIndex = current.findIndex((d) => d.id === "woko-noodle-brand-identity");
-        if (wokoIndex !== -1) {
-          next.splice(wokoIndex + 1, 0, initialNou);
-        } else {
-          next.push(initialNou);
-        }
-      } else {
-        next[nouIndex] = {
-          ...next[nouIndex],
-          ...initialNou,
-          image: initialNou.image,
-          galleryImages: initialNou.galleryImages,
-          title: initialNou.title,
-          description: initialNou.description,
-          type: initialNou.type,
-        };
-      }
+      const topThree: DesignProject[] = [];
+      if (initialClaro) topThree.push(initialClaro);
+      if (initialWoko) topThree.push(initialWoko);
+      if (initialNou) topThree.push(initialNou);
+
+      const next = [...topThree, ...rest];
 
       try {
         localStorage.setItem("portfolio_designs", JSON.stringify(next));
@@ -671,7 +661,7 @@ export default function App() {
       isOpen: true,
       mediaType: "video",
       src: featuredReel?.videoUrl || profileState.heroVideoUrl,
-      title: featuredReel?.title || "Sukunsh Visual Showreel 2026",
+      title: featuredReel?.title || "Suraj Visual Showreel 2026",
       category: featuredReel?.type || "Creative Reel",
       description: "A concise motion reel showing product ads, AI film studies, kinetic layouts, and cinematic visual direction."
     });

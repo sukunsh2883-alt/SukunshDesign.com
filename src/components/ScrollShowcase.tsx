@@ -5,10 +5,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DesignProject, designProjects, AIFilm, aiFilms } from "../portfolioData";
 import ShapeGrid from "./ShapeGrid";
 import CurvedLoop from "./CurvedLoop";
-import LanyardCard from "./LanyardCard";
+import Lanyard from "./Lanyard";
 import CinematicEditorialScroll from "./CinematicEditorialScroll";
 import EditorialProjects from "./EditorialProjects";
 import LetsTalk from "./LetsTalk";
+import FlexCarousel, { FlexCarouselItem } from "./FlexCarousel";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -97,21 +98,20 @@ export default function ScrollShowcase({
 
   const allProjects = useMemo(() => {
     const list = designs && designs.length > 0 ? designs : designProjects;
-    const hasNou = list.some((p) => p.id === "nou-visual-identity");
-    if (!hasNou) {
-      const initialNou = designProjects.find((p) => p.id === "nou-visual-identity");
-      if (initialNou) {
-        const wokoIdx = list.findIndex((p) => p.id === "woko-noodle-brand-identity");
-        const next = [...list];
-        if (wokoIdx !== -1) {
-          next.splice(wokoIdx + 1, 0, initialNou);
-        } else {
-          next.push(initialNou);
-        }
-        return next;
-      }
-    }
-    return list;
+    const initialClaro = designProjects.find((p) => p.id === "claro-ai-information-intelligence");
+    const initialWoko = designProjects.find((p) => p.id === "woko-noodle-brand-identity");
+    const initialNou = designProjects.find((p) => p.id === "nou-visual-identity");
+
+    const rest = list.filter(
+      (p) => p && p.id !== "claro-ai-information-intelligence" && p.id !== "woko-noodle-brand-identity" && p.id !== "nou-visual-identity"
+    );
+
+    const topThree: DesignProject[] = [];
+    if (initialClaro) topThree.push(initialClaro);
+    if (initialWoko) topThree.push(initialWoko);
+    if (initialNou) topThree.push(initialNou);
+
+    return [...topThree, ...rest];
   }, [designs]);
 
   const activeFilms = useMemo(() => {
@@ -122,7 +122,38 @@ export default function ScrollShowcase({
     return list.length > 0 ? list : source;
   }, [films]);
 
-  const film = activeFilms[filmIndex % activeFilms.length];
+  const allAIFilms = useMemo(() => {
+    const list = [...activeFilms];
+    AI_PROMOTION_REEL_VIDEOS.forEach((reel) => {
+      if (!list.some((f) => f.videoUrl === reel.videoUrl)) {
+        list.push({
+          id: reel.id,
+          title: reel.title,
+          category: "AI Reel",
+          description: "AI-powered creative experiment.",
+          videoUrl: reel.videoUrl,
+          thumbnail: reel.thumbnail,
+          year: "2026",
+          tags: ["AI", "Promotion Reel"],
+        });
+      }
+    });
+    return list;
+  }, [activeFilms]);
+
+  const carouselItems = useMemo<FlexCarouselItem[]>(() => {
+    return allAIFilms.map((f, idx) => ({
+      src: f.thumbnail,
+      video: f.videoUrl,
+      alt: f.title,
+      title: f.title,
+      subtitle: f.category || "AI Film",
+      film: f,
+      index: idx,
+    }));
+  }, [allAIFilms]);
+
+  const film = allAIFilms[filmIndex % allAIFilms.length];
   // 14 items (repeating the 7 user Cloudinary videos twice) for seamless continuous infinite reel stream with zero random images
   const reelItems = Array.from({ length: 14 }, (_, index) => AI_PROMOTION_REEL_VIDEOS[index % AI_PROMOTION_REEL_VIDEOS.length]);
   const portraitImage =
@@ -325,7 +356,7 @@ export default function ScrollShowcase({
         );
       });
 
-      // Seamless left-to-right straight horizontal track motion for AI Reel cards
+      // Seamless left-to-right straight horizontal track motion for AI Reel cards (loops uninterrupted without pausing)
       const reelTween = gsap.to(".seamless-reel-track", {
         xPercent: -50,
         duration: 30,
@@ -333,68 +364,6 @@ export default function ScrollShowcase({
         ease: "none",
       });
       reelTweenRef.current = reelTween;
-
-      const trackEl = document.querySelector(".seamless-reel-track");
-      if (trackEl) {
-        trackEl.addEventListener("mouseenter", () => reelTween.pause());
-        trackEl.addEventListener("mouseleave", () => reelTween.play());
-      }
-
-      // Scroll-driven animation for AI Film video frame:
-      // When scrolling down, appears small -> grows large and fits to screen -> sets back to actual frame size
-      if (videoFrameRef.current) {
-        const isMobile = window.innerWidth < 640;
-        const isTablet = window.innerWidth < 1024;
-        const startScale = isMobile ? 0.88 : 0.82;
-        const peakScale = isMobile ? 1.05 : isTablet ? 1.08 : 1.10;
-
-        const videoTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: videoFrameRef.current,
-            start: "top 95%",      // When entering from bottom of viewport
-            end: "top 20%",        // When settling in view
-            scrub: 0.8,            // Fluidly responsive to scroll speed
-            invalidateOnRefresh: true,
-          },
-        });
-
-        videoTimeline
-          .fromTo(
-            videoFrameRef.current,
-            {
-              scale: startScale,
-              borderRadius: isMobile ? "20px" : "28px",
-              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.08)",
-              transformOrigin: "center center",
-            },
-            {
-              scale: peakScale,
-              borderRadius: isMobile ? "8px" : "12px",
-              boxShadow: "0 30px 60px -12px rgba(0, 0, 0, 0.35)",
-              duration: 1,
-              ease: "power2.out",
-            }
-          )
-          .to(
-            videoFrameRef.current,
-            {
-              scale: peakScale,
-              borderRadius: isMobile ? "8px" : "12px",
-              duration: 0.25, // Holds at screen-fit during peak viewing
-              ease: "none",
-            }
-          )
-          .to(
-            videoFrameRef.current,
-            {
-              scale: 1.0,
-              borderRadius: isMobile ? "12px" : "16px",
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-              duration: 0.9,
-              ease: "power2.inOut",
-            }
-          );
-      }
 
       ScrollTrigger.refresh();
     }, containerRef);
@@ -410,7 +379,7 @@ export default function ScrollShowcase({
     <div ref={containerRef} className="scroll-showcase w-full bg-[#050505] text-white select-none">
       {!isInline && onClose && (
         <nav className="fixed left-5 right-5 top-5 z-[120] flex items-center justify-between rounded-full border border-neutral-800 bg-neutral-900/85 px-5 py-3 backdrop-blur-md">
-          <span className="text-xs font-medium text-white">Sukunsh.</span>
+          <span className="text-xs font-medium text-white">Suraj.</span>
           <button
             type="button"
             onClick={onClose}
@@ -441,19 +410,19 @@ export default function ScrollShowcase({
         profile={profile}
       />
 
-      {/* 3. AI FILM BIG SCREEN SECTION */}
+      {/* 3. ALL AI FILMS SECTION (Minimalist, borderless, continuous looping video carousel) */}
       <section
         id="ai-work"
         ref={aiSectionRef}
-        data-cursor-tag="AI Works"
-        className="relative w-full bg-[#050505] px-5 py-12 sm:px-8 sm:py-16 md:px-14 md:py-20 border-t border-neutral-850"
+        data-cursor-tag="AI Films"
+        className="relative w-full bg-[#050505] px-2 sm:px-4 md:px-8 py-10 sm:py-16 select-none"
       >
-        <div className="mx-auto w-full max-w-[1400px]">
-          {/* Section Header: AI Film ↙ */}
-          <div className="folio-reveal mb-6 sm:mb-8 flex items-center justify-between">
+        <div className="mx-auto w-full max-w-[1540px]">
+          {/* Section Header: Minimalist AI Films ↙ */}
+          <div className="folio-reveal mb-2 sm:mb-4 flex items-center justify-between px-3 sm:px-6">
             <div className="flex items-center gap-2 sm:gap-3">
               <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
-                AI Film
+                AI Films
               </h2>
               <span className="inline-flex items-center text-white transform translate-y-1">
                 <svg
@@ -465,221 +434,47 @@ export default function ScrollShowcase({
               </span>
             </div>
 
-            {/* Film count index indicator */}
-            <div className="hidden sm:flex items-center gap-2 text-xs font-mono tracking-widest text-neutral-400 uppercase">
-              <span className="text-white font-bold">0{(filmIndex % activeFilms.length) + 1}</span>
-              <span>/</span>
-              <span>0{activeFilms.length}</span>
-            </div>
-          </div>
-
-          {/* Big Screen Video Frame with in-place playback controls & Fullscreen toggle */}
-          <div
-            ref={videoWrapperRef}
-            className={`w-full transition-all duration-300 ${
-              isFullscreen
-                ? "fixed inset-0 z-[9999] h-screen w-screen bg-black flex items-center justify-center p-0 m-0 rounded-none overflow-hidden"
-                : "relative"
-            }`}
-          >
-            <div
-              ref={videoFrameRef}
-              onClick={togglePlayInline}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && togglePlayInline()}
-              style={{
-                willChange: "transform",
-                transformOrigin: "center center",
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
-              }}
-              className={`group relative block w-full bg-black cursor-pointer text-left outline-none ${
-                isFullscreen
-                  ? "h-full w-full flex items-center justify-center rounded-none shadow-none"
-                  : "aspect-[16/8] sm:aspect-[16/7.5] md:aspect-[2.2/1] min-h-[260px] sm:min-h-[380px] md:min-h-[480px] lg:min-h-[540px] overflow-hidden rounded-[8px] sm:rounded-[12px] md:rounded-[16px] shadow-md hover:shadow-xl transition-shadow duration-300 focus-visible:ring-2 focus-visible:ring-white"
-              }`}
-            >
-              {/* Native Continuous Auto-Playing Video Screen (No YouTube branding/logo) */}
-              <video
-                ref={videoRef}
-                key={film?.id}
-                src={film?.videoUrl}
-                poster={film?.thumbnail}
-                muted={isMuted}
-                loop
-                playsInline
-                autoPlay
-                preload="auto"
-                className={`w-full transition-opacity group-hover:opacity-95 ${
-                  isFullscreen
-                    ? "h-full max-h-screen object-contain bg-black"
-                    : "h-full object-cover opacity-100"
-                }`}
-              />
-
-              {/* Top Title Overlay in Fullscreen */}
-              {isFullscreen && film && (
-                <div
-                  className="absolute top-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex items-center justify-between z-30 transition-opacity duration-300 pointer-events-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="text-white">
-                    <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400">AI Film</span>
-                    <h4 className="text-base sm:text-xl font-bold tracking-tight">
-                      {film.id === "ai-film-rivr-ad" ? "RIVE" : film.title}
-                    </h4>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={toggleFullscreen}
-                    aria-label="Exit Fullscreen"
-                    className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white text-white hover:text-black transition-all border border-white/20 cursor-pointer"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-              )}
-
-              {/* Center Play/Pause Indicator for HTML5 video */}
-              <div
-                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
-                  isPlayingInline ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-                }`}
-              >
-                <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur-md text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
-                  {isPlayingInline ? (
-                    <Pause className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white" />
-                  ) : (
-                    <Play className="h-6 w-6 sm:h-7 sm:w-7 fill-white text-white ml-1" />
-                  )}
-                </span>
-              </div>
-
-              {/* Bottom Right Controls: Fullscreen button & Mute */}
-              <div
-                className={`absolute z-30 flex items-center gap-2.5 ${
-                  isFullscreen ? "bottom-6 right-6" : "bottom-4 right-4"
-                }`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  type="button"
-                  onClick={toggleMute}
-                  aria-label={isMuted ? "Unmute audio (m)" : "Mute audio (m)"}
-                  title={isMuted ? "Unmute (m)" : "Mute (m)"}
-                  className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
-                >
-                  {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={toggleFullscreen}
-                  aria-label={isFullscreen ? "Exit Fullscreen (f)" : "Enter Fullscreen (f)"}
-                  title={isFullscreen ? "Exit Fullscreen (f)" : "Fullscreen (f)"}
-                  className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-black/90 hover:scale-105 cursor-pointer shadow-md"
-                >
-                  {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Details Row with Previous / Next Controls & Good Intention Captions */}
-          <div className="mt-5 sm:mt-7 flex w-full flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="w-full max-w-[460px]">
-              <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-white">
-                {film?.id === "ai-film-rivr-ad" ? "RIVE" : film?.title}
-              </h3>
-              <p className="mt-1.5 text-sm sm:text-base leading-snug text-neutral-300 font-normal">
-                {film?.description || "High-fidelity AI generated cinematography focusing on lighting, fluid physics, and visual storytelling."}
-              </p>
-
-              {/* Previous / Next film switcher controls */}
-              <div className="mt-4 flex items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setFilmIndex((value) => (value - 1 + activeFilms.length) % activeFilms.length)}
-                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-300 hover:text-white transition-colors cursor-pointer group"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-                  <span className="border-b border-neutral-700 group-hover:border-white pb-0.5">Previous film</span>
-                </button>
-                <span className="text-neutral-600 font-mono text-xs">/</span>
-                <button
-                  type="button"
-                  onClick={() => setFilmIndex((value) => (value + 1) % activeFilms.length)}
-                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-neutral-300 hover:text-white transition-colors cursor-pointer group"
-                >
-                  <span className="border-b border-neutral-700 group-hover:border-white pb-0.5">Next film</span>
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                </button>
-              </div>
-            </div>
-
-            <div className="pt-1 flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={onOpenAIWork}
-                className="inline-flex items-center gap-2.5 rounded-full border border-white/30 bg-transparent px-7 sm:px-9 py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-normal text-white hover:bg-white hover:text-black active:scale-95 transition-all duration-200 cursor-pointer select-none shadow-xs group"
+                className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 hover:bg-white hover:text-black px-5 py-2 text-xs font-medium text-white transition-all cursor-pointer"
               >
-                <span>See all AI Films</span>
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                <span>Explore Vault</span>
+                <ArrowUpRight className="h-3.5 w-3.5" />
               </button>
             </div>
+          </div>
+
+          {/* Pure Minimalist Liquid Video Carousel (ZERO white borders, looping continuous videos) */}
+          <div className="relative w-full h-[540px] sm:h-[620px] md:h-[680px] overflow-hidden bg-transparent my-0 border-0 outline-none">
+            <FlexCarousel
+              items={carouselItems}
+              preset="liquid"
+              intro="rise"
+              cardHeight={0.65}
+              gap={18}
+              radius={10}
+              squeeze={0.2}
+              focusOnClick={true}
+              captions={false}
+              captureWheel={false}
+              onChange={(index) => {
+                setFilmIndex(index);
+              }}
+              onSelect={(index, item) => {
+                const selected = item?.film || allAIFilms[index];
+                if (selected) {
+                  onOpenVideo?.(selected.videoUrl, selected.title);
+                }
+              }}
+            />
           </div>
         </div>
       </section>
 
-      {/* AI Promotion Reels: Straight, Non-floating, Seamlessly Attached moving horizontally */}
-      <section id="ai-reels" data-cursor-tag="AI Works" className="relative min-h-[65vh] overflow-hidden bg-[#050505] px-5 py-14 sm:px-8 md:px-14 md:py-20 border-t border-neutral-850">
-        <div className="folio-reveal grid grid-cols-1 gap-8 md:grid-cols-[0.55fr_1fr] max-w-[1240px] mx-auto">
-          <div>
-            <div className="h-px w-28 bg-neutral-600" />
-            <div className="mt-2 flex items-center gap-1.5 text-2xl font-normal text-white">
-              <span>AI Promotion Reel</span>
-              <ArrowDownLeft className="h-4 w-4" />
-            </div>
-          </div>
-          <p className="max-w-[260px] text-[13px] leading-tight text-neutral-400">
-            Watch more AI-powered brand promotion reels.
-          </p>
-        </div>
-
-        {/* Straight, Seamless, Non-floating Carousel Track */}
-        <div className="mt-10 overflow-hidden w-full">
-          <div className="seamless-reel-track flex items-center gap-4 sm:gap-6 w-max py-4">
-            {reelItems.map((item, index) => (
-              <button
-                key={`${item.id}-${index}`}
-                type="button"
-                onClick={() => onOpenVideo?.(item.videoUrl, item.title)}
-                className="group relative h-[280px] w-[160px] sm:h-[320px] sm:w-[185px] shrink-0 overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 transition-all duration-300 hover:border-neutral-600 hover:scale-[1.02]"
-              >
-                <video
-                  src={item.videoUrl}
-                  poster={item.thumbnail}
-                  muted
-                  loop
-                  playsInline
-                  autoPlay
-                  preload="auto"
-                  className="h-full w-full object-cover opacity-95 transition-opacity group-hover:opacity-100"
-                />
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/50 backdrop-blur-xs transition-transform group-hover:scale-110">
-                    <Play className="h-4 w-4 fill-white text-white" />
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. ABOUT ME SECTION (Placed after AI Reels as requested) */}
-      <section id="about" className="relative min-h-screen overflow-visible border-t border-neutral-850 bg-[#050505] text-white px-5 py-16 sm:px-8 md:px-14 md:py-24 z-20">
+      {/* 4. ABOUT ME SECTION (Directly following AI Films) */}
+      <section id="about" className="relative min-h-screen overflow-visible bg-[#050505] text-white px-5 py-16 sm:px-8 md:px-14 md:py-24 z-20">
         <div className="absolute inset-x-6 top-14 bottom-14 z-0 hidden md:block overflow-hidden pointer-events-none">
           <ShapeGrid
             direction="diagonal"
@@ -691,8 +486,27 @@ export default function ScrollShowcase({
             hoverTrailAmount={8}
           />
         </div>
-        <div className="relative z-10 mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="folio-reveal flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12 lg:col-span-7">
+        {/* Full-Screen Lanyard 3D Workspace: zero cropping, movable all over the screen */}
+        <div
+          ref={aboutStageRef}
+          className="absolute inset-0 w-full h-full z-10 overflow-hidden pointer-events-none"
+          aria-label="SURAJ Kumar Sharma identity card"
+        >
+          <div className="w-full h-full pointer-events-auto">
+            <Lanyard
+              position={[0, 0, 22]}
+              fov={22}
+              gravity={[0, -40, 0]}
+              frontImage={portraitImage}
+              imageFit="cover"
+              transparent={true}
+              anchorX={typeof window !== 'undefined' && window.innerWidth >= 1024 ? 3.4 : 0}
+            />
+          </div>
+        </div>
+
+        <div className="relative z-20 mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16 pointer-events-none">
+          <div className="folio-reveal flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12 lg:col-span-7 pointer-events-auto">
             <div>
               <div className="mb-2.5 h-[1.5px] w-12 bg-white" />
               <div className="inline-flex items-center gap-1 text-xs font-medium tracking-wide text-white">
@@ -761,13 +575,8 @@ export default function ScrollShowcase({
             </div>
           </div>
 
-          <div
-            ref={aboutStageRef}
-            className="folio-reveal flex flex-col items-center justify-center lg:col-span-5 relative"
-            aria-label="Sukunsh identity card"
-          >
-            <LanyardCard portraitImage={portraitImage} />
-          </div>
+          {/* Right column spacer for desktop grid layout */}
+          <div className="hidden lg:block lg:col-span-5 h-[650px] pointer-events-none" />
         </div>
         <div className="folio-reveal relative mx-auto mt-8 w-full max-w-[1380px]">
           <CurvedLoop

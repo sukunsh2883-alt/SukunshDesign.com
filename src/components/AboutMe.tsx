@@ -162,26 +162,38 @@ export default function AboutMe({ profile }: AboutMeProps) {
               </div>
             </div>
 
-            {/* White Rounded Rectangular ID Badge */}
-            <div className="relative z-10 -mt-2 w-full max-w-[300px] bg-white rounded-[36px] border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] p-4 sm:p-5 flex flex-col items-center text-center">
+            {/* Modern ID Badge matching reference image */}
+            <div className="relative z-10 -mt-2 w-full max-w-[320px] bg-white rounded-[28px] overflow-hidden border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] flex flex-col">
               
-              {/* Small Circular Hole at top center */}
-              <div className="w-3.5 h-3.5 rounded-full bg-neutral-900 border-2 border-neutral-300 mb-3 shadow-inner flex items-center justify-center">
-                <div className="w-1 h-1 rounded-full bg-neutral-700" />
-              </div>
+              {/* Top slot clip hole */}
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 w-8 h-2 rounded-full bg-neutral-900 border border-neutral-400/50 shadow-inner" />
 
-              {/* B&W Portrait Photograph */}
-              <div className="w-full aspect-[4/5] overflow-hidden rounded-[28px] bg-neutral-100 shadow-sm border border-neutral-200/60">
+              {/* Portrait Photograph covering top 62% */}
+              <div className="w-full aspect-[4/4.5] overflow-hidden bg-neutral-100">
                 <img
                   src={portraitImage}
-                  alt="Suraj Kumar Sharma Portrait"
-                  className="w-full h-full object-cover filter grayscale contrast-110 rounded-[28px]"
+                  alt="Sooraj Kumar Sharma Portrait"
+                  className="w-full h-full object-cover filter contrast-105"
                 />
               </div>
 
-              {/* Name SURAJ KUMAR SHARMA in bold uppercase */}
-              <div className="mt-4 sm:mt-5 font-sans font-bold tracking-[0.16em] text-sm sm:text-base text-neutral-950 uppercase">
-                SURAJ KUMAR SHARMA
+              {/* Asymmetrical Dark Matte Block */}
+              <div className="relative -mt-6 bg-[#18181b] text-white pt-6 pb-5 px-6 rounded-tr-[36px] flex flex-col justify-between min-h-[140px]">
+                {/* Name */}
+                <div className="space-y-0.5">
+                  <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-black tracking-tight text-white leading-tight">
+                    SURAJ
+                  </h3>
+                  <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-bold tracking-tight text-white leading-tight">
+                    Kumar Sharma
+                  </h3>
+                </div>
+
+                {/* Bottom Row */}
+                <div className="mt-5 flex items-center justify-between text-xs text-neutral-300 font-medium">
+                  <span>Visual Designer</span>
+                  <span className="font-mono text-neutral-400">ID #0009256</span>
+                </div>
               </div>
             </div>
 

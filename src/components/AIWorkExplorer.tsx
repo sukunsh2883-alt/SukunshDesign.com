@@ -519,7 +519,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
               </button>
             </div>
             <p className="text-xs font-mono text-neutral-400 uppercase tracking-wider">
-              Sukunsh Sharma / AI Motion Archive
+              Suraj Sharma / AI Motion Archive
             </p>
           </div>
 

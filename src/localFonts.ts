@@ -1,7 +1,7 @@
 export const LOGO_FONT_OPTIONS = [
   {
-    label: "Sukunsh Italic Wordmark",
-    value: "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
+    label: "Suraj Italic Wordmark",
+    value: "\"Suraj Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
   },
   {
     label: "Francois One",
@@ -36,7 +36,7 @@ export const getLogoFontStyle = (fontFamily?: string): any => {
     textRendering: "geometricPrecision",
   };
 
-  if (selected.includes("Sukunsh Wordmark")) {
+  if (selected.includes("Suraj Wordmark") || selected.includes("Sukunsh Wordmark")) {
     return {
       ...base,
       fontWeight: 700,

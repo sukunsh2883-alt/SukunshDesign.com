@@ -1,8 +1,8 @@
 {
-  "name": "sukunsh-portfolio",
+  "name": "suraj-portfolio",
   "private": true,
   "version": "1.0.0",
-  "description": "Premium minimalist portfolio website for Sukunsh.",
+  "description": "Premium minimalist portfolio website for Suraj.",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",

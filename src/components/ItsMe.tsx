@@ -75,7 +75,7 @@ export default function ItsMe({ profile, onOpenContact }: ItsMeProps) {
               <h2 className="text-4xl md:text-6xl font-sans font-bold text-white leading-tight">
                 It's Me,<br />
                 <span className="bg-gradient-to-r from-orange-500 to-orange-300 bg-clip-text text-transparent">
-                  Sukunsh
+                  Suraj
                 </span>
               </h2>
             </div>

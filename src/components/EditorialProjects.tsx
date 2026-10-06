@@ -19,11 +19,14 @@ export default function EditorialProjects({
 }: EditorialProjectsProps) {
   // Safe project slots with designProjects as guaranteed fallback
   const p1 = projects.find(p => p.id === "woko-noodle-brand-identity") || designProjects.find(p => p.id === "woko-noodle-brand-identity") || projects[1]; // Left Column - Top: WOKO
+  const p_claro = projects.find(p => p.id === "claro-ai-information-intelligence") || designProjects.find(p => p.id === "claro-ai-information-intelligence"); // Left Column - Item 2: CLARO
+  const p2 = projects.find(p => p.id === "design-kinetic-motion") || designProjects.find(p => p.id === "design-kinetic-motion") || projects[3]; // Left Column - Item 3: Kinetic Motion
+  const p6 = projects.find(p => p.id === "design-character-anim") || designProjects.find(p => p.id === "design-character-anim") || projects[6]; // Left Column - Bottom: Character Anim
+
   const p3 = projects.find(p => p.id === "nou-visual-identity") || designProjects.find(p => p.id === "nou-visual-identity") || projects[2]; // Right Column - Top: NOU (Beside WOKO)
-  const p2 = projects.find(p => p.id === "design-kinetic-motion") || designProjects.find(p => p.id === "design-kinetic-motion") || projects[3]; // Left Column - Middle
   const p4 = projects.find(p => p.id === "design-1") || designProjects.find(p => p.id === "design-1") || projects[4]; // Right Column - Middle
-  const p6 = projects.find(p => p.id === "design-character-anim") || designProjects.find(p => p.id === "design-character-anim") || projects[6]; // Left Column - Bottom
-  const p5 = projects.find(p => p.id === "design-earthquake-map") || projects.find(p => p.id === "design-monogram-logos") || designProjects.find(p => p.id === "design-earthquake-map") || projects[5]; // Right Column - Bottom
+  const p5 = projects.find(p => p.id === "design-earthquake-map") || designProjects.find(p => p.id === "design-earthquake-map") || projects[5]; // Right Column - Item 3
+  const p_mono = projects.find(p => p.id === "design-monogram-logos") || designProjects.find(p => p.id === "design-monogram-logos"); // Right Column - Bottom
 
   const getProjectLines = (proj?: DesignProject, defaultLine1 = "Background in Fine Art", defaultLine2 = "and Design.") => {
     if (!proj) return { line1: defaultLine1, line2: defaultLine2 };
@@ -80,33 +83,59 @@ export default function EditorialProjects({
           {/* Left Column */}
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14">
             
-            {/* Left Item 1: p1 (Landscape) */}
-            {p1 && (
+            {/* Left Item 1: p_claro (Landscape) - Position #1 */}
+            {p_claro && (
               <div
-                onClick={() => onSelectProject?.(p1)}
+                onClick={() => onSelectProject?.(p_claro)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p1)}
-                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p_claro)}
+                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={p1.image}
-                    alt={p1.title}
+                    src={p_claro.image}
+                    alt={p_claro.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  p1.type || "Branding",
-                  getProjectLines(p1, "Background in Fine Art", "and Design.").line1,
-                  getProjectLines(p1, "Background in Fine Art", "and Design.").line2
+                  p_claro.type || "Branding / UI/UX",
+                  "CLARO",
+                  "AI information intelligence platform."
                 )}
               </div>
             )}
 
-            {/* Left Item 2: p2 (Landscape) */}
+            {/* Left Item 2: p3 NOU (Landscape) - Position #3 */}
+            {p3 && (
+              <div
+                onClick={() => onSelectProject?.(p3)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p3)}
+                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
+              >
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                  <img
+                    src={p3.image}
+                    alt={p3.title}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {renderCardMeta(
+                  p3.type || "Visual Identity",
+                  getProjectLines(p3, "NOU — Visual identity", "Brand identity and design system.").line1,
+                  getProjectLines(p3, "NOU — Visual identity", "Brand identity and design system.").line2
+                )}
+              </div>
+            )}
+
+            {/* Left Item 3: p2 (Landscape) */}
             {p2 && (
               <div
                 onClick={() => onSelectProject?.(p2)}
@@ -132,28 +161,28 @@ export default function EditorialProjects({
               </div>
             )}
 
-            {/* Left Item 3: p6 (Bottom Balancer Card) */}
-            {p6 && (
+            {/* Left Item 4: p5 (Landscape) */}
+            {p5 && (
               <div
-                onClick={() => onSelectProject?.(p6)}
+                onClick={() => onSelectProject?.(p5)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p6)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p5)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={p6.image}
-                    alt={p6.title}
+                    src={p5.image}
+                    alt={p5.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  p6.type || "Branding",
-                  getProjectLines(p6, "Background in Fine Art", "and Design.").line1,
-                  getProjectLines(p6, "Background in Fine Art", "and Design.").line2
+                  p5.type || "Design",
+                  getProjectLines(p5, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p5, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
@@ -163,28 +192,28 @@ export default function EditorialProjects({
           {/* Right Column */}
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14">
             
-            {/* Right Item 1: p3 (Landscape) */}
-            {p3 && (
+            {/* Right Item 1: p1 WOKO (Landscape) - Position #2 */}
+            {p1 && (
               <div
-                onClick={() => onSelectProject?.(p3)}
+                onClick={() => onSelectProject?.(p1)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p3)}
-                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p1)}
+                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={p3.image}
-                    alt={p3.title}
+                    src={p1.image}
+                    alt={p1.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  p3.type || "Visual Identity",
-                  getProjectLines(p3, "NOU — Visual identity", "Brand identity and design system.").line1,
-                  getProjectLines(p3, "NOU — Visual identity", "Brand identity and design system.").line2
+                  p1.type || "Branding",
+                  getProjectLines(p1, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p1, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}
@@ -215,28 +244,54 @@ export default function EditorialProjects({
               </div>
             )}
 
-            {/* Right Item 3: p5 (Landscape) */}
-            {p5 && (
+            {/* Right Item 3: p6 Character Anim (Bottom Balancer Card) */}
+            {p6 && (
               <div
-                onClick={() => onSelectProject?.(p5)}
+                onClick={() => onSelectProject?.(p6)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p5)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p6)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
                   <img
-                    src={p5.image}
-                    alt={p5.title}
+                    src={p6.image}
+                    alt={p6.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 {renderCardMeta(
-                  p5.type || "Design",
-                  getProjectLines(p5, "Background in Fine Art", "and Design.").line1,
-                  getProjectLines(p5, "Background in Fine Art", "and Design.").line2
+                  p6.type || "Branding",
+                  getProjectLines(p6, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p6, "Background in Fine Art", "and Design.").line2
+                )}
+              </div>
+            )}
+
+            {/* Right Item 4: p_mono (Landscape) */}
+            {p_mono && (
+              <div
+                onClick={() => onSelectProject?.(p_mono)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p_mono)}
+                className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
+              >
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                  <img
+                    src={p_mono.image}
+                    alt={p_mono.title}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {renderCardMeta(
+                  p_mono.type || "Logo Design",
+                  getProjectLines(p_mono, "Background in Fine Art", "and Design.").line1,
+                  getProjectLines(p_mono, "Background in Fine Art", "and Design.").line2
                 )}
               </div>
             )}

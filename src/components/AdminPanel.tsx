@@ -59,10 +59,10 @@ export default function AdminPanel({
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginUsername === "Sukunsh" && loginPassword === "Cera@123") {
+    if ((loginUsername === "Suraj" || loginUsername === "Sukunsh") && loginPassword === "Cera@123") {
       setIsAuthenticated(true);
       setIsStudioVisible(true);
-      localStorage.setItem("sukunsh_creator_studio_auth", "true");
+      localStorage.setItem("suraj_creator_studio_auth", "true");
       setLoginError("");
     } else {
       setLoginError("Invalid Administrator Credentials");
@@ -286,7 +286,7 @@ export default function AdminPanel({
   const [archiveImageTitle, setArchiveImageTitle] = useState("");
 
   // Branding states
-  const [brandName, setBrandName] = useState(profile?.brandName || "Sukunsh");
+  const [brandName, setBrandName] = useState(profile?.brandName || "Suraj");
   const [logoFontFamily, setLogoFontFamily] = useState(profile?.logoFontFamily || DEFAULT_LOGO_FONT);
   const [fullName, setFullName] = useState(profile?.fullName || "Suraj Kumar Sharma");
   const [contactEmail, setContactEmail] = useState(profile?.email || "sukunsh2883@gmail.com");
@@ -297,7 +297,7 @@ export default function AdminPanel({
   
   useEffect(() => {
     if (profile) {
-      setBrandName(profile.brandName || "Sukunsh");
+      setBrandName(profile.brandName || "Suraj");
       setLogoFontFamily(profile.logoFontFamily || DEFAULT_LOGO_FONT);
       setFullName(profile.fullName || "Suraj Kumar Sharma");
       setContactEmail(profile.email || "sukunsh2883@gmail.com");
@@ -831,7 +831,7 @@ export default function AdminPanel({
                     Verify credentials to continue
                   </p>
                   <div className="mt-3 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-left font-mono text-[9px] uppercase tracking-widest text-neutral-500">
-                    <div>Username: <span className="font-bold text-neutral-950">Sukunsh</span></div>
+                    <div>Username: <span className="font-bold text-neutral-950">Suraj</span></div>
                     <div>Password: <span className="font-bold text-neutral-950">Cera@123</span></div>
                   </div>
                 </div>
@@ -844,7 +844,7 @@ export default function AdminPanel({
                     <input
                       type="text"
                       required
-                      placeholder="Username (Sukunsh)"
+                      placeholder="Username (Suraj)"
                       value={loginUsername}
                       onChange={(e) => setLoginUsername(e.target.value)}
                       className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-200 bg-white text-neutral-950 placeholder-neutral-400 focus:outline-none focus:border-[#FF6A00]"
@@ -883,11 +883,11 @@ export default function AdminPanel({
                 <button
                   type="button"
                   onClick={() => {
-                    setLoginUsername("Sukunsh");
+                    setLoginUsername("Suraj");
                     setLoginPassword("Cera@123");
                     setIsAuthenticated(true);
                     setIsStudioVisible(true);
-                    localStorage.setItem("sukunsh_creator_studio_auth", "true");
+                    localStorage.setItem("suraj_creator_studio_auth", "true");
                   }}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl bg-[#FF6A00]/10 hover:bg-[#FF6A00]/20 text-[#FF6A00] font-sans font-semibold text-[10px] uppercase tracking-widest cursor-pointer transition-all border border-[#FF6A00]/20 mt-1"
                 >
@@ -1918,12 +1918,12 @@ export default function AdminPanel({
                     value={brandName}
                     onChange={(e) => setBrandName(e.target.value)}
                     className="w-full mt-1 px-3 py-2 text-xs rounded-xl border border-neutral-200 bg-white text-neutral-950 focus:outline-none focus:border-[#FF6A00]"
-                    placeholder="e.g. Sukunsh"
+                    placeholder="e.g. Suraj"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[8px] uppercase font-mono tracking-widest text-[#FF6A00] block font-bold">Sukunsh Logo Font</label>
+                  <label className="text-[8px] uppercase font-mono tracking-widest text-[#FF6A00] block font-bold">Suraj Logo Font</label>
                   <select
                     value={logoFontFamily}
                     onChange={(e) => setLogoFontFamily(e.target.value)}
@@ -1939,7 +1939,7 @@ export default function AdminPanel({
                     className="mt-2 border border-neutral-200 bg-neutral-50 px-3 py-3 text-3xl text-neutral-950"
                     style={getLogoFontStyle(logoFontFamily)}
                   >
-                    Sukunsh.
+                    Suraj.
                   </div>
                 </div>
 

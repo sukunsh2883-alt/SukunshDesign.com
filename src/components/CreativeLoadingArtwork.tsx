@@ -5,7 +5,7 @@ interface CreativeLoadingArtworkProps {
   isExiting: boolean;
 }
 
-export default function CreativeLoadingArtwork({ progress, isExiting }: CreativeLoadingArtworkProps) {
+export default function CreativeLoadingArtwork({ isExiting }: CreativeLoadingArtworkProps) {
   // Staggered pop-up items inspired directly by the user's uploaded SVG
   const items = [
     {
@@ -166,7 +166,7 @@ export default function CreativeLoadingArtwork({ progress, isExiting }: Creative
               <rect x="165" y="100" width="14" height="6" rx="2" />
               <rect x="165" y="112" width="14" height="6" rx="2" />
             </g>
-            {/* XPPen / Deco Brand Mark */}
+            {/* XP-PEN Brand Mark */}
             <text x="84" y="138" fill="#525866" fontSize="7" fontFamily="sans-serif" textAnchor="middle" letterSpacing="1">
               XP-PEN
             </text>

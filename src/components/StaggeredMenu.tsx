@@ -290,7 +290,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 </>
               ) : (
                 <>
-                  Sukunsh<span className="text-[#FF6A00] font-black">.</span>
+                  Suraj<span className="text-[#FF6A00] font-black">.</span>
                 </>
               )}
             </span>

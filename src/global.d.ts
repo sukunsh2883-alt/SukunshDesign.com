@@ -3,8 +3,14 @@ import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 
 export {};
 
-declare module '*.glb';
-declare module '*.png';
+declare module '*.glb' {
+  const content: string;
+  export default content;
+}
+declare module '*.png' {
+  const content: string;
+  export default content;
+}
 
 declare module 'meshline' {
   export const MeshLineGeometry: any;

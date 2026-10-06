@@ -24,7 +24,7 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     }
   }, [isHeroReady]);
 
-  const brandName = profile?.brandName || "Sukunsh";
+  const brandName = profile?.brandName || "Suraj";
 
   const finishLoading = useCallback(() => {
     if (hasFinishedRef.current) return;
@@ -96,7 +96,7 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     <div
       ref={containerRef}
       id="custom-loading-screen"
-      className="fixed inset-0 z-[99999] overflow-hidden select-none cursor-pointer touch-none pointer-events-auto"
+      className="fixed inset-0 z-[99999] overflow-hidden select-none cursor-pointer touch-none pointer-events-auto bg-white"
       onClick={finishLoading}
       role="progressbar"
       aria-valuenow={progress}

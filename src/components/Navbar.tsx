@@ -52,7 +52,7 @@ export default function Navbar({
     },
     {
       label: "About",
-      ariaLabel: "About Sukunsh",
+      ariaLabel: "About Suraj",
       link: "#about",
       onClick: () => handleNavClick("#about"),
     },
@@ -90,7 +90,7 @@ export default function Navbar({
       <StaggeredMenu
         position="right"
         isFixed={true}
-        logoText={`${profile?.brandName || "Sukunsh"}.`}
+        logoText={`${profile?.brandName || "Suraj"}.`}
         onLogoClick={() => handleNavClick("#home")}
         items={menuItems}
         socialItems={socialItems}
