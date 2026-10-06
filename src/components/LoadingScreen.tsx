@@ -32,12 +32,10 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     setIsExiting(true);
   }, []);
 
-  // If progress reached 100% and hero is ready, trigger exit
+  // Quick exit as soon as progress completes and hero is ready
   useEffect(() => {
     if (progress >= 100 && isHeroReady && !hasFinishedRef.current) {
-      const timer = setTimeout(() => {
-        finishLoading();
-      }, 80);
+      const timer = setTimeout(finishLoading, 40);
       return () => clearTimeout(timer);
     }
   }, [isHeroReady, progress, finishLoading]);
@@ -54,33 +52,25 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [finishLoading]);
 
-  // Smooth progress animation timed to allow elements to pop in rhythmically (~1.9s)
+  // Snappy, featherweight progress animation (~750ms total)
   useEffect(() => {
     let animationFrame: number;
     let fallbackTimer: NodeJS.Timeout | null = null;
-    const duration = 1900;
+    const duration = 750;
 
     const updateProgress = () => {
       const elapsed = Date.now() - startTimeRef.current;
       const raw = Math.min(elapsed / duration, 1);
 
       // Smooth easeOut curve
-      const eased = Math.min(100, Math.floor(100 * (1 - Math.pow(1 - raw, 2.5))));
+      const eased = Math.min(100, Math.floor(100 * (1 - Math.pow(1 - raw, 3))));
       setProgress(eased);
 
       if (raw < 1) {
         animationFrame = requestAnimationFrame(updateProgress);
       } else {
         setProgress(100);
-        if (isHeroReadyRef.current) {
-          setTimeout(() => {
-            finishLoading();
-          }, 100);
-        } else {
-          fallbackTimer = setTimeout(() => {
-            finishLoading();
-          }, 800);
-        }
+        fallbackTimer = setTimeout(finishLoading, 80);
       }
     };
 
@@ -103,41 +93,40 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
       aria-valuemin={0}
       aria-valuemax={100}
     >
-      {/* TOP GATE PANEL: Slides vertically up to -100% */}
+      {/* TOP GATE PANEL: Slides vertically up from center */}
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "-100%" } : { y: "0%" }}
-        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-        className="absolute top-0 left-0 w-full h-1/2 bg-white z-20"
+        transition={{ duration: 0.75, ease: [0.76, 0, 0.24, 1] }}
+        className="absolute top-0 left-0 w-full h-1/2 bg-white z-20 border-b border-neutral-200/80 shadow-md"
       />
 
-      {/* BOTTOM GATE PANEL: Slides vertically down to 100% */}
+      {/* BOTTOM GATE PANEL: Slides vertically down from center */}
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "100%" } : { y: "0%" }}
-        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+        transition={{ duration: 0.75, ease: [0.76, 0, 0.24, 1] }}
         onAnimationComplete={() => {
           if (isExiting) {
             onComplete();
           }
         }}
-        className="absolute bottom-0 left-0 w-full h-1/2 bg-white z-20"
+        className="absolute bottom-0 left-0 w-full h-1/2 bg-white z-20 border-t border-neutral-200/80 shadow-md"
       />
 
-      {/* Central Minimal Loading Content: Creative elements pop up one-by-one */}
+      {/* Central Minimalist Featherweight Loading Content */}
       <motion.div
         initial={{ opacity: 1, scale: 1 }}
         animate={isExiting ? { opacity: 0, scale: 0.96 } : { opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
         className="absolute inset-0 z-30 flex flex-col items-center justify-center px-4 sm:px-6 pointer-events-none"
       >
-        {/* Playful Pop-up Artwork Cluster */}
-        <CreativeLoadingArtwork progress={progress} isExiting={isExiting} />
+        <CreativeLoadingArtwork isExiting={isExiting} />
 
-        <div className="flex flex-col items-center text-center max-w-xs w-full mt-2">
-          {/* Clean Name */}
+        <div className="flex flex-col items-center text-center max-w-xs w-full">
+          {/* Creator Brand Name */}
           <h1
-            className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-neutral-950 mb-3"
+            className="text-3xl sm:text-4xl font-bold tracking-[-0.03em] text-neutral-950 mb-1.5"
             style={{
               fontFamily: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             }}
@@ -146,17 +135,21 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
             <span className="text-[#FF6A00]">.</span>
           </h1>
 
-          {/* Minimal Progress Bar */}
-          <div className="w-36 sm:w-48 h-[2px] bg-neutral-200/90 rounded-full overflow-hidden mb-2.5">
+          <p className="text-[10px] font-mono tracking-[0.24em] uppercase text-neutral-500 mb-5">
+            Visual Designer • 2026
+          </p>
+
+          {/* Minimal Progress Hairline */}
+          <div className="w-40 sm:w-52 h-[2px] bg-neutral-200 rounded-full overflow-hidden mb-3">
             <div
-              className="h-full bg-neutral-950 rounded-full transition-[width] duration-150 ease-out"
+              className="h-full bg-neutral-950 rounded-full transition-[width] duration-100 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
 
-          {/* Numeric Counter */}
+          {/* Digital Counter */}
           <span className="font-mono text-xs text-neutral-500 tabular-nums tracking-widest">
-            {progress}%
+            {progress < 10 ? `0${progress}` : progress}%
           </span>
         </div>
       </motion.div>

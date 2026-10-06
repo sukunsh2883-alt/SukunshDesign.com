@@ -31,10 +31,9 @@ export interface LanyardProps {
   transparent?: boolean;
   frontImage?: string | null;
   backImage?: string | null;
-  imageFit?: 'cover' | 'contain';
+  imageFit?: 'cover' | 'contain' | 'fill';
   lanyardImage?: string | null;
   lanyardWidth?: number;
-  anchorX?: number;
 }
 
 export default function Lanyard({
@@ -46,8 +45,7 @@ export default function Lanyard({
   backImage = null,
   imageFit = 'cover',
   lanyardImage = null,
-  lanyardWidth = 1,
-  anchorX = 0
+  lanyardWidth = 1
 }: LanyardProps) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -65,9 +63,9 @@ export default function Lanyard({
         gl={{ alpha: transparent }}
         onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
       >
-        <ambientLight intensity={1.1} />
-        <directionalLight position={[0, 6, 10]} intensity={1.2} />
-        <directionalLight position={[-4, 2, 6]} intensity={0.5} />
+        <ambientLight intensity={0.85} />
+        <directionalLight position={[0, 6, 10]} intensity={0.9} />
+        <directionalLight position={[-5, 3, 6]} intensity={0.4} />
         <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
           <Band
             isMobile={isMobile}
@@ -76,7 +74,6 @@ export default function Lanyard({
             imageFit={imageFit}
             lanyardImage={lanyardImage}
             lanyardWidth={lanyardWidth}
-            anchorX={anchorX}
           />
         </Physics>
         <Environment blur={0.75}>
@@ -120,20 +117,18 @@ function Band({
   isMobile = false,
   frontImage = null,
   backImage = null,
-  imageFit = 'cover',
+  imageFit = 'fill',
   lanyardImage = null,
-  lanyardWidth = 1,
-  anchorX = 0
+  lanyardWidth = 1
 }: {
   maxSpeed?: number;
   minSpeed?: number;
   isMobile?: boolean;
   frontImage?: string | null;
   backImage?: string | null;
-  imageFit?: 'cover' | 'contain';
+  imageFit?: 'cover' | 'contain' | 'fill';
   lanyardImage?: string | null;
   lanyardWidth?: number;
-  anchorX?: number;
 }) {
   const band = useRef<any>(null),
     fixed = useRef<any>(null),
@@ -156,7 +151,7 @@ function Band({
   const backTex = useTexture(backImage || BLANK_PIXEL) as THREE.Texture;
 
   // Composite the front/back images into the card's texture atlas (front = left
-  // half, back = right half). Each image is drawn aspect-preserving (no stretch).
+  // half, back = right half).
   const cardMap = useMemo(() => {
     const baseMap = materials?.base?.map;
     if (!baseMap) return null;
@@ -174,153 +169,51 @@ function Band({
     // Keep the original baked atlas for the card edges and any untouched face.
     ctx.drawImage(baseImg, 0, 0, W, H);
 
-    const drawModernFrontBadge = (img: any, rect: any) => {
+    const drawFace = (img: any, rect: { x: number; y: number; w: number; h: number }) => {
       const rx = rect.x * W;
       const ry = rect.y * H;
       const rw = rect.w * W;
       const rh = rect.h * H;
 
-      // 1. Clean Crisp White Base for the card (no grayish tint)
+      if (!img || !img.width || !img.height) return;
+
       ctx.save();
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(rx, ry, rw, rh);
+      ctx.beginPath();
+      ctx.rect(rx, ry, rw, rh);
+      ctx.clip();
 
-      // 2. Full-bleed Portrait Photo across top portion (Actual photo - NO artificial filter)
-      if (img && img.width && img.height) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(rx, ry, rw, rh * 0.75);
-        ctx.clip();
-
-        // Fit cover across the card width
-        const targetW = rw;
-        const targetH = rh * 0.72;
-        const scale = Math.max(targetW / img.width, targetH / img.height);
+      if (imageFit === 'fill') {
+        // Direct edge-to-edge mapping, completely fills the card geometry with zero crop
+        ctx.drawImage(img, rx, ry, rw, rh);
+      } else if (imageFit === 'contain') {
+        const scale = Math.min(rw / img.width, rh / img.height);
         const dw = img.width * scale;
         const dh = img.height * scale;
-        const dx = rx + (targetW - dw) / 2;
-        const dy = ry;
-
-        // Actual authentic photograph without artificial filter or grayish cast
+        const dx = rx + (rw - dw) / 2;
+        const dy = ry + (rh - dh) / 2;
         ctx.drawImage(img, dx, dy, dw, dh);
-        ctx.restore();
+      } else {
+        // 'cover'
+        const scale = Math.max(rw / img.width, rh / img.height);
+        const dw = img.width * scale;
+        const dh = img.height * scale;
+        const dx = rx + (rw - dw) / 2;
+        const dy = ry + (rh - dh) / 2;
+        ctx.drawImage(img, dx, dy, dw, dh);
       }
-
-      // 3. Asymmetrical Matte Black Wave Block (deep black, not gray)
-      const y1 = ry + rh * 0.60;
-      const y2 = ry + rh * 0.68;
-      const curveStartX = rx + rw * 0.58;
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(rx, y1);
-      ctx.lineTo(curveStartX, y1);
-      ctx.bezierCurveTo(
-        rx + rw * 0.75, y1,
-        rx + rw * 0.78, y2,
-        rx + rw, y2
-      );
-      ctx.lineTo(rx + rw, ry + rh);
-      ctx.lineTo(rx, ry + rh);
-      ctx.closePath();
-      ctx.fillStyle = '#0f0f11';
-      ctx.fill();
-
-      // 4. Typography on the Dark Block: SURAJ Kumar Sharma - big, bold, filling negative space
-      const padX = 36;
-      const textLeft = rx + padX;
-
-      // White Name: SURAJ Kumar Sharma (52px bold, massive & prominent)
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = '900 52px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-      ctx.fillText('SURAJ', textLeft, y1 + 30);
-      ctx.font = '900 42px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText('Kumar Sharma', textLeft, y1 + 86);
-
-      // Bottom Row: "Visual Designer" left-aligned, "ID #0009256" right-aligned
-      const bottomY = ry + rh - 40;
-      ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
-      ctx.fillStyle = '#E4E4E7';
-      ctx.fillText('Visual Designer', textLeft, bottomY);
-
-      ctx.textAlign = 'right';
-      ctx.font = '700 20px "Plus Jakarta Sans", monospace, sans-serif';
-      ctx.fillStyle = '#E4E4E7';
-      ctx.fillText('ID #0009256', rx + rw - padX, bottomY);
-
-      // 5. Top clip slot punch hole
-      ctx.fillStyle = '#111113';
-      const slotW = 50;
-      const slotH = 12;
-      const slotX = rx + (rw - slotW) / 2;
-      const slotY = ry + 24;
-      const r = slotH / 2;
-      ctx.beginPath();
-      ctx.moveTo(slotX + r, slotY);
-      ctx.lineTo(slotX + slotW - r, slotY);
-      ctx.arc(slotX + slotW - r, slotY + r, r, -Math.PI / 2, Math.PI / 2);
-      ctx.lineTo(slotX + r, slotY + slotH);
-      ctx.arc(slotX + r, slotY + r, r, Math.PI / 2, -Math.PI / 2);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.restore();
-    };
-
-    const drawModernBackBadge = (rect: any) => {
-      const rx = rect.x * W;
-      const ry = rect.y * H;
-      const rw = rect.w * W;
-      const rh = rect.h * H;
-
-      ctx.save();
-      // Matte dark background
-      ctx.fillStyle = '#0f0f11';
-      ctx.fillRect(rx, ry, rw, rh);
-
-      // Top slot hole
-      ctx.fillStyle = '#27272a';
-      const slotW = 50;
-      const slotH = 12;
-      const slotX = rx + (rw - slotW) / 2;
-      const slotY = ry + 24;
-      const r = slotH / 2;
-      ctx.beginPath();
-      ctx.moveTo(slotX + r, slotY);
-      ctx.lineTo(slotX + slotW - r, slotY);
-      ctx.arc(slotX + slotW - r, slotY + r, r, -Math.PI / 2, Math.PI / 2);
-      ctx.lineTo(slotX + r, slotY + slotH);
-      ctx.arc(slotX + r, slotY + r, r, Math.PI / 2, -Math.PI / 2);
-      ctx.closePath();
-      ctx.fill();
-
-      // Bold vertical brand text
-      ctx.save();
-      ctx.translate(rx + 68, ry + rh - 60);
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('# SURAJ KUMAR SHARMA', 0, 0);
-      ctx.restore();
-
-      // Clean footer on back
-      ctx.fillStyle = '#A1A1AA';
-      ctx.font = '700 15px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('Visual Designer', rx + 36, ry + rh - 40);
-      ctx.textAlign = 'right';
-      ctx.fillText('ID #0009256', rx + rw - 36, ry + rh - 40);
-
       ctx.restore();
     };
 
     if (frontTex?.image) {
-      drawModernFrontBadge(frontTex.image, FRONT_UV_RECT);
+      drawFace(frontTex.image, FRONT_UV_RECT);
     }
-    drawModernBackBadge(BACK_UV_RECT);
+    if (backTex?.image && backImage) {
+      drawFace(backTex.image, BACK_UV_RECT);
+    } else if (frontTex?.image) {
+      // If no explicit backImage is supplied, display the card graphic on both sides
+      // so 3D rotation / swinging is seamlessly covered
+      drawFace(frontTex.image, BACK_UV_RECT);
+    }
 
     const composite = new THREE.CanvasTexture(canvas);
     composite.colorSpace = THREE.SRGBColorSpace;
@@ -385,7 +278,7 @@ function Band({
 
   return (
     <>
-      <group position={[anchorX, 4, 0]}>
+      <group position={[0, 4, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type="fixed" />
         <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps}>
           <BallCollider args={[0.1]} />
@@ -414,11 +307,10 @@ function Band({
                 <meshPhysicalMaterial
                   map={cardMap}
                   map-anisotropy={16}
-                  clearcoat={isMobile ? 0 : 0.3}
-                  clearcoatRoughness={0.1}
-                  roughness={0.2}
-                  metalness={0.0}
-                  reflectivity={0.2}
+                  clearcoat={isMobile ? 0 : 0.2}
+                  clearcoatRoughness={0.2}
+                  roughness={0.5}
+                  metalness={0.02}
                 />
               </mesh>
             )}

@@ -21,7 +21,7 @@ interface AboutMeProps {
 export default function AboutMe({ profile }: AboutMeProps) {
   const portraitImage =
     profile?.aboutImage ||
-    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
+    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1791301958/Frame_2_jvfa4i.png";
 
   return (
     <section id="about-me" className="relative w-full bg-[#FBFBFC] text-neutral-900 font-sans overflow-hidden py-16 sm:py-24 px-6 sm:px-12 md:px-16 border-t border-neutral-200/60">
@@ -162,39 +162,13 @@ export default function AboutMe({ profile }: AboutMeProps) {
               </div>
             </div>
 
-            {/* Modern ID Badge matching reference image */}
-            <div className="relative z-10 -mt-2 w-full max-w-[320px] bg-white rounded-[28px] overflow-hidden border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] flex flex-col">
-              
-              {/* Top slot clip hole */}
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 w-8 h-2 rounded-full bg-neutral-900 border border-neutral-400/50 shadow-inner" />
-
-              {/* Portrait Photograph covering top 62% */}
-              <div className="w-full aspect-[4/4.5] overflow-hidden bg-neutral-100">
-                <img
-                  src={portraitImage}
-                  alt="Sooraj Kumar Sharma Portrait"
-                  className="w-full h-full object-cover filter contrast-105"
-                />
-              </div>
-
-              {/* Asymmetrical Dark Matte Block */}
-              <div className="relative -mt-6 bg-[#18181b] text-white pt-6 pb-5 px-6 rounded-tr-[36px] flex flex-col justify-between min-h-[140px]">
-                {/* Name */}
-                <div className="space-y-0.5">
-                  <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-black tracking-tight text-white leading-tight">
-                    SURAJ
-                  </h3>
-                  <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-bold tracking-tight text-white leading-tight">
-                    Kumar Sharma
-                  </h3>
-                </div>
-
-                {/* Bottom Row */}
-                <div className="mt-5 flex items-center justify-between text-xs text-neutral-300 font-medium">
-                  <span>Visual Designer</span>
-                  <span className="font-mono text-neutral-400">ID #0009256</span>
-                </div>
-              </div>
+            {/* Modern ID Badge */}
+            <div className="relative z-10 -mt-2 w-full max-w-[290px] rounded-[24px] overflow-hidden border border-neutral-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] flex flex-col items-center bg-black">
+              <img
+                src={portraitImage}
+                alt="Sooraj Kumar Sharma Identity Card"
+                className="w-full h-auto object-cover rounded-[24px]"
+              />
             </div>
 
           </motion.div>

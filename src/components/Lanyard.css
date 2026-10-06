@@ -10,6 +10,7 @@
   align-items: center;
   overflow: visible;
   pointer-events: none;
+  touch-action: none;
 }
 
 .lanyard-wrapper canvas {
@@ -20,4 +21,10 @@
   pointer-events: auto;
   overflow: visible;
   outline: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.lanyard-wrapper canvas:active {
+  cursor: grabbing;
 }

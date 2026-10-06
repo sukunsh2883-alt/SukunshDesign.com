@@ -23,7 +23,7 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
 
   const portraitImage =
     profile?.aboutImage ||
-    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
+    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1791301958/Frame_2_jvfa4i.png";
 
   return (
     <AnimatePresence>
@@ -184,27 +184,13 @@ export default function AboutMeModal({ isOpen, onClose, profile }: AboutMeProps)
                   </div>
                 </div>
 
-                {/* White Rounded Rectangular ID Badge */}
-                <div className="relative z-10 -mt-2 w-[250px] sm:w-[280px] md:w-[300px] bg-white rounded-[36px] border border-neutral-200/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] p-4 sm:p-5 flex flex-col items-center text-center">
-                  
-                  {/* Small Circular Hole at top center */}
-                  <div className="w-3.5 h-3.5 rounded-full bg-neutral-900 border-2 border-neutral-300 mb-3 shadow-inner flex items-center justify-center">
-                    <div className="w-1 h-1 rounded-full bg-neutral-700" />
-                  </div>
-
-                  {/* B&W Portrait Photograph */}
-                  <div className="w-full aspect-[4/5] overflow-hidden rounded-[28px] bg-neutral-100 shadow-sm border border-neutral-200/60">
-                    <img
-                      src={portraitImage}
-                      alt="Suraj Kumar Sharma Portrait"
-                      className="w-full h-full object-cover filter grayscale contrast-110 rounded-[28px]"
-                    />
-                  </div>
-
-                  {/* Name SURAJ KUMAR SHARMA in bold uppercase */}
-                  <div className="mt-4 sm:mt-5 font-sans font-bold tracking-[0.16em] text-sm sm:text-base text-neutral-950 uppercase">
-                    SURAJ KUMAR SHARMA
-                  </div>
+                {/* ID Badge Card */}
+                <div className="relative z-10 -mt-2 w-[240px] sm:w-[270px] md:w-[290px] rounded-[24px] overflow-hidden border border-neutral-800/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center bg-black">
+                  <img
+                    src={portraitImage}
+                    alt="Sooraj Kumar Sharma Identity Card"
+                    className="w-full h-auto object-cover rounded-[24px]"
+                  />
                 </div>
 
               </motion.div>

@@ -157,7 +157,7 @@ export default function ScrollShowcase({
   // 14 items (repeating the 7 user Cloudinary videos twice) for seamless continuous infinite reel stream with zero random images
   const reelItems = Array.from({ length: 14 }, (_, index) => AI_PROMOTION_REEL_VIDEOS[index % AI_PROMOTION_REEL_VIDEOS.length]);
   const portraitImage =
-    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png";
+    "https://res.cloudinary.com/dylv5m3jk/image/upload/v1791301958/Frame_2_jvfa4i.png";
 
   const togglePlayInline = () => {
     if (!videoRef.current) return;
@@ -379,7 +379,7 @@ export default function ScrollShowcase({
     <div ref={containerRef} className="scroll-showcase w-full bg-[#050505] text-white select-none">
       {!isInline && onClose && (
         <nav className="fixed left-5 right-5 top-5 z-[120] flex items-center justify-between rounded-full border border-neutral-800 bg-neutral-900/85 px-5 py-3 backdrop-blur-md">
-          <span className="text-xs font-medium text-white">Suraj.</span>
+          <span className="text-xs font-medium text-white">Sukunsh.</span>
           <button
             type="button"
             onClick={onClose}
@@ -486,27 +486,10 @@ export default function ScrollShowcase({
             hoverTrailAmount={8}
           />
         </div>
-        {/* Full-Screen Lanyard 3D Workspace: zero cropping, movable all over the screen */}
-        <div
-          ref={aboutStageRef}
-          className="absolute inset-0 w-full h-full z-10 overflow-hidden pointer-events-none"
-          aria-label="SURAJ Kumar Sharma identity card"
-        >
-          <div className="w-full h-full pointer-events-auto">
-            <Lanyard
-              position={[0, 0, 22]}
-              fov={22}
-              gravity={[0, -40, 0]}
-              frontImage={portraitImage}
-              imageFit="cover"
-              transparent={true}
-              anchorX={typeof window !== 'undefined' && window.innerWidth >= 1024 ? 3.4 : 0}
-            />
-          </div>
-        </div>
 
-        <div className="relative z-20 mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16 pointer-events-none">
-          <div className="folio-reveal flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12 lg:col-span-7 pointer-events-auto">
+
+        <div className="relative z-10 mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="folio-reveal flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12 lg:col-span-7">
             <div>
               <div className="mb-2.5 h-[1.5px] w-12 bg-white" />
               <div className="inline-flex items-center gap-1 text-xs font-medium tracking-wide text-white">
@@ -575,8 +558,21 @@ export default function ScrollShowcase({
             </div>
           </div>
 
-          {/* Right column spacer for desktop grid layout */}
-          <div className="hidden lg:block lg:col-span-5 h-[650px] pointer-events-none" />
+          <div
+            ref={aboutStageRef}
+            className="folio-reveal flex flex-col items-center justify-center lg:col-span-5 relative w-full h-[750px] sm:h-[860px] md:h-[960px] lg:h-[1000px] overflow-visible"
+            aria-label="Sooraj Kumar Sharma identity card"
+          >
+            <Lanyard
+              position={[0, 0, 22]}
+              fov={22}
+              gravity={[0, -40, 0]}
+              frontImage={portraitImage}
+              backImage={portraitImage}
+              imageFit="fill"
+              transparent={true}
+            />
+          </div>
         </div>
         <div className="folio-reveal relative mx-auto mt-8 w-full max-w-[1380px]">
           <CurvedLoop
