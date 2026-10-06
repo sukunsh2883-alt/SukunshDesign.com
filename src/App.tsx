@@ -6,6 +6,7 @@ import Lenis from "lenis";
 
 // Subcomponents
 import LoadingScreen from "./components/LoadingScreen";
+import UserCursor from "./components/UserCursor";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Lightbox from "./components/Lightbox";
@@ -694,6 +695,9 @@ export default function App() {
 
   return (
     <div className="app page relative min-h-screen overflow-x-clip overflow-y-visible bg-[#050505] text-neutral-900 transition-colors duration-300 touch-pan-y">
+      {/* Site-wide interactive precision cursor with circular project hover */}
+      <UserCursor />
+
       {/* Smooth Curtain Loading Overlay: sits cleanly on top and peels up when ready */}
       <div id="loading-overlay-root">
         {isLoading && (

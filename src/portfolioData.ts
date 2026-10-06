@@ -35,7 +35,6 @@ export interface DesignProject {
   pdfUrl?: string;
   uploadedPdfName?: string;
   behanceEmbedUrl?: string;
-  tags?: string[];
 }
 
 export interface VideoCard {
@@ -355,6 +354,31 @@ export const designProjects: DesignProject[] = [
       "https://mir-cdn.behance.net/v1/rendition/project_modules/source/d88f97256423999.6abbee93c5f62.png",
       "https://mir-cdn.behance.net/v1/rendition/project_modules/source/c3b6dd256423999.6abbee93c4a2e.png",
       "https://mir-cdn.behance.net/v1/rendition/project_modules/source/75e34a256423999.6abbee93c34bb.png"
+    ],
+    "isAI": false,
+    "pdfUrl": "",
+    "uploadedPdfName": "",
+    "behanceEmbedUrl": ""
+  },
+  {
+    "id": "layer-82-motion-design",
+    "title": "LAYER 82 — Motion Design",
+    "type": "Motion & Film",
+    "year": "2026",
+    "description": "LAYER 82 — Motion design. Editorial kinetic visual, 3D typography, and dynamic identity design.",
+    "image": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+    "video": "/design-illustration-loop.mp4",
+    "tools": [
+      "Cinema 4D",
+      "After Effects",
+      "Premiere Pro",
+      "Blender"
+    ],
+    "link": "#",
+    "client": "LAYER 82",
+    "aboutProject": "Editorial kinetic visual and design system featuring high-velocity typography, dynamic 3D elements, and cinematic video storytelling.",
+    "galleryImages": [
+      "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
     ],
     "isAI": false,
     "pdfUrl": "",

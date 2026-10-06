@@ -52,7 +52,7 @@ export default function Navbar({
     },
     {
       label: "About",
-      ariaLabel: "About Suraj",
+      ariaLabel: "About Sukunsh",
       link: "#about",
       onClick: () => handleNavClick("#about"),
     },
@@ -90,14 +90,14 @@ export default function Navbar({
       <StaggeredMenu
         position="right"
         isFixed={true}
-        logoText={`${profile?.brandName || "Suraj"}.`}
+        logoText={`${profile?.brandName || "Sukunsh"}.`}
         onLogoClick={() => handleNavClick("#home")}
         items={menuItems}
         socialItems={socialItems}
         displaySocials={true}
         displayItemNumbering={true}
-        menuButtonColor="#ffffff"
-        openMenuButtonColor="#ffffff"
+        menuButtonColor="#111113"
+        openMenuButtonColor="#111113"
         changeMenuColorOnOpen={true}
         colors={["#0c0c0e", "#18181b", "#27272a"]}
         accentColor="#f97316"

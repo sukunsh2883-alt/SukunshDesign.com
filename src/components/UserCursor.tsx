@@ -1,44 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { motion, useMotionValue, useSpring, animate, type SpringOptions } from "motion/react";
+import { motion, useMotionValue, useSpring, type SpringOptions } from "motion/react";
 
 export type UserCursorProps = {
-  name?: string;
-  color?: string;
-  size?: number;
-  hideNativeCursor?: boolean;
-  hideOnTouch?: boolean;
   zIndex?: number;
-  pressScale?: number;
-  style?: React.CSSProperties;
   children?: React.ReactNode;
 };
 
-const COMPONENT_DEFAULTS = {
-  color: "#09090b",
-  size: 26,
-  pressScale: 0.88,
-  hideNativeCursor: true,
-  hideOnTouch: true,
-  zIndex: 9999999,
-};
-
-export function UserCursor(props: UserCursorProps) {
-  const mergedProps = { ...COMPONENT_DEFAULTS, ...props };
-  const {
-    size,
-    pressScale,
-    hideNativeCursor,
-    hideOnTouch,
-    zIndex,
-    children,
-  } = mergedProps;
-
-  // Client-side portal mount container
+export function UserCursor({ zIndex = 9999999, children }: UserCursorProps) {
   const [mounted, setMounted] = useState(false);
   const [hovering, setHovering] = useState(false);
-  const [isInteractive, setIsInteractive] = useState(false);
-  const [cursorTag, setCursorTag] = useState<string | null>(null);
+  const [isProject, setIsProject] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
@@ -46,12 +18,8 @@ export function UserCursor(props: UserCursorProps) {
     setMounted(true);
   }, []);
 
-  // --- touch detection -----------------------------------------------------
+  // Touch device detection (disable custom cursor on touch screens)
   useEffect(() => {
-    if (!hideOnTouch) {
-      setIsTouchDevice(false);
-      return;
-    }
     if (typeof window === "undefined" || !window.matchMedia) return;
     const mql = window.matchMedia("(pointer: coarse)");
     const sync = () => setIsTouchDevice(!!mql.matches);
@@ -60,77 +28,36 @@ export function UserCursor(props: UserCursorProps) {
       mql.addEventListener("change", sync);
       return () => mql.removeEventListener("change", sync);
     }
-    const legacy = mql as MediaQueryList & {
-      addListener?: (l: (e: MediaQueryListEvent) => void) => void;
-      removeListener?: (l: (e: MediaQueryListEvent) => void) => void;
-    };
-    legacy.addListener?.(sync);
-    return () => legacy.removeListener?.(sync);
-  }, [hideOnTouch]);
+  }, []);
 
-  // Apply cursor: none class to document when active
-  useEffect(() => {
-    if (hideNativeCursor && !isTouchDevice && typeof document !== "undefined") {
-      document.documentElement.classList.add("custom-cursor-active");
-      document.body.classList.add("custom-cursor-active");
-      return () => {
-        document.documentElement.classList.remove("custom-cursor-active");
-        document.body.classList.remove("custom-cursor-active");
-      };
-    }
-  }, [hideNativeCursor, isTouchDevice]);
-
-  // Fast, responsive spring physics for cursor position
-  const arrowSpring = useMemo<SpringOptions>(
-    () => ({ stiffness: 600, damping: 38, mass: 0.35 }),
+  // Smooth, snappy spring physics for cursor tracking
+  const springConfig = useMemo<SpringOptions>(
+    () => ({ stiffness: 500, damping: 32, mass: 0.28 }),
     []
   );
 
-  const mouseX = useMotionValue(-100);
-  const mouseY = useMotionValue(-100);
+  const mouseX = useMotionValue(-200);
+  const mouseY = useMotionValue(-200);
 
-  const cursorX = useSpring(mouseX, arrowSpring);
-  const cursorY = useSpring(mouseY, arrowSpring);
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
 
-  // Press & hover scale
-  const scaleMV = useMotionValue(1);
-  useEffect(() => {
-    const targetScale = pressed ? pressScale : isInteractive ? 1.14 : 1;
-    const controls = animate(scaleMV, targetScale, {
-      type: "spring",
-      stiffness: 450,
-      damping: 25,
-      mass: 0.4,
-    });
-    return () => controls.stop();
-  }, [pressed, isInteractive, pressScale, scaleMV]);
-
-  // Check if hovering over clickable / interactive target and custom cursor text
-  const checkInteractiveTarget = useCallback((clientX: number, clientY: number) => {
+  // Check specifically if the hovered element is a project card or inside project list
+  const checkProjectTarget = useCallback((clientX: number, clientY: number) => {
     if (typeof document === "undefined") return;
     const el = document.elementFromPoint(clientX, clientY);
     if (!el) {
-      setIsInteractive(false);
-      setCursorTag(null);
+      setIsProject(false);
       return;
     }
 
-    const isClickable = !!el.closest(
-      'a, button, [role="button"], input, select, textarea, [data-project-card], .project-card, .wave-reel-card, .ai-film-card, .interactive-target, [tabindex="0"]'
+    const isProjectCard = !!el.closest(
+      '[data-cursor-project], [data-project-card], .project-card, [data-project-id], #projects [role="button"], #projects .group, .editorial-project-card, [data-role="project-item"]'
     );
-    setIsInteractive(isClickable);
-
-    // Read dedicated cursor tag or text
-    const tagEl = el.closest("[data-cursor-tag], [data-cursor-text]");
-    if (tagEl) {
-      const tagVal = tagEl.getAttribute("data-cursor-tag") || tagEl.getAttribute("data-cursor-text");
-      setCursorTag(tagVal || null);
-    } else {
-      setCursorTag(null);
-    }
+    setIsProject(isProjectCard);
   }, []);
 
-  // Global pointer listeners across the entire document & window
+  // Global pointer listeners
   useEffect(() => {
     if (isTouchDevice || typeof window === "undefined") return;
 
@@ -138,7 +65,7 @@ export function UserCursor(props: UserCursorProps) {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
       if (!hovering) setHovering(true);
-      checkInteractiveTarget(e.clientX, e.clientY);
+      checkProjectTarget(e.clientX, e.clientY);
     };
 
     const onDown = () => setPressed(true);
@@ -146,20 +73,18 @@ export function UserCursor(props: UserCursorProps) {
 
     const onLeave = () => {
       setHovering(false);
-      setIsInteractive(false);
-      setCursorTag(null);
+      setIsProject(false);
     };
 
-    let scrollCheckRaf: number | null = null;
+    let scrollRaf: number | null = null;
     const onScroll = () => {
-      // Throttle element check during scrolling via requestAnimationFrame to avoid synchronous layout reflows
-      if (scrollCheckRaf !== null) return;
-      scrollCheckRaf = requestAnimationFrame(() => {
-        scrollCheckRaf = null;
+      if (scrollRaf !== null) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = null;
         const currentX = mouseX.get();
         const currentY = mouseY.get();
         if (currentX >= 0 && currentY >= 0) {
-          checkInteractiveTarget(currentX, currentY);
+          checkProjectTarget(currentX, currentY);
         }
       });
     };
@@ -172,7 +97,7 @@ export function UserCursor(props: UserCursorProps) {
     window.addEventListener("blur", onLeave);
 
     return () => {
-      if (scrollCheckRaf !== null) cancelAnimationFrame(scrollCheckRaf);
+      if (scrollRaf !== null) cancelAnimationFrame(scrollRaf);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("mousedown", onDown, { capture: true });
       window.removeEventListener("mouseup", onUp, { capture: true });
@@ -180,16 +105,16 @@ export function UserCursor(props: UserCursorProps) {
       document.removeEventListener("mouseleave", onLeave);
       window.removeEventListener("blur", onLeave);
     };
-  }, [isTouchDevice, mouseX, mouseY, hovering, checkInteractiveTarget]);
+  }, [isTouchDevice, mouseX, mouseY, hovering, checkProjectTarget]);
 
   if (isTouchDevice || !mounted) {
     return children ? <>{children}</> : null;
   }
 
-  // Pure Minimalist Modern Cursor Portal (no tag / label, persistent across entire site)
+  // Transparent without fill, small outline circle with VIEW PROJECT text
   const cursorNode = (
     <div
-      id="site-custom-cursor"
+      id="project-hover-cursor-root"
       style={{
         position: "fixed",
         inset: 0,
@@ -206,54 +131,37 @@ export function UserCursor(props: UserCursorProps) {
           left: 0,
           x: cursorX,
           y: cursorY,
-          scale: scaleMV,
-          width: size,
-          height: size,
-          opacity: hovering ? 1 : 0,
-          transformOrigin: "0% 0%",
-          transition: "opacity 120ms ease-out",
-          willChange: "transform, opacity",
           pointerEvents: "none",
+          willChange: "transform, opacity",
+        }}
+        initial={false}
+        animate={{
+          scale: isProject ? (pressed ? 0.9 : 1) : 0,
+          opacity: hovering && isProject ? 1 : 0,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 460,
+          damping: 28,
+          mass: 0.28,
         }}
       >
-        {/* Sleek Minimalist Vector Arrow with Dual Contrast (visible on dark & light) */}
-        <svg
-          width={size}
-          height={size}
-          viewBox="0 0 28 28"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+        {/* Small transparent outline circle: no fill, crisp white outline, VIEW PROJECT text */}
+        <div
           style={{
-            display: "block",
-            overflow: "visible",
-            filter: "drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45))",
+            transform: "translate(-50%, -50%)",
           }}
+          className="w-14 h-14 sm:w-[58px] sm:h-[58px] rounded-full bg-transparent border border-white flex flex-col items-center justify-center select-none"
         >
-          <path
-            d="M5 3 L23 14 L14 16 L11 24 Z"
-            fill="#09090b"
-            stroke="#ffffff"
-            strokeWidth={1.5}
-            strokeLinejoin="round"
-          />
-        </svg>
-
-        {/* Floating Custom Cursor Tag (e.g. 'Click to see') */}
-        {cursorTag && (
-          <div
-            style={{
-              position: "absolute",
-              left: 18,
-              top: 18,
-              pointerEvents: "none",
-              whiteSpace: "nowrap",
-            }}
-            className="px-2.5 py-1 rounded-full bg-neutral-950/95 text-white text-[10px] font-mono tracking-wider shadow-xl border border-white/20 select-none uppercase font-semibold flex items-center gap-1.5"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-pulse" />
-            <span>{cursorTag}</span>
+          <div className="flex flex-col items-center justify-center text-center select-none pointer-events-none leading-none gap-0.5">
+            <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] font-extrabold tracking-[0.14em] uppercase text-white">
+              VIEW
+            </span>
+            <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] font-extrabold tracking-[0.14em] uppercase text-white">
+              PROJECT
+            </span>
           </div>
-        )}
+        </div>
       </motion.div>
     </div>
   );

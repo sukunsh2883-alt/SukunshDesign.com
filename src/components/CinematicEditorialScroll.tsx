@@ -309,6 +309,8 @@ export default function CinematicEditorialScroll({
                 onClick={onExploreClick}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onExploreClick?.()}
                 className="expanding-video group z-30 cursor-pointer overflow-hidden rounded-[6px] sm:rounded-[8px] bg-neutral-950 shadow-[0_20px_60px_rgba(0,0,0,0.85)] outline-none focus-visible:ring-2 focus-visible:ring-white w-full h-full"
                 style={{
@@ -320,6 +322,7 @@ export default function CinematicEditorialScroll({
                   ref={videoRef}
                   src={videoSrc}
                   poster={posterSrc}
+                  autoPlay
                   muted
                   loop
                   playsInline

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "motion/react";
-import CreativeLoadingArtwork from "./CreativeLoadingArtwork";
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -86,72 +85,64 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     <div
       ref={containerRef}
       id="custom-loading-screen"
-      className="fixed inset-0 z-[99999] overflow-hidden select-none cursor-pointer touch-none pointer-events-auto bg-white"
+      className="fixed inset-0 z-[99999] overflow-hidden select-none cursor-pointer touch-none pointer-events-auto bg-transparent"
       onClick={finishLoading}
       role="progressbar"
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
     >
-      {/* TOP GATE PANEL: Slides vertically up from center */}
+      {/* TOP PIECE: covers top 50% (0 to 50vh), splits vertically UP (-100%) */}
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "-100%" } : { y: "0%" }}
-        transition={{ duration: 0.75, ease: [0.76, 0, 0.24, 1] }}
-        className="absolute top-0 left-0 w-full h-1/2 bg-white z-20 border-b border-neutral-200/80 shadow-md"
-      />
+        transition={{ duration: 0.75, ease: [0.77, 0, 0.175, 1] }}
+        className="absolute top-0 left-0 w-full h-1/2 bg-[#050505] z-20 border-b border-neutral-850 flex flex-col justify-end items-center overflow-hidden"
+      >
+        {/* Top half: Clean Minimalist Brand Typography */}
+        <motion.div
+          animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="relative z-10 flex flex-col items-center pb-3 sm:pb-4 px-4 pointer-events-none"
+        >
+          <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-white mb-1">
+            {brandName}
+          </h1>
+          <span className="text-[10px] font-mono tracking-[0.24em] uppercase text-neutral-500">
+            Portfolio
+          </span>
+        </motion.div>
+      </motion.div>
 
-      {/* BOTTOM GATE PANEL: Slides vertically down from center */}
+      {/* BOTTOM PIECE: covers bottom 50% (50vh to 100vh), splits vertically DOWN (+100%) */}
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "100%" } : { y: "0%" }}
-        transition={{ duration: 0.75, ease: [0.76, 0, 0.24, 1] }}
+        transition={{ duration: 0.75, ease: [0.77, 0, 0.175, 1] }}
         onAnimationComplete={() => {
           if (isExiting) {
             onComplete();
           }
         }}
-        className="absolute bottom-0 left-0 w-full h-1/2 bg-white z-20 border-t border-neutral-200/80 shadow-md"
-      />
-
-      {/* Central Minimalist Featherweight Loading Content */}
-      <motion.div
-        initial={{ opacity: 1, scale: 1 }}
-        animate={isExiting ? { opacity: 0, scale: 0.96 } : { opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
-        className="absolute inset-0 z-30 flex flex-col items-center justify-center px-4 sm:px-6 pointer-events-none"
+        className="absolute bottom-0 left-0 w-full h-1/2 bg-[#050505] z-20 border-t border-neutral-850 flex flex-col justify-start items-center overflow-hidden"
       >
-        <CreativeLoadingArtwork isExiting={isExiting} />
-
-        <div className="flex flex-col items-center text-center max-w-xs w-full">
-          {/* Creator Brand Name */}
-          <h1
-            className="text-3xl sm:text-4xl font-bold tracking-[-0.03em] text-neutral-950 mb-1.5"
-            style={{
-              fontFamily: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            }}
-          >
-            {brandName}
-            <span className="text-[#FF6A00]">.</span>
-          </h1>
-
-          <p className="text-[10px] font-mono tracking-[0.24em] uppercase text-neutral-500 mb-5">
-            Visual Designer • 2026
-          </p>
-
-          {/* Minimal Progress Hairline */}
-          <div className="w-40 sm:w-52 h-[2px] bg-neutral-200 rounded-full overflow-hidden mb-3">
+        {/* Bottom half: Clean 1px Progress Hairline and Percentage Counter */}
+        <motion.div
+          animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="relative z-10 flex flex-col items-center pt-3 sm:pt-4 px-4 pointer-events-none max-w-xs w-full"
+        >
+          <div className="w-28 sm:w-36 h-[1px] bg-neutral-800 mb-2 overflow-hidden">
             <div
-              className="h-full bg-neutral-950 rounded-full transition-[width] duration-100 ease-out"
+              className="h-full bg-white transition-[width] duration-100 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
 
-          {/* Digital Counter */}
-          <span className="font-mono text-xs text-neutral-500 tabular-nums tracking-widest">
+          <span className="font-mono text-[10px] sm:text-[11px] text-neutral-400 tabular-nums tracking-widest">
             {progress < 10 ? `0${progress}` : progress}%
           </span>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );

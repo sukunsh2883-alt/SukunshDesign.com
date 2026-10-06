@@ -275,7 +275,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                         <span className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-pulse" />
                         <span>ADDING SOON</span>
                       </div>
-                      <p className="text-white/85 text-[10px] md:text-xs font-mono tracking-widest uppercase font-semibold text-center drop-shadow-sm">
+                      <p className="text-white/85 text-[10px] md:text-xs font-mono tracking-widest uppercase font-semibold text-center">
                         6 More Projects
                       </p>
                     </div>

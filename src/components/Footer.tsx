@@ -283,10 +283,7 @@ export default function Footer({ profile, onNavigate }: FooterProps) {
           ty += Math.cos(time * 1.8 + piece.phase) * (3.0 + piece.strength * 1.8);
           rot += Math.sin(time * 2.0 + piece.phase) * (6.0 + piece.strength * 2.0);
           scale *= 1.2 * pulse;
-          piece.el.style.filter =
-            piece.role === "flower"
-              ? "drop-shadow(0 0 10px rgba(249, 250, 237, 0.95)) brightness(1.25)"
-              : "drop-shadow(0 0 8px rgba(127, 113, 62, 0.85)) brightness(1.2)";
+          piece.el.style.filter = "brightness(1.2)";
         } else {
           piece.el.style.filter = "none";
         }

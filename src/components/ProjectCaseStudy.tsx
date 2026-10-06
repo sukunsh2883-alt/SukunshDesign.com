@@ -131,9 +131,9 @@ export default function ProjectCaseStudy({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="project-case-study fixed inset-0 z-[200] overflow-x-hidden overflow-y-scroll overscroll-y-contain bg-[#181818] text-neutral-950 select-text"
+      className="project-case-study fixed inset-0 z-[200] overflow-x-hidden overflow-y-scroll overscroll-y-contain bg-[#f0f0f2] text-neutral-950 select-text"
     >
-      <div ref={contentRef} className="w-full bg-[#181818]">
+      <div ref={contentRef} className="w-full bg-[#f0f0f2]">
         <article className="mx-auto min-h-screen w-full max-w-[1440px] bg-white shadow-[0_28px_90px_rgba(0,0,0,0.35)]">
           
           {/* Header & Hero Presentation */}

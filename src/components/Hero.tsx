@@ -1146,8 +1146,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       ref={sectionRef}
       id="home"
       data-cursor-tag="Home"
-      className="hero relative h-[100dvh] md:h-screen min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none overflow-hidden bg-[#050505] text-white select-none touch-pan-y"
-      style={{ backgroundColor: "#050505" }}
+      className="hero relative h-[100dvh] md:h-screen min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none overflow-hidden bg-[#fafafa] text-neutral-950 select-none touch-pan-y"
+      style={{ backgroundColor: "#fafafa" }}
     >
       {/* Central Interactive Artwork Canvas with Character & PORTFOLIO Typography */}
       <div className="hero-inner relative flex h-full min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none items-center justify-center px-0 pt-0 md:pt-16 touch-pan-y">

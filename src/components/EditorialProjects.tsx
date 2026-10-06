@@ -24,6 +24,7 @@ export default function EditorialProjects({
   const p6 = projects.find(p => p.id === "design-character-anim") || designProjects.find(p => p.id === "design-character-anim") || projects[6]; // Left Column - Bottom: Character Anim
 
   const p3 = projects.find(p => p.id === "nou-visual-identity") || designProjects.find(p => p.id === "nou-visual-identity") || projects[2]; // Right Column - Top: NOU (Beside WOKO)
+  const p_layer82 = projects.find(p => p.id === "layer-82-motion-design") || designProjects.find(p => p.id === "layer-82-motion-design");
   const p4 = projects.find(p => p.id === "design-1") || designProjects.find(p => p.id === "design-1") || projects[4]; // Right Column - Middle
   const p5 = projects.find(p => p.id === "design-earthquake-map") || designProjects.find(p => p.id === "design-earthquake-map") || projects[5]; // Right Column - Item 3
   const p_mono = projects.find(p => p.id === "design-monogram-logos") || designProjects.find(p => p.id === "design-monogram-logos"); // Right Column - Bottom
@@ -89,10 +90,12 @@ export default function EditorialProjects({
                 onClick={() => onSelectProject?.(p_claro)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p_claro)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p_claro.image}
                     alt={p_claro.title}
@@ -115,10 +118,12 @@ export default function EditorialProjects({
                 onClick={() => onSelectProject?.(p3)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p3)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p3.image}
                     alt={p3.title}
@@ -135,16 +140,72 @@ export default function EditorialProjects({
               </div>
             )}
 
+            {/* Video Project: Layer 82 (Placed directly after NOU with static image thumbnail) */}
+            <div
+              onClick={() => {
+                const targetProj = p_layer82 || {
+                  id: "layer-82-motion-design",
+                  title: "LAYER 82 — Motion Design",
+                  type: "Motion & Film",
+                  year: "2026",
+                  description: "LAYER 82 — Motion design. Editorial kinetic visual, 3D typography, and dynamic identity design.",
+                  image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+                  video: "/design-illustration-loop.mp4",
+                  tools: ["Cinema 4D", "After Effects", "Premiere Pro"],
+                  link: "#",
+                };
+                onSelectProject?.(targetProj);
+              }}
+              role="button"
+              tabIndex={0}
+              data-cursor-project="true"
+              data-project-card="true"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  const targetProj = p_layer82 || {
+                    id: "layer-82-motion-design",
+                    title: "LAYER 82 — Motion Design",
+                    type: "Motion & Film",
+                    year: "2026",
+                    description: "LAYER 82 — Motion design. Editorial kinetic visual, 3D typography, and dynamic identity design.",
+                    image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+                    video: "/design-illustration-loop.mp4",
+                    tools: ["Cinema 4D", "After Effects", "Premiere Pro"],
+                    link: "#",
+                  };
+                  onSelectProject?.(targetProj);
+                }
+              }}
+              className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
+            >
+              <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <img
+                  src="https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
+                  alt="LAYER 82 — Motion Design"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              {renderCardMeta(
+                "Motion & Film",
+                "LAYER 82 — Motion design",
+                "Editorial kinetic visual and design system."
+              )}
+            </div>
+
             {/* Left Item 3: p2 (Landscape) */}
             {p2 && (
               <div
                 onClick={() => onSelectProject?.(p2)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p2)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p2.image}
                     alt={p2.title}
@@ -167,10 +228,12 @@ export default function EditorialProjects({
                 onClick={() => onSelectProject?.(p5)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p5)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p5.image}
                     alt={p5.title}
@@ -198,10 +261,12 @@ export default function EditorialProjects({
                 onClick={() => onSelectProject?.(p1)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p1)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p1.image}
                     alt={p1.title}
@@ -224,10 +289,12 @@ export default function EditorialProjects({
                 onClick={() => onSelectProject?.(p4)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p4)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[1/1] sm:aspect-[1/1] md:aspect-[4/4.2] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[1/1] sm:aspect-[1/1] md:aspect-[4/4.2] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p4.image}
                     alt={p4.title}
@@ -250,10 +317,12 @@ export default function EditorialProjects({
                 onClick={() => onSelectProject?.(p6)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p6)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p6.image}
                     alt={p6.title}
@@ -276,10 +345,12 @@ export default function EditorialProjects({
                 onClick={() => onSelectProject?.(p_mono)}
                 role="button"
                 tabIndex={0}
+                data-cursor-project="true"
+                data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p_mono)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900 shadow-xs hover:shadow-md transition-shadow duration-300">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                   <img
                     src={p_mono.image}
                     alt={p_mono.title}
