@@ -7,8 +7,8 @@ import { buildPortfolioTsContent } from "./server/portfolioSync";
 const app = express();
 const PORT = 3000;
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 // Endpoint to permanently save Creator Studio data to src/portfolioData.ts and git
 app.post("/api/portfolio/save", async (req, res) => {

@@ -17,5 +17,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
+          'vendor-motion': ['motion', 'gsap', 'lenis'],
+          'vendor-react': ['react', 'react-dom'],
+        },
+      },
+    },
   },
 });

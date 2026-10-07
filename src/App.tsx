@@ -1,24 +1,26 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
-// Subcomponents
+// Core Subcomponents (immediately rendered)
 import LoadingScreen from "./components/LoadingScreen";
 import UserCursor from "./components/UserCursor";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import Lightbox from "./components/Lightbox";
-import AdminPanel from "./components/AdminPanel";
-import ProjectCaseStudy from "./components/ProjectCaseStudy";
-import ProjectsExplorer from "./components/ProjectsExplorer";
-import AIWorkExplorer from "./components/AIWorkExplorer";
-import FullResumeModal from "./components/FullResumeModal";
-import AboutMeModal from "./components/AboutMeModal";
 import ScrollShowcase from "./components/ScrollShowcase";
-import GitHubExplorer from "./components/GitHubExplorer";
-import DesignIllustrationShowcase from "./components/DesignIllustrationShowcase";
+
+// Lazily Loaded Conditional Modals & Portals (loaded on-demand only)
+const Lightbox = lazy(() => import("./components/Lightbox"));
+const AdminPanel = lazy(() => import("./components/AdminPanel"));
+const ProjectCaseStudy = lazy(() => import("./components/ProjectCaseStudy"));
+const ProjectsExplorer = lazy(() => import("./components/ProjectsExplorer"));
+const AIWorkExplorer = lazy(() => import("./components/AIWorkExplorer"));
+const FullResumeModal = lazy(() => import("./components/FullResumeModal"));
+const AboutMeModal = lazy(() => import("./components/AboutMeModal"));
+const GitHubExplorer = lazy(() => import("./components/GitHubExplorer"));
+const DesignIllustrationShowcase = lazy(() => import("./components/DesignIllustrationShowcase"));
 
 // State Engines and Credentials
 import {
@@ -712,25 +714,27 @@ export default function App() {
       {/* Main page content - rendered immediately underneath the loading overlay so Hero is 100% ready */}
       <div className="flex flex-col min-h-screen">
         {selectedDesignProject ? (
-              <ProjectCaseStudy
-                project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
-                allProjects={designs}
-                onClose={() => {
-                  setSelectedDesignProject(null);
-                  window.history.pushState({}, "", "/#projects");
-                  window.setTimeout(() => {
-                    const el = document.getElementById("projects") || document.getElementById("scroll-demo");
-                    if (el) {
-                      if (lenisRef.current) {
-                        lenisRef.current.scrollTo(el, { offset: -60, duration: 1.0 });
-                      } else {
-                        const top = el.getBoundingClientRect().top + window.pageYOffset - 60;
-                        window.scrollTo({ top, behavior: "smooth" });
+              <Suspense fallback={null}>
+                <ProjectCaseStudy
+                  project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
+                  allProjects={designs}
+                  onClose={() => {
+                    setSelectedDesignProject(null);
+                    window.history.pushState({}, "", "/#projects");
+                    window.setTimeout(() => {
+                      const el = document.getElementById("projects") || document.getElementById("scroll-demo");
+                      if (el) {
+                        if (lenisRef.current) {
+                          lenisRef.current.scrollTo(el, { offset: -60, duration: 1.0 });
+                        } else {
+                          const top = el.getBoundingClientRect().top + window.pageYOffset - 60;
+                          window.scrollTo({ top, behavior: "smooth" });
+                        }
                       }
-                    }
-                  }, 60);
-                }}
-              />
+                    }, 60);
+                  }}
+                />
+              </Suspense>
             ) : (
             <>
             {/* Header Floating navigation bar */}
@@ -824,127 +828,133 @@ export default function App() {
             </div>
 
             {/* Floating portfolio control admin panel */}
-            <AdminPanel
-              onAddFilm={handleAddFilm}
-              onAddDesign={handleAddDesign}
-              onAddVideo={handleAddVideo}
-              onAddExploration={(newExp) => setExplorationsState((prev) => [newExp, ...prev])}
-              profile={profileState}
-              onUpdateProfile={setProfileState}
-              designs={designs}
-              onUpdateDesigns={setDesigns}
-              films={films}
-              onUpdateFilms={setFilms}
-              videos={videosState}
-              onUpdateVideos={setVideosState}
-              explorations={explorationsState}
-              onUpdateExplorations={setExplorationsState}
-            />
+            <Suspense fallback={null}>
+              <AdminPanel
+                onAddFilm={handleAddFilm}
+                onAddDesign={handleAddDesign}
+                onAddVideo={handleAddVideo}
+                onAddExploration={(newExp) => setExplorationsState((prev) => [newExp, ...prev])}
+                profile={profileState}
+                onUpdateProfile={setProfileState}
+                designs={designs}
+                onUpdateDesigns={setDesigns}
+                films={films}
+                onUpdateFilms={setFilms}
+                videos={videosState}
+                onUpdateVideos={setVideosState}
+                explorations={explorationsState}
+                onUpdateExplorations={setExplorationsState}
+              />
+            </Suspense>
 
             {/* Cinematic media projection lightbox */}
-            <Lightbox
-              isOpen={lightbox.isOpen}
-              mediaType={lightbox.mediaType}
-              src={lightbox.src}
-              title={lightbox.title}
-              category={lightbox.category}
-              description={lightbox.description}
-              onClose={() =>
-                setLightbox((prev) => ({ ...prev, isOpen: false }))
-              }
-            />
+            <Suspense fallback={null}>
+              <Lightbox
+                isOpen={lightbox.isOpen}
+                mediaType={lightbox.mediaType}
+                src={lightbox.src}
+                title={lightbox.title}
+                category={lightbox.category}
+                description={lightbox.description}
+                onClose={() =>
+                  setLightbox((prev) => ({ ...prev, isOpen: false }))
+                }
+              />
+            </Suspense>
 
             {/* Interactive Fullscreen Portals */}
-            <AnimatePresence>
-              {isProjectsExplorerOpen && (
-                <ProjectsExplorer
-                  isOpen={isProjectsExplorerOpen}
-                  onClose={closePortalWithHistory}
-                  projects={designs}
-                  onSelectProject={handleSelectProject}
-                />
-              )}
-            </AnimatePresence>
+            <Suspense fallback={null}>
+              <AnimatePresence>
+                {isProjectsExplorerOpen && (
+                  <ProjectsExplorer
+                    isOpen={isProjectsExplorerOpen}
+                    onClose={closePortalWithHistory}
+                    projects={designs}
+                    onSelectProject={handleSelectProject}
+                  />
+                )}
+              </AnimatePresence>
 
-            <AnimatePresence>
-              {isAIWorkExplorerOpen && (
-                <AIWorkExplorer
-                  isOpen={isAIWorkExplorerOpen}
-                  onClose={closePortalWithHistory}
-                  films={films}
-                  videos={videosState}
-                  explorations={explorationsState}
-                  onSelectFilm={(film) => {
-                    setLightbox({
-                      isOpen: true,
-                      mediaType: "video",
-                      src: film.videoUrl,
-                      title: film.title,
-                      category: film.category,
-                      description: film.description
-                    });
-                  }}
-                  onSelectVideo={(video) => {
-                    setLightbox({
-                      isOpen: true,
-                      mediaType: "video",
-                      src: video.videoUrl,
-                      title: video.title,
-                      category: video.type,
-                      description: `${video.duration} motion reel / ${video.year}`
-                    });
-                  }}
-                />
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {isAIWorkExplorerOpen && (
+                  <AIWorkExplorer
+                    isOpen={isAIWorkExplorerOpen}
+                    onClose={closePortalWithHistory}
+                    films={films}
+                    videos={videosState}
+                    explorations={explorationsState}
+                    onSelectFilm={(film) => {
+                      setLightbox({
+                        isOpen: true,
+                        mediaType: "video",
+                        src: film.videoUrl,
+                        title: film.title,
+                        category: film.category,
+                        description: film.description
+                      });
+                    }}
+                    onSelectVideo={(video) => {
+                      setLightbox({
+                        isOpen: true,
+                        mediaType: "video",
+                        src: video.videoUrl,
+                        title: video.title,
+                        category: video.type,
+                        description: `${video.duration} motion reel / ${video.year}`
+                      });
+                    }}
+                  />
+                )}
+              </AnimatePresence>
 
-            <AnimatePresence>
-              {isResumeOpen && (
-                <FullResumeModal
-                  isOpen={isResumeOpen}
-                  onClose={closePortalWithHistory}
-                />
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {isResumeOpen && (
+                  <FullResumeModal
+                    isOpen={isResumeOpen}
+                    onClose={closePortalWithHistory}
+                  />
+                )}
+              </AnimatePresence>
 
-            <AnimatePresence>
-              {isAboutMeOpen && (
-                <AboutMeModal
-                  isOpen={isAboutMeOpen}
-                  onClose={closePortalWithHistory}
-                  profile={profileState}
-                />
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {isAboutMeOpen && (
+                  <AboutMeModal
+                    isOpen={isAboutMeOpen}
+                    onClose={closePortalWithHistory}
+                    profile={profileState}
+                  />
+                )}
+              </AnimatePresence>
 
-            <AnimatePresence>
-              {isGitHubExplorerOpen && (
-                <GitHubExplorer
-                  isOpen={isGitHubExplorerOpen}
-                  onClose={closePortalWithHistory}
-                />
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {isGitHubExplorerOpen && (
+                  <GitHubExplorer
+                    isOpen={isGitHubExplorerOpen}
+                    onClose={closePortalWithHistory}
+                  />
+                )}
+              </AnimatePresence>
 
-            {/* Design & Illustration Showcase Screen */}
-            <AnimatePresence>
-              {isDesignShowcaseOpen && (
-                <DesignIllustrationShowcase
-                  isOpen={isDesignShowcaseOpen}
-                  onClose={closePortalWithHistory}
-                  projects={designs}
-                  onSelectProject={handleSelectProject}
-                  onAddDesign={handleAddDesign}
-                  onOpenCreatorStudio={() => {
-                    window.dispatchEvent(
-                      new CustomEvent("open-creator-studio", {
-                        detail: { tab: "uploader", assetType: "design", subTab: "add" }
-                      })
-                    );
-                  }}
-                />
-              )}
-            </AnimatePresence>
+              {/* Design & Illustration Showcase Screen */}
+              <AnimatePresence>
+                {isDesignShowcaseOpen && (
+                  <DesignIllustrationShowcase
+                    isOpen={isDesignShowcaseOpen}
+                    onClose={closePortalWithHistory}
+                    projects={designs}
+                    onSelectProject={handleSelectProject}
+                    onAddDesign={handleAddDesign}
+                    onOpenCreatorStudio={() => {
+                      window.dispatchEvent(
+                        new CustomEvent("open-creator-studio", {
+                          detail: { tab: "uploader", assetType: "design", subTab: "add" }
+                        })
+                      );
+                    }}
+                  />
+                )}
+              </AnimatePresence>
+            </Suspense>
 
             </>
             )}
