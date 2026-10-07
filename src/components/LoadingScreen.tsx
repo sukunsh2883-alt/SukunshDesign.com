@@ -31,13 +31,13 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     setIsExiting(true);
   }, []);
 
-  // Quick exit as soon as progress completes and hero is ready
+  // Fast, instant exit as soon as progress completes
   useEffect(() => {
-    if (progress >= 100 && isHeroReady && !hasFinishedRef.current) {
-      const timer = setTimeout(finishLoading, 40);
+    if (progress >= 100 && !hasFinishedRef.current) {
+      const timer = setTimeout(finishLoading, 20);
       return () => clearTimeout(timer);
     }
-  }, [isHeroReady, progress, finishLoading]);
+  }, [progress, finishLoading]);
 
   // Keyboard shortcut to skip
   useEffect(() => {
@@ -51,11 +51,11 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [finishLoading]);
 
-  // Snappy, featherweight progress animation (~750ms total)
+  // Snappy, ultra-fast progress animation (~320ms total)
   useEffect(() => {
     let animationFrame: number;
     let fallbackTimer: NodeJS.Timeout | null = null;
-    const duration = 750;
+    const duration = 320;
 
     const updateProgress = () => {
       const elapsed = Date.now() - startTimeRef.current;
@@ -69,7 +69,7 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
         animationFrame = requestAnimationFrame(updateProgress);
       } else {
         setProgress(100);
-        fallbackTimer = setTimeout(finishLoading, 80);
+        fallbackTimer = setTimeout(finishLoading, 20);
       }
     };
 
@@ -96,13 +96,13 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "-100%" } : { y: "0%" }}
-        transition={{ duration: 0.75, ease: [0.77, 0, 0.175, 1] }}
+        transition={{ duration: 0.42, ease: [0.76, 0, 0.24, 1] }}
         className="absolute top-0 left-0 w-full h-1/2 bg-[#050505] z-20 border-b border-neutral-850 flex flex-col justify-end items-center overflow-hidden"
       >
         {/* Top half: Clean Minimalist Brand Typography */}
         <motion.div
           animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
           className="relative z-10 flex flex-col items-center pb-3 sm:pb-4 px-4 pointer-events-none"
         >
           <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-white mb-1">
@@ -118,7 +118,7 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "100%" } : { y: "0%" }}
-        transition={{ duration: 0.75, ease: [0.77, 0, 0.175, 1] }}
+        transition={{ duration: 0.42, ease: [0.76, 0, 0.24, 1] }}
         onAnimationComplete={() => {
           if (isExiting) {
             onComplete();
@@ -129,12 +129,12 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
         {/* Bottom half: Clean 1px Progress Hairline and Percentage Counter */}
         <motion.div
           animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
           className="relative z-10 flex flex-col items-center pt-3 sm:pt-4 px-4 pointer-events-none max-w-xs w-full"
         >
           <div className="w-28 sm:w-36 h-[1px] bg-neutral-800 mb-2 overflow-hidden">
             <div
-              className="h-full bg-white transition-[width] duration-100 ease-out"
+              className="h-full bg-white transition-[width] duration-75 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>

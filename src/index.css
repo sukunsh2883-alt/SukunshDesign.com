@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Badeen+Display&display=swap');
 @import url('https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap');
 @import "tailwindcss";
 
@@ -586,9 +587,9 @@ section#home .hero-svg {
 }
 
 .hero-portfolio-text {
-  font-family: "Big Shoulders Display", "Francois One Local", Impact, sans-serif !important;
-  font-weight: 900 !important;
-  font-style: italic !important;
+  font-family: "Badeen Display", "Big Shoulders Display", Impact, sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
 }
 
 /* Desktop Hero layout >= 768px (Kept exactly as is) */
@@ -809,13 +810,13 @@ section#home .hero-svg {
 }
 
 .hero-portfolio-text {
-  font-family: "Big Shoulders Display", "Francois One Local", Impact, sans-serif !important;
-  font-weight: 900 !important;
-  font-style: italic !important;
+  font-family: "Badeen Display", "Big Shoulders Display", sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
   text-transform: uppercase !important;
-  letter-spacing: -0.025em !important;
-  fill: #ffffff !important;
-  font-size: 400px !important;
+  letter-spacing: -0.015em !important;
+  fill: #ff3b30 !important;
+  font-size: 220px !important;
   line-height: 1 !important;
   text-anchor: middle !important;
   user-select: none;

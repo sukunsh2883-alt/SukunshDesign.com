@@ -33,13 +33,13 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
   ];
 
   return (
-    <section id="contact" data-cursor-tag="Contact" className="w-full bg-[#FF6A00] text-black border-t border-black/15 pt-16 sm:pt-20 md:pt-28 pb-16 sm:pb-24 font-sans selection:bg-black selection:text-white">
+    <section id="contact" data-cursor-tag="Contact" className="w-full bg-[#ff3b30] text-black border-t border-black/15 pt-16 sm:pt-20 md:pt-28 pb-16 sm:pb-24 font-sans selection:bg-black selection:text-white">
       <div className="w-full max-w-[1380px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16">
         
         {/* Editorial Heading: LET'S TALK with Circular Rotating Badge directly beside it */}
         <div className="text-left">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-8">
-            <h2 className="text-[clamp(3.75rem,11.5vw,9.5rem)] font-bold uppercase tracking-[-0.035em] text-neutral-950 leading-[0.88] select-none">
+            <h2 className="text-[clamp(2.75rem,8vw,6.5rem)] font-bold uppercase tracking-[-0.035em] text-neutral-950 leading-[0.92] select-none">
               LET'S TALK
             </h2>
 
