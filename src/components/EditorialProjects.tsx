@@ -41,16 +41,15 @@ export default function EditorialProjects({
     return { line1: defaultLine1, line2: defaultLine2 };
   };
 
-  const renderCardMeta = (typeText = "Branding", line1 = "Background in Fine Art", line2 = "and Design.") => (
-    <div className="mt-2.5 sm:mt-3.5 md:mt-4 flex items-start gap-2 sm:gap-2.5 text-[clamp(0.75rem,1.2vw,0.875rem)] text-neutral-300 leading-[1.25]">
+  const renderCardMeta = (typeText = "Branding", line1 = "Background in Fine Art", _line2?: string) => (
+    <div className="mt-2.5 sm:mt-3 md:mt-3.5 flex items-center gap-2 sm:gap-2.5 text-[13px] sm:text-[14px] leading-none text-neutral-300">
       <span className="font-semibold text-white whitespace-nowrap">
         {typeText}
       </span>
-      <span className="inline-block w-px self-stretch bg-neutral-700 shrink-0 my-0.5" />
-      <div className="flex flex-col text-neutral-300 font-normal leading-[1.2]">
-        <span>{line1}</span>
-        <span>{line2}</span>
-      </div>
+      <span className="inline-block w-px h-3.5 bg-neutral-700 shrink-0" />
+      <span className="text-neutral-300 font-normal truncate">
+        {line1}
+      </span>
     </div>
   );
 
@@ -58,19 +57,18 @@ export default function EditorialProjects({
     <section
       id="projects"
       data-cursor-tag="Projects"
-      style={{ fontSize: "22px" }}
       className="relative w-full bg-[#050505] text-white pt-12 sm:pt-16 md:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16"
     >
       <div className="w-full mx-auto">
         
-        {/* Title: Projects ↙ with fluid clamp typography */}
+        {/* Title: Projects ↙ aligned to H2 standard 36–48px */}
         <div className="flex items-center gap-2 sm:gap-3 mb-8 sm:mb-12 md:mb-14">
-          <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.75rem,7.5vw,6rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
+          <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,4vw,3rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
             Projects
           </h2>
-          <span className="inline-flex items-center text-white transform translate-y-1">
+          <span className="inline-flex items-center text-white transform translate-y-0.5">
             <svg
-              className="w-[clamp(1.75rem,4.5vw,3.5rem)] h-[clamp(1.75rem,4.5vw,3.5rem)] stroke-current stroke-[2.2] fill-none"
+              className="w-7 h-7 sm:w-8 sm:h-8 stroke-current stroke-[2.2] fill-none"
               viewBox="0 0 24 24"
             >
               <path d="M19 5L5 19M5 19H17M5 19V7" strokeLinecap="round" strokeLinejoin="round" />
@@ -140,18 +138,17 @@ export default function EditorialProjects({
               </div>
             )}
 
-            {/* Video Project: Layer 82 (Placed directly after NOU with static image thumbnail) */}
+            {/* Project: Design and Illustration */}
             <div
               onClick={() => {
                 const targetProj = p_layer82 || {
                   id: "layer-82-motion-design",
-                  title: "LAYER 82 — Motion Design",
-                  type: "Motion & Film",
+                  title: "Design and Illustration",
+                  type: "Design & Illustration",
                   year: "2026",
-                  description: "LAYER 82 — Motion design. Editorial kinetic visual, 3D typography, and dynamic identity design.",
+                  description: "Design and illustration showcase. Visual craft and dynamic creative design.",
                   image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
-                  video: "/design-illustration-loop.mp4",
-                  tools: ["Cinema 4D", "After Effects", "Premiere Pro"],
+                  tools: ["Illustrator", "Photoshop", "Cinema 4D"],
                   link: "#",
                 };
                 onSelectProject?.(targetProj);
@@ -164,13 +161,12 @@ export default function EditorialProjects({
                 if (e.key === "Enter" || e.key === " ") {
                   const targetProj = p_layer82 || {
                     id: "layer-82-motion-design",
-                    title: "LAYER 82 — Motion Design",
-                    type: "Motion & Film",
+                    title: "Design and Illustration",
+                    type: "Design & Illustration",
                     year: "2026",
-                    description: "LAYER 82 — Motion design. Editorial kinetic visual, 3D typography, and dynamic identity design.",
+                    description: "Design and illustration showcase. Visual craft and dynamic creative design.",
                     image: "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
-                    video: "/design-illustration-loop.mp4",
-                    tools: ["Cinema 4D", "After Effects", "Premiere Pro"],
+                    tools: ["Illustrator", "Photoshop", "Cinema 4D"],
                     link: "#",
                   };
                   onSelectProject?.(targetProj);
@@ -181,16 +177,15 @@ export default function EditorialProjects({
               <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
                 <img
                   src="https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
-                  alt="LAYER 82 — Motion Design"
+                  alt="Design and Illustration"
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   loading="lazy"
                   referrerPolicy="no-referrer"
                 />
               </div>
               {renderCardMeta(
-                "Motion & Film",
-                "LAYER 82 — Motion design",
-                "Editorial kinetic visual and design system."
+                "Design & Illustration",
+                "Design and Illustration"
               )}
             </div>
 

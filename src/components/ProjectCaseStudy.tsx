@@ -131,48 +131,48 @@ export default function ProjectCaseStudy({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="project-case-study fixed inset-0 z-[200] overflow-x-hidden overflow-y-scroll overscroll-y-contain bg-[#f0f0f2] text-neutral-950 select-text"
+      className="project-case-study fixed inset-0 z-[200] overflow-x-hidden overflow-y-scroll overscroll-y-contain bg-black text-white select-text"
     >
-      <div ref={contentRef} className="w-full bg-[#f0f0f2]">
-        <article className="mx-auto min-h-screen w-full max-w-[1440px] bg-white shadow-[0_28px_90px_rgba(0,0,0,0.35)]">
+      <div ref={contentRef} className="w-full bg-black">
+        {/* Top-Left Back Button Navigation on Black */}
+        <div className="sticky top-0 z-50 w-full bg-black/90 backdrop-blur-md px-5 sm:px-8 md:px-12 lg:px-16 pt-5 pb-3 flex items-center justify-start border-b border-white/5">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Back to projects"
+            className="inline-flex items-center gap-2 rounded-full border border-neutral-800 bg-neutral-900/90 text-white px-4.5 py-2 text-[14px] font-medium hover:bg-neutral-800 hover:border-neutral-700 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back</span>
+          </button>
+        </div>
+
+        <article className="mx-auto min-h-screen w-full max-w-[1440px] bg-black text-white">
           
           {/* Header & Hero Presentation */}
-          <section className="grid min-h-[100svh] grid-cols-1 gap-10 px-5 pb-12 pt-6 sm:px-8 md:grid-cols-[0.72fr_1.45fr] md:items-center md:gap-12 md:px-12 md:py-10 lg:px-16">
-            <div className="flex h-full flex-col justify-between gap-12 md:min-h-[78vh]">
+          <section className="grid min-h-[calc(100svh-80px)] grid-cols-1 gap-10 px-5 pb-12 pt-2 sm:px-8 md:grid-cols-[0.72fr_1.45fr] md:items-center md:gap-12 md:px-12 md:py-8 lg:px-16 bg-black">
+            <div className="flex h-full flex-col justify-center gap-6 md:min-h-[68vh] text-left">
               
-              {/* Top Navigation */}
-              <div className="flex items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  aria-label="Back to projects"
-                  className="sticky top-5 z-40 inline-flex w-fit items-center gap-2 rounded-full border border-neutral-200 bg-white/95 px-4 py-2 text-[12px] font-medium text-neutral-900 shadow-xs hover:border-neutral-900 transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Back</span>
-                </button>
-              </div>
-
               {/* Title & Details */}
-              <div className="max-w-[360px] pb-4">
-                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-400">
+              <div className="max-w-[380px] text-left pb-2">
+                <p className="mb-3 font-mono text-[12px] uppercase tracking-[0.22em] text-neutral-400">
                   Project {displayIndex}
                 </p>
-                <h1 className="text-2xl sm:text-3xl font-sans font-medium leading-snug tracking-tight text-neutral-950">
+                <h1 className="text-2xl sm:text-3xl font-sans font-medium leading-snug tracking-tight text-white">
                   {project.title}
                 </h1>
-                <p className="mt-3 text-[13px] sm:text-[14px] leading-relaxed text-neutral-500 font-normal">
+                <p className="mt-3 text-[16px] sm:text-[17px] leading-relaxed text-neutral-300 font-normal">
                   {project.description || project.aboutProject}
                 </p>
 
                 <div className="mt-5 flex items-center gap-6 text-left">
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Category</p>
-                    <p className="mt-0.5 text-[12px] font-medium text-neutral-950">{project.type}</p>
+                    <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-neutral-500">Category</p>
+                    <p className="mt-0.5 text-[14px] font-medium text-white">{project.type}</p>
                   </div>
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400">Year</p>
-                    <p className="mt-0.5 text-[12px] font-medium text-neutral-950">{project.year}</p>
+                    <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-neutral-500">Year</p>
+                    <p className="mt-0.5 text-[14px] font-medium text-white">{project.year}</p>
                   </div>
                 </div>
 
@@ -180,7 +180,7 @@ export default function ProjectCaseStudy({
                   <button
                     type="button"
                     onClick={scrollToGallery}
-                    className="inline-flex items-center gap-1.5 text-[12px] font-medium text-neutral-950 hover:text-neutral-600 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-[14px] font-medium text-white hover:text-neutral-300 transition-colors cursor-pointer"
                   >
                     <span>View Work</span>
                     <ChevronDown className="h-3.5 w-3.5" />
@@ -196,28 +196,41 @@ export default function ProjectCaseStudy({
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="flex items-center"
             >
-              <div className="aspect-[1.35] w-full overflow-hidden bg-neutral-100 rounded-[2px] shadow-sm">
-                <img
-                  src={galleryImages[0]}
-                  alt={`${project.title} cover`}
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover"
-                />
+              <div className="aspect-[1.35] w-full overflow-hidden bg-neutral-900 rounded-[2px]">
+                {project.video ? (
+                  <video
+                    src={project.video}
+                    poster={galleryImages[0]}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    controls
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={galleryImages[0]}
+                    alt={`${project.title} cover`}
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover"
+                  />
+                )}
               </div>
             </motion.div>
           </section>
 
-          {/* Smooth Artwork Stream: ZERO JERK, continuous flowing images */}
+          {/* Smooth Artwork Stream on Pure Black */}
           <section
             id="project-gallery"
-            className="bg-white px-3 py-4 sm:px-5 sm:py-6"
+            className="bg-black px-3 py-4 sm:px-5 sm:py-6"
           >
-            <div className="mx-auto flex max-w-[1360px] flex-col gap-0 leading-none">
+            <div className="mx-auto flex max-w-[1360px] flex-col gap-0 leading-none bg-black">
               {galleryImages.map((image, index) => (
                 <div
                   key={`${image.slice(0, 40)}-${index}`}
-                  className="w-full flex justify-center bg-white p-0 m-0 border-0 outline-0 leading-none"
-                  style={{ backgroundColor: "#FFFFFF" }}
+                  className="w-full flex justify-center bg-black p-0 m-0 border-0 outline-0 leading-none"
+                  style={{ backgroundColor: "#000000" }}
                 >
                   <img
                     src={image}
@@ -232,7 +245,7 @@ export default function ProjectCaseStudy({
           </section>
 
           {/* Footer & Navigation Outro */}
-          <section className="flex min-h-[38vh] flex-col justify-between gap-10 bg-[#111] px-6 py-10 text-white sm:px-10 md:flex-row md:items-end md:px-16 md:py-14">
+          <section className="flex min-h-[38vh] flex-col justify-between gap-10 bg-[#0a0a0a] border-t border-neutral-900 px-6 py-10 text-white sm:px-10 md:flex-row md:items-end md:px-16 md:py-14">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">End of case study</p>
               <h2 className="mt-3 text-[clamp(2rem,4vw,4rem)] font-medium leading-none">More work awaits.</h2>

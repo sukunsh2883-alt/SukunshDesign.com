@@ -33,24 +33,24 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
   ];
 
   return (
-    <section id="contact" data-cursor-tag="Contact" className="w-full bg-[#ff3b30] text-black border-t border-black/15 pt-16 sm:pt-20 md:pt-28 pb-16 sm:pb-24 font-sans selection:bg-black selection:text-white">
+    <section id="contact" data-cursor-tag="Contact" className="w-full bg-[#ff3b30] text-black border-t border-black/15 pt-16 sm:pt-20 md:pt-24 pb-16 sm:pb-20 font-sans selection:bg-black selection:text-white select-none">
       <div className="w-full max-w-[1380px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16">
         
-        {/* Editorial Heading: LET'S TALK with Circular Rotating Badge directly beside it */}
+        {/* Editorial Heading: LET'S TALK with Circular Rotating Badge */}
         <div className="text-left">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-8">
-            <h2 className="text-[clamp(2.75rem,8vw,6.5rem)] font-bold uppercase tracking-[-0.035em] text-neutral-950 leading-[0.92] select-none">
+            <h2 className="text-[clamp(2.25rem,4vw,3rem)] font-bold uppercase tracking-[-0.035em] text-neutral-950 leading-none select-none">
               LET'S TALK
             </h2>
 
-            {/* Circular Rotating Contact Badge placed beside LET'S TALK */}
+            {/* Circular Rotating Contact Badge */}
             <a
               href={`mailto:${email}`}
               aria-label="Contact Suraj via Email"
-              className="group relative shrink-0 flex items-center justify-center h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-full bg-neutral-950 text-white shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-black self-start sm:self-center"
+              className="group relative shrink-0 flex items-center justify-center h-22 w-22 sm:h-26 sm:w-26 md:h-28 md:w-28 rounded-full bg-neutral-950 text-white shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-black self-start sm:self-center"
             >
               <div className="absolute inset-0 flex items-center justify-center">
-                <ArrowUpRight className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 stroke-[2.2] text-white transition-transform group-hover:rotate-45" />
+                <ArrowUpRight className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 stroke-[2.2] text-white transition-transform group-hover:rotate-45" />
               </div>
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <svg className="w-full h-full animate-[spin_12s_linear_infinite]" viewBox="0 0 100 100">
@@ -69,46 +69,33 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
             </a>
           </div>
 
-          <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-8 text-[clamp(0.75rem,1.2vw,0.875rem)] font-semibold uppercase tracking-[0.18em] text-neutral-900/80">
-            <div className="space-y-1.5">
+          {/* Minimal 1-Line Email & Social Links */}
+          <div className="mt-8 sm:mt-12 pt-6 border-t border-black/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 font-mono text-xs sm:text-sm">
+            <div>
               <a
                 href={`mailto:${email}`}
-                className="block text-neutral-950 hover:underline transition-all font-bold tracking-normal lowercase text-base sm:text-xl md:text-2xl"
+                className="text-neutral-950 hover:underline font-bold tracking-tight text-base sm:text-xl"
               >
                 {email}
               </a>
-              <p className="text-neutral-900/85 font-medium text-xs sm:text-sm">{location}</p>
+              <p className="text-neutral-900/80 font-medium text-xs mt-0.5">{location}</p>
             </div>
 
-            <div className="sm:text-right flex sm:justify-end items-start">
-              <p className="font-extrabold text-neutral-950 text-base sm:text-lg md:text-xl max-w-[320px] tracking-tight leading-snug">
-                AND CREATE SOME STUFF TOGETHER!
-              </p>
-            </div>
-          </div>
-
-          {/* Social Links Row: LinkedIn (Sukunsh Sharma), Behance, Instagram */}
-          <div className="mt-10 sm:mt-12 pt-8 border-t border-black/20">
-            <p className="text-xs font-bold uppercase tracking-widest text-neutral-950/80 mb-4">Connect & Follow</p>
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 uppercase tracking-[0.18em]">
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2 rounded-full border border-black/20 bg-neutral-950 px-5 py-3 sm:px-6 sm:py-3.5 text-xs sm:text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-black hover:scale-105 active:scale-95"
+                  className="text-neutral-950 hover:text-black font-semibold hover:underline flex items-center gap-1 transition-colors"
                 >
-                  <span className="font-bold">{social.name}</span>
-                  <span className="text-[11px] text-white/60 group-hover:text-white/80 font-normal hidden sm:inline">
-                    ({social.handle})
-                  </span>
-                  <ArrowUpRight className="h-3.5 w-3.5 stroke-[2] text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <span>{social.platform}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
                 </a>
               ))}
             </div>
           </div>
-
         </div>
 
       </div>

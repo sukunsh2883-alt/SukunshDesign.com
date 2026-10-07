@@ -276,7 +276,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               height={24}
             />
           ) : (
-            <span className="text-lg sm:text-xl font-bold font-sans tracking-tight text-white select-none leading-none">
+            <span className="text-[18px] font-bold font-sans tracking-tight text-white select-none leading-none">
               {logoText ? (
                 <>
                   {logoText.endsWith(".") ? (
@@ -346,11 +346,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                       >
                         <div className="flex items-center gap-3">
                           {displayItemNumbering && (
-                            <span className="text-[11px] font-mono text-neutral-400 group-hover:text-[#FF6A00] transition-colors">
+                            <span className="text-[13px] font-sans text-neutral-400 group-hover:text-[#FF6A00] transition-colors">
                               0{idx + 1}
                             </span>
                           )}
-                          <span className="text-[15px] font-medium tracking-tight text-white/90 group-hover:text-white group-hover:translate-x-0.5 transition-all">
+                          <span className="text-[18px] font-sans font-medium tracking-tight text-white/90 group-hover:text-white group-hover:translate-x-0.5 transition-all">
                             {it.label}
                           </span>
                         </div>
@@ -370,7 +370,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                         href={s.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-mono text-neutral-400 hover:text-white hover:underline transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+                        className="text-[13px] font-sans text-neutral-400 hover:text-white hover:underline transition-colors px-2 py-1 rounded-md hover:bg-white/5"
                       >
                         {s.label}
                       </a>

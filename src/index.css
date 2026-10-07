@@ -1,38 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Badeen+Display&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap');
 @import "tailwindcss";
-
-@font-face {
-  font-family: "Clash Display Local";
-  src: url("/fonts/ClashDisplay-Extralight.otf") format("opentype");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Clash Display Local";
-  src: url("/fonts/ClashDisplay-Light.otf") format("opentype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
 
 @font-face {
   font-family: "Clash Display Local";
   src: url("/fonts/ClashDisplay-Regular.otf") format("opentype");
   font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Clash Display Local";
-  src: url("/fonts/ClashDisplay-Medium.otf") format("opentype");
-  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -49,46 +20,6 @@
   font-family: "Clash Display Local";
   src: url("/fonts/ClashDisplay-Bold.otf") format("opentype");
   font-weight: 700 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Francois One Local";
-  src: url("/fonts/FrancoisOne-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "AXIS Local";
-  src: url("/fonts/AXIS.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Baveuse Local";
-  src: url("/fonts/Baveuse.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Baveuse 3D Local";
-  src: url("/fonts/Baveuse%203d.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "HIDROM Local";
-  src: url("/fonts/HIDROM.otf") format("opentype");
-  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -110,15 +41,10 @@
   --color-stroke: hsl(var(--stroke));
   --color-accent: hsl(var(--accent));
   
-  --font-sans: "Clash Display", "Clash Display Local", sans-serif;
-  --font-serif: "Clash Display", "Clash Display Local", sans-serif;
-  --font-display: "Gasoek One", sans-serif;
-  --font-sixcaps: "Gasoek One", sans-serif;
-  --font-boldonse: "Clash Display", "Clash Display Local", sans-serif;
-  --font-gasoek: "Gasoek One", sans-serif;
-  --font-racing: "Racing Sans One", sans-serif;
-  --font-francois: "Francois One Local", "Arial Narrow", Impact, sans-serif;
-  --font-shoulders: "Big Shoulders Display", sans-serif;
+  --font-sans: "Clash Display Local", sans-serif;
+  --font-display: "Clash Display Local", sans-serif;
+  --font-shoulders: "Clash Display Local", sans-serif;
+  --font-badeen: "Clash Display Local", sans-serif;
 
   --font-weight-medium: 400;
   --font-weight-semibold: 400;
@@ -587,8 +513,8 @@ section#home .hero-svg {
 }
 
 .hero-portfolio-text {
-  font-family: "Badeen Display", "Big Shoulders Display", Impact, sans-serif !important;
-  font-weight: 400 !important;
+  font-family: "Clash Display Local", sans-serif !important;
+  font-weight: 700 !important;
   font-style: normal !important;
 }
 
@@ -810,8 +736,8 @@ section#home .hero-svg {
 }
 
 .hero-portfolio-text {
-  font-family: "Badeen Display", "Big Shoulders Display", sans-serif !important;
-  font-weight: 400 !important;
+  font-family: "Clash Display Local", sans-serif !important;
+  font-weight: 700 !important;
   font-style: normal !important;
   text-transform: uppercase !important;
   letter-spacing: -0.015em !important;

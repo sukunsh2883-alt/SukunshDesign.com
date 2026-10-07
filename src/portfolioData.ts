@@ -362,21 +362,19 @@ export const designProjects: DesignProject[] = [
   },
   {
     "id": "layer-82-motion-design",
-    "title": "LAYER 82 — Motion Design",
-    "type": "Motion & Film",
+    "title": "Design and Illustration",
+    "type": "Design & Illustration",
     "year": "2026",
-    "description": "LAYER 82 — Motion design. Editorial kinetic visual, 3D typography, and dynamic identity design.",
+    "description": "Design and illustration showcase. Visual craft and dynamic creative design.",
     "image": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
-    "video": "/design-illustration-loop.mp4",
     "tools": [
-      "Cinema 4D",
-      "After Effects",
-      "Premiere Pro",
-      "Blender"
+      "Illustrator",
+      "Photoshop",
+      "Cinema 4D"
     ],
     "link": "#",
-    "client": "LAYER 82",
-    "aboutProject": "Editorial kinetic visual and design system featuring high-velocity typography, dynamic 3D elements, and cinematic video storytelling.",
+    "client": "Design & Illustration",
+    "aboutProject": "Design and illustration portfolio showcase featuring digital craft, artwork, and visual systems.",
     "galleryImages": [
       "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
     ],

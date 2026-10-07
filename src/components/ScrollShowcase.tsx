@@ -240,15 +240,15 @@ export default function ScrollShowcase({
         className="relative w-full bg-[#050505] text-white px-2 sm:px-4 md:px-8 py-10 sm:py-16 select-none"
       >
         <div className="mx-auto w-full max-w-[1540px]">
-          {/* Section Header: Minimalist AI Films ↙ */}
+          {/* Section Header: Minimalist AI Films ↙ aligned to H2 standard 36–48px */}
           <div className="folio-reveal mb-2 sm:mb-4 flex items-center justify-between px-3 sm:px-6">
             <div className="flex items-center gap-2 sm:gap-3">
-              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,4vw,3rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
                 AI Films
               </h2>
-              <span className="inline-flex items-center text-white transform translate-y-1">
+              <span className="inline-flex items-center text-white transform translate-y-0.5">
                 <svg
-                  className="w-[clamp(1.5rem,3.5vw,2.75rem)] h-[clamp(1.5rem,3.5vw,2.75rem)] stroke-current stroke-[2.2] fill-none"
+                  className="w-7 h-7 sm:w-8 sm:h-8 stroke-current stroke-[2.2] fill-none"
                   viewBox="0 0 24 24"
                 >
                   <path d="M19 5L5 19M5 19H17M5 19V7" strokeLinecap="round" strokeLinejoin="round" />
@@ -260,7 +260,7 @@ export default function ScrollShowcase({
               <button
                 type="button"
                 onClick={onOpenAIWork}
-                className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 hover:bg-white hover:text-black px-5 py-2 text-xs font-medium text-white shadow-xs transition-all cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 hover:bg-white hover:text-black px-5 py-2.5 text-[14px] font-medium text-white shadow-xs transition-all cursor-pointer"
               >
                 <span>Explore Vault</span>
                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -313,46 +313,45 @@ export default function ScrollShowcase({
           <div className="folio-reveal flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12 lg:col-span-7">
             <div>
               <div className="mb-2.5 h-[1.5px] w-12 bg-white" />
-              <div className="inline-flex items-center gap-1 text-xs font-semibold tracking-wide text-white">
+              <div className="inline-flex items-center gap-1 text-[13px] font-semibold tracking-wide text-white">
                 <span>About me</span>
                 <ArrowUpRight className="h-3.5 w-3.5 stroke-[2] text-white" />
               </div>
             </div>
-            <h2 className="select-none text-4xl font-normal leading-[1.06] tracking-normal text-white sm:text-6xl md:text-7xl lg:text-[76px]">
+            {/* H2 standard 36–48px */}
+            <h2 className="select-none text-[34px] sm:text-[40px] md:text-[44px] lg:text-[48px] font-normal leading-[1.12] tracking-normal text-white">
               I am a Delhi based
               <br />
               visual designer.
             </h2>
-            <p className="max-w-xl text-base font-normal leading-relaxed text-neutral-400 sm:text-lg md:text-[21px]">
-              Blending fine art sensibilities with contemporary design,
-              <br className="hidden sm:inline" />
-              crafting evocative visual stories through motion,
-              <br className="hidden sm:inline" />
-              typography and creative precision.
+            {/* Body text standard 16–18px */}
+            <p className="max-w-xl text-[16px] sm:text-[17px] md:text-[18px] font-normal leading-relaxed text-neutral-400">
+              Crafting evocative visual stories through motion, typography, and creative precision.
             </p>
 
             <div className="pt-2">
               <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-stretch sm:gap-0">
                 <div className="flex-1 sm:pr-8 md:pr-10">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white sm:text-xs">
+                  {/* Labels / metadata standard 12–14px */}
+                  <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-white">
                     EDUCATION
                   </div>
                   <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-white" />
                   <div className="space-y-5">
                     <div>
-                      <div className="text-sm font-semibold leading-snug text-white sm:text-[15px]">
+                      <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-white">
                         M.Des - IDC School of Design
                       </div>
-                      <div className="mt-0.5 text-xs font-normal text-neutral-400 sm:text-sm">
+                      <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-400">
                         IIT Bombay
                       </div>
                     </div>
                     <div className="h-px w-full bg-neutral-800" />
                     <div>
-                      <div className="text-sm font-semibold leading-snug text-white sm:text-[15px]">
+                      <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-white">
                         BFA, Visual Communication
                       </div>
-                      <div className="mt-0.5 text-xs font-normal text-neutral-400 sm:text-sm">
+                      <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-400">
                         College of Art, Delhi
                       </div>
                     </div>
@@ -362,15 +361,16 @@ export default function ScrollShowcase({
                   <div className="absolute top-1/2 -left-[2.5px] h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#FF6A00]" />
                 </div>
                 <div className="flex-1 sm:pl-8 md:pl-10">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white sm:text-xs">
+                  {/* Labels / metadata standard 12–14px */}
+                  <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-white">
                     EXPERIENCE
                   </div>
                   <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-white" />
                   <div>
-                    <div className="text-sm font-semibold leading-snug text-white sm:text-[15px]">
+                    <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-white">
                       Visual Designer
                     </div>
-                    <div className="mt-0.5 text-xs font-normal text-neutral-400 sm:text-sm">
+                    <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-400">
                       ShareChat
                     </div>
                   </div>
@@ -397,7 +397,7 @@ export default function ScrollShowcase({
         </div>
         <div className="folio-reveal relative mx-auto mt-8 w-full max-w-[1380px]">
           <CurvedLoop
-            marqueeText="VISUAL ART ✦ FINE ART ✦ RISOGRAPHY ✦ VISUAL STORYTELLING ✦ CONTEMPORARY DESIGN ✦ DELHI ✦ MOTION DESIGN ✦ CINEMATIC EXPERIMENTS ✦ "
+            marqueeText="VISUAL ART ✦ MOTION DESIGN ✦ IDENTITY ✦ DIRECTION ✦ "
             speed={1.45}
             curveAmount={0}
             direction="left"

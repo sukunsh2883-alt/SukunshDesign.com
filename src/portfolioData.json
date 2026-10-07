@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T07:26:42.896Z",
+  "savedAt": "2026-10-07T23:06:18.313Z",
   "aiFilms": [
     {
       "id": "ai-film-rivr-ad",
@@ -270,6 +270,29 @@
         "https://mir-cdn.behance.net/v1/rendition/project_modules/source/d88f97256423999.6abbee93c5f62.png",
         "https://mir-cdn.behance.net/v1/rendition/project_modules/source/c3b6dd256423999.6abbee93c4a2e.png",
         "https://mir-cdn.behance.net/v1/rendition/project_modules/source/75e34a256423999.6abbee93c34bb.png"
+      ],
+      "isAI": false,
+      "pdfUrl": "",
+      "uploadedPdfName": "",
+      "behanceEmbedUrl": ""
+    },
+    {
+      "id": "layer-82-motion-design",
+      "title": "Design and Illustration",
+      "type": "Design & Illustration",
+      "year": "2026",
+      "description": "Design and illustration showcase. Visual craft and dynamic creative design.",
+      "image": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+      "tools": [
+        "Illustrator",
+        "Photoshop",
+        "Cinema 4D"
+      ],
+      "link": "#",
+      "client": "Design & Illustration",
+      "aboutProject": "Design and illustration portfolio showcase featuring digital craft, artwork, and visual systems.",
+      "galleryImages": [
+        "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
       ],
       "isAI": false,
       "pdfUrl": "",
@@ -583,7 +606,7 @@
   ],
   "profile": {
     "fullName": "Suraj Kumar Sharma",
-    "brandName": "Suraj",
+    "brandName": "Sukunsh",
     "roles": [
       "Visual Designer",
       "AI Creative Designer",
@@ -597,7 +620,7 @@
     "behance": "https://www.behance.net/sukunshsharma",
     "instagram": "https://www.instagram.com/sukunsh",
     "accentGradient": "linear-gradient(90deg, #FF6A00 0%, #FFB000 100%)",
-    "logoFontFamily": "\"Suraj Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
+    "logoFontFamily": "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",
     "heroVideoUrl": "https://res.cloudinary.com/dylv5m3jk/video/upload/v1779644211/make_give_bit_loop_motion_202605242304_vd4fkj.mp4",
     "aboutImage": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png",
     "aboutImageSecondary": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1785077426/download_24_dl22dv.png",
