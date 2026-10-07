@@ -156,7 +156,8 @@ export default function DesignWorks({ projects, onSelectProject, onOpenExplorer 
           src={project.image}
           alt={project.title}
           className="h-full w-full object-cover object-center"
-          loading={index > 2 ? "lazy" : "eager"}
+          loading="lazy"
+          fetchPriority="low"
           referrerPolicy="no-referrer"
         />
       </div>

@@ -167,7 +167,8 @@ export default function DesignIllustrationShowcase({
                   src={src}
                   alt=""
                   className="w-full h-auto block m-0 p-0 border-0 outline-0 shadow-none select-none align-bottom"
-                  loading={index < 2 ? "eager" : "lazy"}
+                  loading="lazy"
+                  fetchPriority="low"
                   referrerPolicy="no-referrer"
                 />
               </div>

@@ -128,6 +128,8 @@ export default function Showreel({ videos, films, onSelectVideo, onSelectFilm, o
                       src={item.image}
                       alt={item.title}
                       className="h-full w-full object-cover grayscale-[0.15] transition-transform duration-700 group-hover:scale-[1.03]"
+                      loading="lazy"
+                      fetchPriority="low"
                       referrerPolicy="no-referrer"
                     />
                   )}

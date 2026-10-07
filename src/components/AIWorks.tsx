@@ -167,6 +167,8 @@ export default function AIWorks({
                 src={heroFilm.thumbnail}
                 alt={heroFilm.title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                loading="lazy"
+                fetchPriority="low"
                 referrerPolicy="no-referrer"
               />
             ) : (
@@ -228,6 +230,8 @@ export default function AIWorks({
                     src={film.thumbnail}
                     alt={film.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 ) : (

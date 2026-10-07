@@ -456,6 +456,8 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                             src={item.imageUrl}
                             alt={item.title}
                             className="w-full h-auto object-cover rounded-2xl transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                            loading="lazy"
+                            fetchPriority="low"
                             referrerPolicy="no-referrer"
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-350" />

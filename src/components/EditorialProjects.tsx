@@ -99,6 +99,7 @@ export default function EditorialProjects({
                     alt={p_claro.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -127,6 +128,7 @@ export default function EditorialProjects({
                     alt={p3.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -180,6 +182,7 @@ export default function EditorialProjects({
                   alt="Design and Illustration"
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   loading="lazy"
+                  fetchPriority="low"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -206,6 +209,7 @@ export default function EditorialProjects({
                     alt={p2.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -234,6 +238,7 @@ export default function EditorialProjects({
                     alt={p5.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -267,6 +272,7 @@ export default function EditorialProjects({
                     alt={p1.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -295,6 +301,7 @@ export default function EditorialProjects({
                     alt={p4.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -323,6 +330,7 @@ export default function EditorialProjects({
                     alt={p6.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -351,6 +359,7 @@ export default function EditorialProjects({
                     alt={p_mono.title}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     loading="lazy"
+                    fetchPriority="low"
                     referrerPolicy="no-referrer"
                   />
                 </div>

@@ -157,6 +157,8 @@ export default function AIFilms({ films, onSelectFilm, onOpenExplorer }: AIFilms
                       src={film.thumbnail}
                       alt={film.title}
                       className="w-full h-full object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
+                      loading="lazy"
+                      fetchPriority="low"
                       referrerPolicy="no-referrer"
                     />
                     

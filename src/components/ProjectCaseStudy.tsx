@@ -213,6 +213,8 @@ export default function ProjectCaseStudy({
                     src={galleryImages[0]}
                     alt={`${project.title} cover`}
                     referrerPolicy="no-referrer"
+                    loading="lazy"
+                    fetchPriority="low"
                     className="h-full w-full object-cover"
                   />
                 )}
@@ -237,7 +239,8 @@ export default function ProjectCaseStudy({
                     alt={`${project.title} artwork ${index + 1}`}
                     referrerPolicy="no-referrer"
                     className="w-full h-auto block m-0 p-0 border-0 outline-0 shadow-none select-none align-bottom object-contain"
-                    loading={index < 3 ? "eager" : "lazy"}
+                    loading="lazy"
+                    fetchPriority="low"
                   />
                 </div>
               ))}

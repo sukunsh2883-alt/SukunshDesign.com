@@ -223,6 +223,8 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                       src={project.image}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                      loading="lazy"
+                      fetchPriority="low"
                       referrerPolicy="no-referrer"
                     />
 
@@ -266,6 +268,8 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                       src={project.image}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] scale-100 opacity-20 filter grayscale saturate-50 contrast-125 brightness-[0.4]"
+                      loading="lazy"
+                      fetchPriority="low"
                       referrerPolicy="no-referrer"
                     />
 

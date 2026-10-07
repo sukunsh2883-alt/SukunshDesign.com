@@ -244,6 +244,7 @@ export default function SineWaveScroller({
                       alt={`AI Reel ${index}`}
                       className="w-full h-full object-cover grayscale contrast-125 group-hover/img:grayscale-0 group-hover/img:scale-105 transition-all duration-500"
                       loading="lazy"
+                      fetchPriority="low"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover/img:opacity-20 transition-opacity" />
                     
