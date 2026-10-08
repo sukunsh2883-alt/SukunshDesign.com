@@ -97,6 +97,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         if (textNode) {
           textNode.textContent = "PORTFOLIO";
           textNode.setAttribute("class", "st1 st2 st3 hero-portfolio-text");
+          textNode.setAttribute("font-weight", "400");
+          textNode.style.fontWeight = "400";
           textNode.setAttribute("letter-spacing", "-0.025em");
           textNode.setAttribute("text-anchor", "middle");
           textNode.setAttribute("x", "864.1");

@@ -281,18 +281,20 @@ export default function CinematicEditorialScroll({
           {/* Top Line: PLEASE DON'T ASK WHAT */}
           <div
             ref={line1Ref}
-            className="w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-bold uppercase tracking-[-0.035em] text-white leading-[0.92] select-none"
+            className="w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-black uppercase italic tracking-[-0.035em] text-white leading-[0.80] select-none"
+            style={{ fontWeight: 900, fontStyle: "italic", lineHeight: 0.82 }}
           >
             {line1Text}
           </div>
 
           {/* Bottom Line: LAYER 82 [ VIDEO SLOT ] DOES. (Symmetrically Centered) */}
           <div
-            className="-mt-1 sm:-mt-2 md:-mt-3 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-bold uppercase tracking-[-0.035em] text-white leading-[0.92] select-none"
+            className="-mt-3 sm:-mt-5 md:-mt-8 lg:-mt-10 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-black uppercase italic tracking-[-0.035em] text-white leading-[0.80] select-none"
+            style={{ fontWeight: 900, fontStyle: "italic", lineHeight: 0.82 }}
           >
             {/* Left Word (Right-aligned to touch center video slot equally) */}
             <div className="flex justify-end pr-2 sm:pr-4 md:pr-6 overflow-visible">
-              <span ref={line2PrefixRef} className="inline-block shrink-0 whitespace-nowrap font-bold font-sans">
+              <span ref={line2PrefixRef} className="inline-block shrink-0 whitespace-nowrap font-black italic font-sans" style={{ fontWeight: 900, fontStyle: "italic" }}>
                 {line2Prefix}
               </span>
             </div>
@@ -335,7 +337,7 @@ export default function CinematicEditorialScroll({
 
             {/* Right Word (Left-aligned to touch center video slot equally) */}
             <div className="flex justify-start pl-2 sm:pl-4 md:pl-6 overflow-visible">
-              <span ref={line2SuffixRef} className="inline-block shrink-0 whitespace-nowrap font-bold font-sans">
+              <span ref={line2SuffixRef} className="inline-block shrink-0 whitespace-nowrap font-black italic font-sans" style={{ fontWeight: 900, fontStyle: "italic" }}>
                 {line2Suffix}
               </span>
             </div>
