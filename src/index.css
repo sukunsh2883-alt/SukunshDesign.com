@@ -46,11 +46,11 @@
   --font-shoulders: "Clash Display Local", sans-serif;
   --font-badeen: "Clash Display Local", sans-serif;
 
-  --font-weight-medium: 400;
-  --font-weight-semibold: 400;
-  --font-weight-bold: 400;
-  --font-weight-extrabold: 400;
-  --font-weight-black: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
 
   /* Restore standard neutral scale in Tailwind v4 for instant clean white tone styling */
   --color-neutral-50: #fafafa;

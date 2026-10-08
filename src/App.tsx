@@ -40,27 +40,19 @@ export default function App() {
   const [isHeroReady, setIsHeroReady] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-  // Prevent scrolling while initial loading screen is active without shifting scrollbar gutter
+  // Clean scroll management during initial loading screen without blocking browser composite thread
   useEffect(() => {
-    if (!isLoading) {
+    if (isLoading) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    } else {
+      document.body.style.overflow = "";
       requestAnimationFrame(() => {
         ScrollTrigger.refresh();
       });
-      return;
     }
-
-    const preventScroll = (e: Event) => {
-      e.preventDefault();
-    };
-
-    window.scrollTo(0, 0);
-    window.addEventListener("wheel", preventScroll, { passive: false });
-    window.addEventListener("touchmove", preventScroll, { passive: false });
-
-    return () => {
-      window.removeEventListener("wheel", preventScroll);
-      window.removeEventListener("touchmove", preventScroll);
-    };
   }, [isLoading]);
 
   // Dynamic portfolio item states for local uploader simulations with localStorage persistence
@@ -370,7 +362,7 @@ export default function App() {
       gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1.0,
-      touchMultiplier: 1.0,
+      touchMultiplier: 1.1,
       syncTouch: false,
       infinite: false,
     });
@@ -385,10 +377,13 @@ export default function App() {
     };
 
     gsap.ticker.add(updateTicker);
-    // Smooth out dropped frames / momentary CPU pauses to prevent scroll jumping or jerking
-    gsap.ticker.lagSmoothing(500, 33);
+    // Crucial for Lenis: disable GSAP lagSmoothing so ticker delivers linear real-time scroll frames without lag
+    gsap.ticker.lagSmoothing(0);
 
-    const refresh = () => ScrollTrigger.refresh();
+    const refresh = () => {
+      lenis.resize();
+      ScrollTrigger.refresh();
+    };
     const refreshTimer = window.setTimeout(refresh, 250);
     window.addEventListener("load", refresh, { once: true });
 

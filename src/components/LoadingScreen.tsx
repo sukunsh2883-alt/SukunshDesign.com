@@ -29,7 +29,11 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     if (hasFinishedRef.current) return;
     hasFinishedRef.current = true;
     setIsExiting(true);
-  }, []);
+    // Guaranteed exit safety timer in case motion onAnimationComplete is delayed
+    setTimeout(() => {
+      onComplete();
+    }, 450);
+  }, [onComplete]);
 
   // Fast, instant exit as soon as progress completes
   useEffect(() => {

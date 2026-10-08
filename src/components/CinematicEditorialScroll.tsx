@@ -74,7 +74,7 @@ export default function CinematicEditorialScroll({
         return { scaleFactor, verticalOffset, shiftPrefix, shiftSuffix };
       };
 
-      const geo = getGeometry();
+      let geo = getGeometry();
 
       if (reduceMotion) {
         return;
@@ -128,6 +128,9 @@ export default function CinematicEditorialScroll({
           scrub: 0.85,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          onRefreshInit: () => {
+            geo = getGeometry();
+          },
           onUpdate: (self) => {
             const v = videoRef.current;
             if (!v) return;
@@ -189,8 +192,8 @@ export default function CinematicEditorialScroll({
       .to(
         videoCard,
         {
-          scale: () => getGeometry().scaleFactor,
-          y: () => -getGeometry().verticalOffset,
+          scale: () => geo.scaleFactor,
+          y: () => -geo.verticalOffset,
           borderRadius: 0,
           ease: "power2.inOut",
           duration: 1.15,
@@ -258,10 +261,10 @@ export default function CinematicEditorialScroll({
       className="cinematic-scroll-section relative w-full bg-[#050505] text-white select-none"
       style={{ minHeight: "300vh" }}
     >
-      {/* Pinned Sticky Stage Viewport */}
+      {/* Pinned Stage Viewport (managed cleanly by GSAP ScrollTrigger pin) */}
       <div
         ref={stageRef}
-        className="sticky top-0 flex h-screen min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-[#050505]"
+        className="relative flex h-screen min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-[#050505]"
       >
         {/* Background Ambient Radial Glow */}
         <div
@@ -281,20 +284,20 @@ export default function CinematicEditorialScroll({
           {/* Top Line: PLEASE DON'T ASK WHAT */}
           <div
             ref={line1Ref}
-            className="w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-black uppercase italic tracking-[-0.035em] text-white leading-[0.80] select-none"
-            style={{ fontWeight: 900, fontStyle: "italic", lineHeight: 0.82 }}
+            className="w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-bold uppercase italic tracking-[-0.035em] text-white leading-[0.88] select-none"
+            style={{ fontWeight: 700, fontStyle: "italic" }}
           >
             {line1Text}
           </div>
 
           {/* Bottom Line: LAYER 82 [ VIDEO SLOT ] DOES. (Symmetrically Centered) */}
           <div
-            className="-mt-3 sm:-mt-5 md:-mt-8 lg:-mt-10 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-black uppercase italic tracking-[-0.035em] text-white leading-[0.80] select-none"
-            style={{ fontWeight: 900, fontStyle: "italic", lineHeight: 0.82 }}
+            className="-mt-1 sm:-mt-2 md:-mt-3 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-bold uppercase italic tracking-[-0.035em] text-white leading-[0.88] select-none"
+            style={{ fontWeight: 700, fontStyle: "italic" }}
           >
             {/* Left Word (Right-aligned to touch center video slot equally) */}
             <div className="flex justify-end pr-2 sm:pr-4 md:pr-6 overflow-visible">
-              <span ref={line2PrefixRef} className="inline-block shrink-0 whitespace-nowrap font-black italic font-sans" style={{ fontWeight: 900, fontStyle: "italic" }}>
+              <span ref={line2PrefixRef} className="inline-block shrink-0 whitespace-nowrap font-bold italic font-sans" style={{ fontWeight: 700, fontStyle: "italic" }}>
                 {line2Prefix}
               </span>
             </div>
@@ -337,7 +340,7 @@ export default function CinematicEditorialScroll({
 
             {/* Right Word (Left-aligned to touch center video slot equally) */}
             <div className="flex justify-start pl-2 sm:pl-4 md:pl-6 overflow-visible">
-              <span ref={line2SuffixRef} className="inline-block shrink-0 whitespace-nowrap font-black italic font-sans" style={{ fontWeight: 900, fontStyle: "italic" }}>
+              <span ref={line2SuffixRef} className="inline-block shrink-0 whitespace-nowrap font-bold italic font-sans" style={{ fontWeight: 700, fontStyle: "italic" }}>
                 {line2Suffix}
               </span>
             </div>

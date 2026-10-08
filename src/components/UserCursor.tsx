@@ -42,16 +42,14 @@ export function UserCursor({ zIndex = 9999999, children }: UserCursorProps) {
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
-  // Check specifically if the hovered element is a project card or inside project list
-  const checkProjectTarget = useCallback((clientX: number, clientY: number) => {
-    if (typeof document === "undefined") return;
-    const el = document.elementFromPoint(clientX, clientY);
-    if (!el) {
+  // Check hovered element using high-performance event delegation (zero synchronous layout recalculations)
+  const onOver = useCallback((e: MouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) {
       setIsProject(false);
       return;
     }
-
-    const isProjectCard = !!el.closest(
+    const isProjectCard = !!target.closest(
       '[data-cursor-project], [data-project-card], .project-card, [data-project-id], #projects [role="button"], #projects .group, .editorial-project-card, [data-role="project-item"]'
     );
     setIsProject(isProjectCard);
@@ -65,7 +63,6 @@ export function UserCursor({ zIndex = 9999999, children }: UserCursorProps) {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
       if (!hovering) setHovering(true);
-      checkProjectTarget(e.clientX, e.clientY);
     };
 
     const onDown = () => setPressed(true);
@@ -76,36 +73,22 @@ export function UserCursor({ zIndex = 9999999, children }: UserCursorProps) {
       setIsProject(false);
     };
 
-    let scrollRaf: number | null = null;
-    const onScroll = () => {
-      if (scrollRaf !== null) return;
-      scrollRaf = requestAnimationFrame(() => {
-        scrollRaf = null;
-        const currentX = mouseX.get();
-        const currentY = mouseY.get();
-        if (currentX >= 0 && currentY >= 0) {
-          checkProjectTarget(currentX, currentY);
-        }
-      });
-    };
-
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("mouseover", onOver, { passive: true });
     window.addEventListener("mousedown", onDown, { capture: true });
     window.addEventListener("mouseup", onUp, { capture: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("mouseleave", onLeave);
     window.addEventListener("blur", onLeave);
 
     return () => {
-      if (scrollRaf !== null) cancelAnimationFrame(scrollRaf);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("mouseover", onOver);
       window.removeEventListener("mousedown", onDown, { capture: true });
       window.removeEventListener("mouseup", onUp, { capture: true });
-      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("mouseleave", onLeave);
       window.removeEventListener("blur", onLeave);
     };
-  }, [isTouchDevice, mouseX, mouseY, hovering, checkProjectTarget]);
+  }, [isTouchDevice, mouseX, mouseY, hovering, onOver]);
 
   if (isTouchDevice || !mounted) {
     return children ? <>{children}</> : null;
