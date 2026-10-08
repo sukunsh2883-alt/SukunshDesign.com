@@ -367,6 +367,7 @@ export const designProjects: DesignProject[] = [
     "year": "2026",
     "description": "Design and illustration showcase. Visual craft and dynamic creative design.",
     "image": "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
+    "video": "/design-illustration-loop.mp4",
     "tools": [
       "Illustrator",
       "Photoshop",
@@ -820,6 +821,7 @@ export const profile = {
   "email": "sukunsh2883@gmail.com",
   "linkedin": "https://www.linkedin.com/in/sukunsh",
   "behance": "https://www.behance.net/sukunshsharma",
+  "github": "https://github.com/surajsharma",
   "instagram": "https://www.instagram.com/sukunsh",
   "accentGradient": "linear-gradient(90deg, #FF6A00 0%, #FFB000 100%)",
   "logoFontFamily": "\"Sukunsh Wordmark\", \"Clash Display Local\", \"Arial Black\", Impact, sans-serif",

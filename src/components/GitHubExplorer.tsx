@@ -124,15 +124,13 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
   const fetchStatus = async () => {
     try {
       setLoading(true);
+      setError(null);
       const res = await fetch("/api/github/config");
       const data = await res.json();
       setConfig(data);
       
-      if (data.authenticated) {
-        await fetchProfileAndRepos();
-      } else {
-        setLoading(false);
-      }
+      // Always fetch live profile and repos
+      await fetchProfileAndRepos();
     } catch (err: any) {
       setError("Failed to reach integration server. Please make sure the backend is active.");
       setLoading(false);
@@ -147,11 +145,6 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
       // Fetch profile
       const profileRes = await fetch("/api/github/profile");
       if (!profileRes.ok) {
-        if (profileRes.status === 401) {
-          setConfig(prev => prev ? { ...prev, authenticated: false } : null);
-          setLoading(false);
-          return;
-        }
         throw new Error("Failed to load GitHub profile.");
       }
       const profileData = await profileRes.json();
@@ -161,7 +154,12 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
       const reposRes = await fetch("/api/github/repos");
       if (reposRes.ok) {
         const reposData = await reposRes.json();
-        setRepos(Array.isArray(reposData) ? reposData : []);
+        const list = Array.isArray(reposData) ? reposData : [];
+        setRepos(list);
+        if (list.length > 0) {
+          fetchRepoDetails(list[0]);
+          setSelectedRepo(list[0]);
+        }
       }
     } catch (err: any) {
       setError(err.message || "An error occurred while loading GitHub data.");
@@ -318,28 +316,42 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
       <motion.div
         id="github-explorer"
         data-portal="github"
+        data-lenis-prevent="true"
         ref={containerRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="fixed inset-0 z-[200] flex flex-col overflow-y-auto bg-neutral-950 text-neutral-200"
+        className="fixed inset-0 z-[200] flex flex-col overflow-y-auto overscroll-contain bg-neutral-950 text-neutral-200 touch-pan-y"
+        style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
       >
         {/* Navigation / Header bar */}
-        <header className="sticky top-0 z-[210] flex h-16 items-center justify-between border-b border-neutral-900 bg-neutral-950/80 px-6 backdrop-blur-md">
+        <header className="sticky top-0 z-[210] flex h-16 items-center justify-between border-b border-neutral-900 bg-neutral-950/90 px-6 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <Github className="h-6 w-6 text-white" />
             <span className="font-sans text-lg font-medium tracking-tight text-white">GitHub Explorer</span>
-            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-400">Live</span>
+            <span className="rounded bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Live</span>
           </div>
 
-          <button
-            onClick={onClose}
-            className="group flex h-10 w-10 items-center justify-center rounded-full border border-neutral-800 transition-colors hover:border-neutral-700 hover:bg-neutral-900"
-            aria-label="Close Explorer"
-          >
-            <X className="h-5 w-5 text-neutral-400 transition-transform group-hover:scale-110 group-hover:text-white" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={fetchStatus}
+              title="Refresh GitHub data"
+              className="flex h-9 items-center gap-2 rounded-full border border-neutral-800 bg-neutral-900/60 px-3.5 text-xs text-neutral-300 hover:border-neutral-700 hover:text-white transition-colors cursor-pointer"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Refresh Feed</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="group flex h-9 w-9 items-center justify-center rounded-full border border-neutral-800 transition-colors hover:border-neutral-700 hover:bg-neutral-900 cursor-pointer"
+              aria-label="Close Explorer"
+            >
+              <X className="h-4 w-4 text-neutral-400 transition-transform group-hover:scale-110 group-hover:text-white" />
+            </button>
+          </div>
         </header>
 
         {/* Content Body */}
@@ -350,7 +362,7 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
               <RefreshCw className="h-8 w-8 animate-spin text-neutral-500" />
               <p className="mt-4 font-mono text-xs text-neutral-500 uppercase tracking-widest">Sourcing Live GitHub Feed...</p>
             </div>
-          ) : error && !config?.authenticated ? (
+          ) : error && !profile ? (
             <div className="mx-auto max-w-md rounded-2xl border border-red-900/40 bg-red-950/15 p-6 text-center">
               <AlertCircle className="mx-auto h-10 w-10 text-red-500" />
               <h3 className="mt-4 text-base font-medium text-white">Integration Error</h3>
@@ -602,7 +614,7 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
                   </div>
 
                   {/* Repo list Cards */}
-                  <div className="grid grid-cols-1 gap-4 max-h-[550px] overflow-y-auto pr-1">
+                  <div className="grid grid-cols-1 gap-4 pr-1">
                     {filteredRepos.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-16 border border-dashed border-neutral-900 rounded-2xl">
                         <span className="font-mono text-xs text-neutral-600">No repositories matching configuration.</span>
@@ -677,7 +689,7 @@ export default function GitHubExplorer({ isOpen, onClose }: GitHubExplorerProps)
                 </div>
 
                 {/* Repository Details Pane */}
-                <div className="lg:col-span-5 flex flex-col gap-4">
+                <div className="lg:col-span-5 flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
                   <AnimatePresence mode="wait">
                     {selectedRepo ? (
                       <motion.div

@@ -25,6 +25,12 @@ export default function LetsTalk({ profile }: LetsTalkProps) {
       handle: "/sukunshsharma",
     },
     {
+      name: "GitHub",
+      platform: "GitHub",
+      url: profile?.github || "https://github.com/surajsharma",
+      handle: "/surajsharma",
+    },
+    {
       name: "Instagram",
       platform: "Instagram",
       url: instagram,

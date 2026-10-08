@@ -120,9 +120,11 @@ app.get("/api/github/config", (req, res) => {
   const token = cookies["github_oauth_token"];
   
   res.json({
-    configured: hasClientId && hasClientSecret,
+    configured: true,
+    hasOAuth: hasClientId && hasClientSecret,
     authenticated: !!token,
-    clientId: process.env.GITHUB_CLIENT_ID || null
+    clientId: process.env.GITHUB_CLIENT_ID || null,
+    defaultUser: "surajsharma"
   });
 });
 
@@ -265,25 +267,31 @@ app.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
 app.get("/api/github/profile", async (req, res) => {
   const cookies = parseCookies(req.headers.cookie);
   const token = cookies["github_oauth_token"];
-
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized. Please connect your GitHub account." });
-  }
+  const targetUser = req.query.username || "surajsharma";
 
   try {
-    const userRes = await fetch("https://api.github.com/user", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "User-Agent": "Sukunsh-Portfolio-App"
-      }
-    });
+    const url = token ? "https://api.github.com/user" : `https://api.github.com/users/${encodeURIComponent(String(targetUser))}`;
+    const headers: Record<string, string> = {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "Suraj-Portfolio-App"
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const userRes = await fetch(url, { headers });
 
     if (!userRes.ok) {
-      if (userRes.status === 401) {
-        // Clear stale token
+      if (token && userRes.status === 401) {
+        // Clear stale token and retry public
         res.setHeader("Set-Cookie", "github_oauth_token=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0");
-        return res.status(401).json({ error: "Session expired. Token cleared." });
+        const retryRes = await fetch(`https://api.github.com/users/${encodeURIComponent(String(targetUser))}`, {
+          headers: { Accept: "application/vnd.github+json", "User-Agent": "Suraj-Portfolio-App" }
+        });
+        if (retryRes.ok) {
+          const retryData = await retryRes.json();
+          return res.json(retryData);
+        }
       }
       const errText = await userRes.text();
       return res.status(userRes.status).json({ error: `GitHub API error: ${errText}` });
@@ -296,24 +304,25 @@ app.get("/api/github/profile", async (req, res) => {
   }
 });
 
-// Proxy route to fetch authenticated user's repositories
+// Proxy route to fetch repositories
 app.get("/api/github/repos", async (req, res) => {
   const cookies = parseCookies(req.headers.cookie);
   const token = cookies["github_oauth_token"];
-
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized. Please connect your GitHub account." });
-  }
+  const targetUser = req.query.username || "surajsharma";
 
   try {
-    // Fetch all repositories sorted by recently pushed/updated
-    const reposRes = await fetch("https://api.github.com/user/repos?sort=updated&per_page=50&direction=desc", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "User-Agent": "Sukunsh-Portfolio-App"
-      }
-    });
+    const url = token 
+      ? "https://api.github.com/user/repos?sort=updated&per_page=50&direction=desc" 
+      : `https://api.github.com/users/${encodeURIComponent(String(targetUser))}/repos?sort=updated&per_page=50&direction=desc`;
+    const headers: Record<string, string> = {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "Suraj-Portfolio-App"
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const reposRes = await fetch(url, { headers });
 
     if (!reposRes.ok) {
       const errText = await reposRes.text();
@@ -333,17 +342,17 @@ app.get("/api/github/repos/:owner/:repo/commits", async (req, res) => {
   const token = cookies["github_oauth_token"];
   const { owner, repo } = req.params;
 
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized." });
-  }
-
   try {
-    const commitsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=10`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "User-Agent": "Sukunsh-Portfolio-App"
-      }
+    const headers: Record<string, string> = {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "Suraj-Portfolio-App"
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const commitsRes = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=10`, {
+      headers
     });
 
     if (!commitsRes.ok) {
@@ -364,17 +373,17 @@ app.get("/api/github/repos/:owner/:repo/languages", async (req, res) => {
   const token = cookies["github_oauth_token"];
   const { owner, repo } = req.params;
 
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized." });
-  }
-
   try {
-    const langRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "User-Agent": "Sukunsh-Portfolio-App"
-      }
+    const headers: Record<string, string> = {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "Suraj-Portfolio-App"
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const langRes = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/languages`, {
+      headers
     });
 
     if (!langRes.ok) {

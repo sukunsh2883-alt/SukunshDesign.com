@@ -80,6 +80,10 @@ export default function Navbar({
       link: profile?.behance || "https://www.behance.net/sukunshsharma",
     },
     {
+      label: "GitHub",
+      link: profile?.github || "https://github.com/surajsharma",
+    },
+    {
       label: "Email",
       link: `mailto:${profile?.email || "Sukunsh2883@gmail.com"}`,
     },
