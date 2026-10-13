@@ -134,7 +134,7 @@ export function UserCursor({ zIndex = 9999999, children }: UserCursorProps) {
           style={{
             transform: "translate(-50%, -50%)",
           }}
-          className="w-14 h-14 sm:w-[58px] sm:h-[58px] rounded-full bg-transparent border border-white flex flex-col items-center justify-center select-none"
+          className="w-14 h-14 sm:w-[58px] sm:h-[58px] rounded-full bg-neutral-950/90 border border-white/20 shadow-xl flex flex-col items-center justify-center select-none backdrop-blur-xs"
         >
           <div className="flex flex-col items-center justify-center text-center select-none pointer-events-none leading-none gap-0.5">
             <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] font-extrabold tracking-[0.14em] uppercase text-white">

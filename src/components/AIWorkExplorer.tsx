@@ -326,7 +326,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                           onClick={() => {
                             setActivePlayingId(film.id);
                           }}
-                          className="group relative flex min-h-[65vh] sm:min-h-[75vh] md:min-h-[82vh] cursor-pointer items-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 transition-all duration-300 hover:border-neutral-400 hover:shadow-xl"
+                          className="group relative flex min-h-[65vh] sm:min-h-[75vh] md:min-h-[82vh] cursor-pointer items-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 transition-all duration-300 hover:border-neutral-400"
                         >
                           <video
                             src={film.videoUrl}
@@ -450,7 +450,7 @@ export default function AIWorkExplorer({ isOpen, onClose, films, videos, onSelec
                         {/* Image frame container carrying NO internal padding/margins/borders */}
                         <div 
                           onClick={() => setSelectedImgUrl(item.imageUrl)}
-                          className="relative w-full overflow-hidden rounded-2xl bg-neutral-100 border border-neutral-150/40 cursor-pointer shadow-sm z-0"
+                          className="relative w-full overflow-hidden rounded-2xl bg-neutral-100 border border-neutral-150/40 cursor-pointer z-0"
                         >
                           <img
                             src={item.imageUrl}

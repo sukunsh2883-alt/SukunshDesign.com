@@ -15,9 +15,9 @@ interface CinematicEditorialScrollProps {
 }
 
 export default function CinematicEditorialScroll({
-  line1Text = "PLEASE DON'T ASK WHAT",
-  line2Prefix = "LAYER 82",
-  line2Suffix = "DOES.",
+  line1Text = "I'M A VISUAL DESIGNER",
+  line2Prefix = "EXPLORE",
+  line2Suffix = "SELECTED WORKS.",
   videoSrc = "/design-illustration-loop.mp4",
   fallbackVideoSrc = "https://res.cloudinary.com/dylv5m3jk/video/upload/q_auto/f_auto/v1780259813/RIVR_AD_Flim_ln2lz9.mp4",
   posterSrc = "https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg",
@@ -258,20 +258,26 @@ export default function CinematicEditorialScroll({
       ref={containerRef}
       id="cinematic-editorial-expand"
       data-cursor-tag="Cinematic"
-      className="cinematic-scroll-section relative w-full bg-[#050505] text-white select-none"
+      className="cinematic-scroll-section relative w-full bg-white text-neutral-900 select-none"
       style={{ minHeight: "300vh" }}
     >
       {/* Pinned Stage Viewport (managed cleanly by GSAP ScrollTrigger pin) */}
       <div
         ref={stageRef}
-        className="relative flex h-screen min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-[#050505]"
+        className="relative flex h-screen min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-white"
       >
-        {/* Background Ambient Radial Glow */}
+        {/* Seamless blend transition connecting flush to hero artwork base */}
+        <div
+          className="pointer-events-none absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black/20 to-transparent z-20"
+          aria-hidden="true"
+        />
+
+        {/* Background Ambient Glow - pure black subtle gradient */}
         <div
           className="pointer-events-none absolute inset-0 z-0 opacity-20"
           style={{
             background:
-              "radial-gradient(circle at 50% 50%, rgba(255, 106, 0, 0.12) 0%, rgba(5, 5, 5, 0) 70%)",
+              "radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0) 70%)",
           }}
           aria-hidden="true"
         />
@@ -279,33 +285,37 @@ export default function CinematicEditorialScroll({
         {/* 1. EDITORIAL TEXT COMPOSITION */}
         <div
           ref={typographyWrapRef}
-          className="editorial-text relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-center justify-center px-4 sm:px-6 md:px-10 lg:px-12 text-center"
+          className="editorial-text relative z-10 mx-auto flex w-full max-w-[1160px] flex-col items-center justify-center px-4 sm:px-6 md:px-8 text-center"
         >
-          {/* Top Line: PLEASE DON'T ASK WHAT */}
+          {/* Top Line: VISUAL DESIGN & ART DIRECTION */}
           <div
             ref={line1Ref}
-            className="w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-bold uppercase italic tracking-[-0.035em] text-white leading-[0.88] select-none"
-            style={{ fontWeight: 700, fontStyle: "italic" }}
+            className="w-full font-sans text-[clamp(1.95rem,4.4vw,3.85rem)] font-bold uppercase italic tracking-[-0.02em] text-black leading-[0.88] select-none text-center"
+            style={{ fontWeight: 700, fontStyle: "italic", color: "#000000" }}
           >
             {line1Text}
           </div>
 
-          {/* Bottom Line: LAYER 82 [ VIDEO SLOT ] DOES. (Symmetrically Centered) */}
+          {/* Bottom Line: EXPLORE [ VIDEO SLOT ] SELECTED WORKS. (Tightly stacked with zero awkward gap) */}
           <div
-            className="-mt-1 sm:-mt-2 md:-mt-3 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(2.75rem,6.5vw,5.5rem)] font-bold uppercase italic tracking-[-0.035em] text-white leading-[0.88] select-none"
-            style={{ fontWeight: 700, fontStyle: "italic" }}
+            className="-mt-3 sm:-mt-5 md:-mt-6 lg:-mt-7 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(1.95rem,4.4vw,3.85rem)] font-bold uppercase italic tracking-[-0.02em] text-black leading-[0.88] select-none"
+            style={{ fontWeight: 700, fontStyle: "italic", color: "#000000" }}
           >
             {/* Left Word (Right-aligned to touch center video slot equally) */}
-            <div className="flex justify-end pr-2 sm:pr-4 md:pr-6 overflow-visible">
-              <span ref={line2PrefixRef} className="inline-block shrink-0 whitespace-nowrap font-bold italic font-sans" style={{ fontWeight: 700, fontStyle: "italic" }}>
+            <div className="flex justify-end pr-2 sm:pr-3.5 md:pr-5 overflow-visible">
+              <span
+                ref={line2PrefixRef}
+                className="inline-block shrink-0 whitespace-nowrap font-bold italic font-sans text-black"
+                style={{ fontWeight: 700, fontStyle: "italic", color: "#000000" }}
+              >
                 {line2Prefix}
               </span>
             </div>
 
-            {/* In-flow Video Slot: Houses the video directly between HELLO and SUKUNSH */}
+            {/* In-flow Video Slot: Houses the video directly between words */}
             <div
               ref={videoSlotRef}
-              className="relative inline-flex items-center justify-center shrink-0 aspect-[16/10] w-[140px] sm:w-[210px] md:w-[280px] lg:w-[320px] max-w-[34vw] rounded-[6px] sm:rounded-[8px] overflow-visible z-30"
+              className="relative inline-flex items-center justify-center shrink-0 aspect-[16/10] w-[125px] sm:w-[185px] md:w-[245px] lg:w-[280px] max-w-[32vw] rounded-[6px] sm:rounded-[8px] overflow-visible z-30"
             >
               <div
                 ref={videoCardRef}
@@ -315,9 +325,10 @@ export default function CinematicEditorialScroll({
                 data-cursor-project="true"
                 data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onExploreClick?.()}
-                className="expanding-video group z-30 cursor-pointer overflow-hidden rounded-[6px] sm:rounded-[8px] bg-neutral-950 shadow-[0_20px_60px_rgba(0,0,0,0.85)] outline-none focus-visible:ring-2 focus-visible:ring-white w-full h-full"
+                className="expanding-video group z-30 cursor-pointer overflow-hidden rounded-[6px] sm:rounded-[8px] bg-black border-0 shadow-[0_16px_40px_rgba(0,0,0,0.85)] outline-none focus-visible:ring-2 focus-visible:ring-black w-full h-full"
                 style={{
                   willChange: "transform, border-radius",
+                  boxShadow: "0 16px 40px rgba(0, 0, 0, 0.85)",
                   transformOrigin: "center center",
                 }}
               >
@@ -339,8 +350,12 @@ export default function CinematicEditorialScroll({
             </div>
 
             {/* Right Word (Left-aligned to touch center video slot equally) */}
-            <div className="flex justify-start pl-2 sm:pl-4 md:pl-6 overflow-visible">
-              <span ref={line2SuffixRef} className="inline-block shrink-0 whitespace-nowrap font-bold italic font-sans" style={{ fontWeight: 700, fontStyle: "italic" }}>
+            <div className="flex justify-start pl-2 sm:pl-3.5 md:pl-5 overflow-visible">
+              <span
+                ref={line2SuffixRef}
+                className="inline-block shrink-0 whitespace-nowrap font-bold italic font-sans text-black"
+                style={{ fontWeight: 700, fontStyle: "italic", color: "#000000" }}
+              >
                 {line2Suffix}
               </span>
             </div>

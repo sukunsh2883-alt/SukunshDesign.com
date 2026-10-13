@@ -198,14 +198,14 @@ export default function ScrollShowcase({
   };
 
   return (
-    <div ref={containerRef} className="scroll-showcase w-full bg-[#050505] text-white select-none">
+    <div ref={containerRef} className="scroll-showcase w-full bg-white text-neutral-900 select-none">
       {!isInline && onClose && (
-        <nav className="fixed left-5 right-5 top-5 z-[120] flex items-center justify-between rounded-full border border-white/10 bg-neutral-950/90 px-5 py-3 shadow-md backdrop-blur-md">
-          <span className="text-xs font-medium text-white">Sukunsh.</span>
+        <nav className="fixed left-5 right-5 top-5 z-[120] flex items-center justify-between rounded-full border border-black/10 bg-white/90 px-5 py-3 shadow-md backdrop-blur-md">
+          <span className="text-xs font-medium text-neutral-900">Sukunsh.</span>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1.5 text-xs text-white hover:border-white cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-800 hover:border-black cursor-pointer"
           >
             <span>Close</span>
             <X className="h-3.5 w-3.5" />
@@ -215,9 +215,9 @@ export default function ScrollShowcase({
 
       {/* 1. CINEMATIC SCROLL EDITORIAL SECTION (REFERENCE-INSPIRED EXPANDING VIDEO) */}
       <CinematicEditorialScroll
-        line1Text="PLEASE DON'T ASK WHAT"
-        line2Prefix="LAYER 82"
-        line2Suffix="DOES."
+        line1Text="VISUAL DESIGN & DIRECTION"
+        line2Prefix="DISCOVER"
+        line2Suffix="SELECTED WORK."
         videoSrc="/design-illustration-loop.mp4"
         onExploreClick={onOpenDesignShowcase}
       />
@@ -237,16 +237,16 @@ export default function ScrollShowcase({
         id="ai-work"
         ref={aiSectionRef}
         data-cursor-tag="AI Films"
-        className="relative w-full bg-[#050505] text-white px-2 sm:px-4 md:px-8 py-10 sm:py-16 select-none"
+        className="relative w-full bg-white text-neutral-900 px-2 sm:px-4 md:px-8 py-10 sm:py-16 select-none"
       >
         <div className="mx-auto w-full max-w-[1540px]">
           {/* Section Header: Minimalist AI Films ↙ aligned to H2 standard 36–48px */}
           <div className="folio-reveal mb-2 sm:mb-4 flex items-center justify-between px-3 sm:px-6">
             <div className="flex items-center gap-2 sm:gap-3">
-              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,4vw,3rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,4vw,3rem)] font-bold tracking-[-0.035em] text-neutral-900 leading-none select-none">
                 AI Films
               </h2>
-              <span className="inline-flex items-center text-white transform translate-y-0.5">
+              <span className="inline-flex items-center text-neutral-900 transform translate-y-0.5">
                 <svg
                   className="w-7 h-7 sm:w-8 sm:h-8 stroke-current stroke-[2.2] fill-none"
                   viewBox="0 0 24 24"
@@ -260,7 +260,7 @@ export default function ScrollShowcase({
               <button
                 type="button"
                 onClick={onOpenAIWork}
-                className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 hover:bg-white hover:text-black px-5 py-2.5 text-[14px] font-medium text-white shadow-xs transition-all cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-neutral-100 hover:bg-neutral-900 hover:text-white px-5 py-2.5 text-[14px] font-medium text-neutral-900 shadow-xs transition-all cursor-pointer"
               >
                 <span>Explore Vault</span>
                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -296,14 +296,14 @@ export default function ScrollShowcase({
       </section>
 
       {/* 4. ABOUT ME SECTION (Directly following AI Films) */}
-      <section id="about" className="relative min-h-screen overflow-visible bg-[#050505] text-white px-5 py-16 sm:px-8 md:px-14 md:py-24 z-20">
+      <section id="about" className="relative min-h-screen overflow-visible bg-white text-neutral-900 px-5 py-16 sm:px-8 md:px-14 md:py-24 z-20">
         <div className="absolute inset-x-6 top-14 bottom-14 z-0 hidden md:block overflow-hidden pointer-events-none">
           <ShapeGrid
             direction="diagonal"
             speed={0.35}
             squareSize={34}
-            borderColor="rgba(255, 255, 255, 0.06)"
-            hoverFillColor="rgba(255, 255, 255, 0.08)"
+            borderColor="rgba(0, 0, 0, 0.05)"
+            hoverFillColor="rgba(0, 0, 0, 0.04)"
             shape="square"
             hoverTrailAmount={8}
           />
@@ -312,20 +312,20 @@ export default function ScrollShowcase({
         <div className="relative z-10 mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="folio-reveal flex flex-col justify-center space-y-8 sm:space-y-10 md:space-y-12 lg:col-span-7">
             <div>
-              <div className="mb-2.5 h-[1.5px] w-12 bg-white" />
-              <div className="inline-flex items-center gap-1 text-[13px] font-semibold tracking-wide text-white">
+              <div className="mb-2.5 h-[1.5px] w-12 bg-neutral-900" />
+              <div className="inline-flex items-center gap-1 text-[13px] font-semibold tracking-wide text-neutral-900">
                 <span>About me</span>
-                <ArrowUpRight className="h-3.5 w-3.5 stroke-[2] text-white" />
+                <ArrowUpRight className="h-3.5 w-3.5 stroke-[2] text-neutral-900" />
               </div>
             </div>
             {/* H2 standard 36–48px */}
-            <h2 className="select-none text-[34px] sm:text-[40px] md:text-[44px] lg:text-[48px] font-normal leading-[1.12] tracking-normal text-white">
+            <h2 className="select-none text-[34px] sm:text-[40px] md:text-[44px] lg:text-[48px] font-normal leading-[1.12] tracking-normal text-neutral-900">
               I am a Delhi based
               <br />
               visual designer.
             </h2>
             {/* Body text standard 16–18px */}
-            <p className="max-w-xl text-[16px] sm:text-[17px] md:text-[18px] font-normal leading-relaxed text-neutral-400">
+            <p className="max-w-xl text-[16px] sm:text-[17px] md:text-[18px] font-normal leading-relaxed text-neutral-600">
               Crafting evocative visual stories through motion, typography, and creative precision.
             </p>
 
@@ -333,44 +333,44 @@ export default function ScrollShowcase({
               <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-stretch sm:gap-0">
                 <div className="flex-1 sm:pr-8 md:pr-10">
                   {/* Labels / metadata standard 12–14px */}
-                  <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-white">
+                  <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-900">
                     EDUCATION
                   </div>
-                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-white" />
+                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-neutral-900" />
                   <div className="space-y-5">
                     <div>
-                      <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-white">
+                      <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-neutral-900">
                         M.Des - IDC School of Design
                       </div>
-                      <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-400">
+                      <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-500">
                         IIT Bombay
                       </div>
                     </div>
-                    <div className="h-px w-full bg-neutral-800" />
+                    <div className="h-px w-full bg-neutral-200" />
                     <div>
-                      <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-white">
+                      <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-neutral-900">
                         BFA, Visual Communication
                       </div>
-                      <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-400">
+                      <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-500">
                         College of Art, Delhi
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="relative hidden w-px shrink-0 flex-col items-center justify-center self-stretch bg-neutral-800 sm:flex">
-                  <div className="absolute top-1/2 -left-[2.5px] h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#FF6A00]" />
+                <div className="relative hidden w-px shrink-0 flex-col items-center justify-center self-stretch bg-neutral-200 sm:flex">
+                  <div className="absolute top-1/2 -left-[2.5px] h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#3B4DF7]" />
                 </div>
                 <div className="flex-1 sm:pl-8 md:pl-10">
                   {/* Labels / metadata standard 12–14px */}
-                  <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-white">
+                  <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-neutral-900">
                     EXPERIENCE
                   </div>
-                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-white" />
+                  <div className="mb-5 mt-1.5 h-[1.5px] w-6 bg-neutral-900" />
                   <div>
-                    <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-white">
+                    <div className="text-[15px] sm:text-[16px] font-semibold leading-snug text-neutral-900">
                       Visual Designer
                     </div>
-                    <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-400">
+                    <div className="mt-0.5 text-[13px] sm:text-[14px] font-normal text-neutral-500">
                       ShareChat
                     </div>
                   </div>
@@ -402,7 +402,7 @@ export default function ScrollShowcase({
             curveAmount={0}
             direction="left"
             interactive={true}
-            className="fill-white font-sans text-[32px] font-bold uppercase tracking-[0.18em]"
+            className="fill-neutral-900 font-sans text-[32px] font-bold uppercase tracking-[0.18em]"
           />
         </div>
       </section>

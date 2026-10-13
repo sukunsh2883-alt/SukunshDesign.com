@@ -140,7 +140,7 @@ export default function AIFilms({ films, onSelectFilm, onOpenExplorer }: AIFilms
                 <div
                   key={film.id}
                   onClick={() => handleCardClick(index, film)}
-                  className="absolute w-[240px] h-[320px] md:w-[320px] md:h-[420px] lg:w-[410px] lg:h-[480px] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.2,1)] cursor-pointer rounded-2xl overflow-hidden select-none group border border-neutral-200/80 bg-neutral-100 shadow-2xl"
+                  className="absolute w-[240px] h-[320px] md:w-[320px] md:h-[420px] lg:w-[410px] lg:h-[480px] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.2,1)] cursor-pointer rounded-2xl overflow-hidden select-none group border border-neutral-200/80 bg-neutral-100"
                   style={{
                     transform: `translateX(${translateXVal}px) translateZ(${isCenter ? "120px" : "0px"}) rotateY(${rotateYVal}deg) scale(${scaleVal})`,
                     opacity: opacityVal,

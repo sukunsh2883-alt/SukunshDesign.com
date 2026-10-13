@@ -217,7 +217,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                   className="group flex flex-col cursor-pointer"
                 >
                   {/* Card container carrying ONLY the image for high-end minimalistic seamless layout */}
-                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-100 shadow-sm z-0">
+                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-100 z-0">
                     
                     <img
                       src={project.image}
@@ -262,7 +262,7 @@ export default function ProjectsExplorer({ isOpen, onClose, projects, onSelectPr
                   className="group flex flex-col select-none"
                 >
                   {/* Card container carrying the overlay image */}
-                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-950 shadow-sm z-0">
+                  <div className="relative w-full aspect-[1.5] rounded-xl overflow-hidden bg-neutral-950 z-0">
                     
                     <img
                       src={project.image}

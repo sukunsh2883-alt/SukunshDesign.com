@@ -40,11 +40,11 @@ export default function Journal({ posts }: JournalProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-neutral-50/50 hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-350 rounded-xl sm:rounded-full transition-all duration-300 gap-4 shadow-2xs"
+              className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-neutral-50/50 hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-350 rounded-xl sm:rounded-full transition-all duration-300 gap-4"
             >
               <div className="flex items-center gap-4">
                 {/* Post Image Thumbnail */}
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-full overflow-hidden flex-shrink-0 bg-neutral-100 border border-neutral-200 shadow-2xs">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-full overflow-hidden flex-shrink-0 bg-neutral-100 border border-neutral-200">
                   <img
                     src={post.image}
                     alt={post.title}

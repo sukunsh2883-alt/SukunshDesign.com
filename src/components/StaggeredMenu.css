@@ -82,6 +82,7 @@
   line-height: 1;
   overflow: visible;
   box-shadow: none !important;
+  mix-blend-mode: difference;
   transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
   user-select: none;
 }

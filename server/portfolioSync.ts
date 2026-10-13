@@ -191,6 +191,7 @@ export interface DesignProject {
   pdfUrl?: string;
   uploadedPdfName?: string;
   behanceEmbedUrl?: string;
+  tags?: string[];
 }
 
 export interface VideoCard {

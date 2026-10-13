@@ -225,7 +225,8 @@ export default function App() {
     isResumeOpen || 
     isAboutMeOpen || 
     isGitHubExplorerOpen ||
-    isDesignShowcaseOpen;
+    isDesignShowcaseOpen ||
+    !!selectedDesignProject;
 
   const closePortals = () => {
     setIsProjectsExplorerOpen(false);
@@ -351,7 +352,7 @@ export default function App() {
     if (isLoading) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion || selectedDesignProject) return;
+    if (reduceMotion) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -368,6 +369,7 @@ export default function App() {
     });
 
     lenisRef.current = lenis;
+    (window as any).__lenis = lenis;
 
     // Connect Lenis scroll updates directly to GSAP ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
@@ -393,6 +395,7 @@ export default function App() {
       gsap.ticker.remove(updateTicker);
       lenis.destroy();
       lenisRef.current = null;
+      (window as any).__lenis = null;
     };
   }, [isLoading, isScrollShowcaseOpen, selectedDesignProject]);
 
@@ -691,7 +694,7 @@ export default function App() {
   };
 
   return (
-    <div className="app page relative min-h-screen overflow-x-clip overflow-y-visible bg-[#050505] text-white transition-colors duration-300 touch-pan-y">
+    <div className="app page relative min-h-screen overflow-x-clip overflow-y-visible bg-white text-neutral-900 transition-colors duration-300 touch-pan-y">
       {/* Site-wide interactive precision cursor with circular project hover */}
       <UserCursor />
 
@@ -708,31 +711,7 @@ export default function App() {
 
       {/* Main page content - rendered immediately underneath the loading overlay so Hero is 100% ready */}
       <div className="flex flex-col min-h-screen">
-        {selectedDesignProject ? (
-              <Suspense fallback={null}>
-                <ProjectCaseStudy
-                  project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
-                  allProjects={designs}
-                  onClose={() => {
-                    setSelectedDesignProject(null);
-                    window.history.pushState({}, "", "/#projects");
-                    window.setTimeout(() => {
-                      const el = document.getElementById("projects") || document.getElementById("scroll-demo");
-                      if (el) {
-                        if (lenisRef.current) {
-                          lenisRef.current.scrollTo(el, { offset: -60, duration: 1.0 });
-                        } else {
-                          const top = el.getBoundingClientRect().top + window.pageYOffset - 60;
-                          window.scrollTo({ top, behavior: "smooth" });
-                        }
-                      }
-                    }, 60);
-                  }}
-                />
-              </Suspense>
-            ) : (
-            <>
-            {/* Header Floating navigation bar */}
+        {/* Header Floating navigation bar */}
             {!isScrollShowcaseOpen && (
               <Navbar 
                 profile={profileState}
@@ -949,10 +928,24 @@ export default function App() {
                   />
                 )}
               </AnimatePresence>
-            </Suspense>
 
-            </>
-            )}
+              {/* Dedicated Full-Screen Project Case Study Screen */}
+              <AnimatePresence>
+                {selectedDesignProject && (
+                  <ProjectCaseStudy
+                    project={designs.find(d => d.id === selectedDesignProject.id) || selectedDesignProject}
+                    allProjects={designs}
+                    onClose={() => {
+                      setSelectedDesignProject(null);
+                      if (window.location.pathname.startsWith("/project/")) {
+                        window.history.pushState(null, "", "/#projects");
+                      }
+                    }}
+                    onSelectProject={handleSelectProject}
+                  />
+                )}
+              </AnimatePresence>
+            </Suspense>
       </div>
     </div>
   );

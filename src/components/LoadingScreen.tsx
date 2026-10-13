@@ -8,7 +8,7 @@ interface LoadingScreenProps {
   isHeroReady?: boolean;
 }
 
-export default function LoadingScreen({ onComplete, profile, isHeroReady }: LoadingScreenProps) {
+export default function LoadingScreen({ onComplete, isHeroReady }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -23,25 +23,15 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     }
   }, [isHeroReady]);
 
-  const brandName = profile?.brandName || "Suraj";
-
   const finishLoading = useCallback(() => {
     if (hasFinishedRef.current) return;
     hasFinishedRef.current = true;
     setIsExiting(true);
-    // Guaranteed exit safety timer in case motion onAnimationComplete is delayed
+    // Guaranteed exit safety timer
     setTimeout(() => {
       onComplete();
-    }, 450);
+    }, 850);
   }, [onComplete]);
-
-  // Fast, instant exit as soon as progress completes
-  useEffect(() => {
-    if (progress >= 100 && !hasFinishedRef.current) {
-      const timer = setTimeout(finishLoading, 20);
-      return () => clearTimeout(timer);
-    }
-  }, [progress, finishLoading]);
 
   // Keyboard shortcut to skip
   useEffect(() => {
@@ -55,25 +45,25 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [finishLoading]);
 
-  // Snappy, ultra-fast progress animation (~320ms total)
+  // Smooth, engaging progress animation (~1400ms to allow full reading of "I'm Suraj Kumar Sharma")
   useEffect(() => {
     let animationFrame: number;
     let fallbackTimer: NodeJS.Timeout | null = null;
-    const duration = 320;
+    const duration = 1400;
 
     const updateProgress = () => {
       const elapsed = Date.now() - startTimeRef.current;
       const raw = Math.min(elapsed / duration, 1);
 
       // Smooth easeOut curve
-      const eased = Math.min(100, Math.floor(100 * (1 - Math.pow(1 - raw, 3))));
+      const eased = Math.min(100, Math.floor(100 * (1 - Math.pow(1 - raw, 2.5))));
       setProgress(eased);
 
       if (raw < 1) {
         animationFrame = requestAnimationFrame(updateProgress);
       } else {
         setProgress(100);
-        fallbackTimer = setTimeout(finishLoading, 20);
+        fallbackTimer = setTimeout(finishLoading, 250);
       }
     };
 
@@ -84,6 +74,8 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
       if (fallbackTimer) clearTimeout(fallbackTimer);
     };
   }, [finishLoading]);
+
+  const words = ["I'm", "Suraj", "Kumar", "Sharma"];
 
   return (
     <div
@@ -100,21 +92,45 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "-100%" } : { y: "0%" }}
-        transition={{ duration: 0.42, ease: [0.76, 0, 0.24, 1] }}
-        className="absolute top-0 left-0 w-full h-1/2 bg-[#050505] z-20 border-b border-neutral-850 flex flex-col justify-end items-center overflow-hidden"
+        transition={{ duration: 0.72, ease: [0.76, 0, 0.24, 1] }}
+        className="absolute top-0 left-0 w-full h-1/2 bg-white z-20 border-b border-neutral-100 flex flex-col justify-end items-center overflow-hidden"
       >
-        {/* Top half: Clean Minimalist Brand Typography */}
+        {/* Top half: Animated "I'm Suraj Kumar Sharma" typography */}
         <motion.div
-          animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          className="relative z-10 flex flex-col items-center pb-3 sm:pb-4 px-4 pointer-events-none"
+          animate={isExiting ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="relative z-10 flex flex-col items-center pb-4 sm:pb-5 px-6 pointer-events-none"
         >
-          <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-white mb-1">
-            {brandName}
-          </h1>
-          <span className="text-[10px] font-mono tracking-[0.24em] uppercase text-neutral-500">
-            Portfolio
-          </span>
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
+            {words.map((word, idx) => (
+              <motion.span
+                key={word}
+                initial={{ opacity: 0, y: 22, filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{
+                  duration: 0.55,
+                  delay: 0.12 + idx * 0.16,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className={`font-sans tracking-tight leading-none text-neutral-950 ${
+                  word === "Sharma"
+                    ? "text-3xl sm:text-4xl md:text-5xl font-black text-[#3B4DF7]"
+                    : "text-3xl sm:text-4xl md:text-5xl font-bold"
+                }`}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </div>
+
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.85, ease: "easeOut" }}
+            className="mt-2 text-[10px] sm:text-[11px] font-mono tracking-[0.28em] uppercase text-neutral-400"
+          >
+            Visual & Motion Designer
+          </motion.span>
         </motion.div>
       </motion.div>
 
@@ -122,32 +138,40 @@ export default function LoadingScreen({ onComplete, profile, isHeroReady }: Load
       <motion.div
         initial={{ y: "0%" }}
         animate={isExiting ? { y: "100%" } : { y: "0%" }}
-        transition={{ duration: 0.42, ease: [0.76, 0, 0.24, 1] }}
+        transition={{ duration: 0.72, ease: [0.76, 0, 0.24, 1] }}
         onAnimationComplete={() => {
           if (isExiting) {
             onComplete();
           }
         }}
-        className="absolute bottom-0 left-0 w-full h-1/2 bg-[#050505] z-20 border-t border-neutral-850 flex flex-col justify-start items-center overflow-hidden"
+        className="absolute bottom-0 left-0 w-full h-1/2 bg-white z-20 border-t border-neutral-100 flex flex-col justify-start items-center overflow-hidden"
       >
         {/* Bottom half: Clean 1px Progress Hairline and Percentage Counter */}
         <motion.div
-          animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          className="relative z-10 flex flex-col items-center pt-3 sm:pt-4 px-4 pointer-events-none max-w-xs w-full"
+          animate={isExiting ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="relative z-10 flex flex-col items-center pt-4 sm:pt-5 px-6 pointer-events-none max-w-xs w-full"
         >
-          <div className="w-28 sm:w-36 h-[1px] bg-neutral-800 mb-2 overflow-hidden">
+          <div className="w-36 sm:w-44 h-[2px] bg-neutral-100 mb-2.5 overflow-hidden rounded-full">
             <div
-              className="h-full bg-white transition-[width] duration-75 ease-out"
+              className="h-full bg-neutral-900 transition-[width] duration-100 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
 
-          <span className="font-mono text-[10px] sm:text-[11px] text-neutral-400 tabular-nums tracking-widest">
-            {progress < 10 ? `0${progress}` : progress}%
+          <div className="flex items-center justify-between w-36 sm:w-44 text-[10px] font-mono text-neutral-400">
+            <span className="tracking-widest uppercase text-[9px]">Loading</span>
+            <span className="tabular-nums font-semibold text-neutral-900">
+              {progress < 10 ? `0${progress}` : progress}%
+            </span>
+          </div>
+
+          <span className="mt-4 text-[9px] font-mono text-neutral-300 tracking-wider">
+            Click or press Space to enter
           </span>
         </motion.div>
       </motion.div>
     </div>
   );
 }
+

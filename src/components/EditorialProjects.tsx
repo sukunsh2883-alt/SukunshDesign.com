@@ -42,12 +42,12 @@ export default function EditorialProjects({
   };
 
   const renderCardMeta = (typeText = "Branding", line1 = "Background in Fine Art", _line2?: string) => (
-    <div className="mt-2.5 sm:mt-3 md:mt-3.5 flex items-center gap-2 sm:gap-2.5 text-[13px] sm:text-[14px] leading-none text-neutral-300">
-      <span className="font-semibold text-white whitespace-nowrap">
+    <div className="mt-2.5 sm:mt-3 md:mt-3.5 flex items-center gap-2 sm:gap-2.5 text-[13px] sm:text-[14px] leading-none text-neutral-700">
+      <span className="font-semibold text-neutral-900 whitespace-nowrap">
         {typeText}
       </span>
-      <span className="inline-block w-px h-3.5 bg-neutral-700 shrink-0" />
-      <span className="text-neutral-300 font-normal truncate">
+      <span className="inline-block w-px h-3.5 bg-neutral-300 shrink-0" />
+      <span className="text-neutral-500 font-normal truncate">
         {line1}
       </span>
     </div>
@@ -57,16 +57,16 @@ export default function EditorialProjects({
     <section
       id="projects"
       data-cursor-tag="Projects"
-      className="relative w-full bg-[#050505] text-white pt-12 sm:pt-16 md:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16"
+      className="relative w-full bg-white text-neutral-900 pt-12 sm:pt-16 md:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16"
     >
       <div className="w-full mx-auto">
         
         {/* Title: Projects ↙ aligned to H2 standard 36–48px */}
         <div className="flex items-center gap-2 sm:gap-3 mb-8 sm:mb-12 md:mb-14">
-          <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,4vw,3rem)] font-bold tracking-[-0.035em] text-white leading-none select-none">
+          <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(2.25rem,4vw,3rem)] font-bold tracking-[-0.035em] text-neutral-900 leading-none select-none">
             Projects
           </h2>
-          <span className="inline-flex items-center text-white transform translate-y-0.5">
+          <span className="inline-flex items-center text-neutral-900 transform translate-y-0.5">
             <svg
               className="w-7 h-7 sm:w-8 sm:h-8 stroke-current stroke-[2.2] fill-none"
               viewBox="0 0 24 24"
@@ -93,7 +93,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p_claro)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p_claro.image}
                     alt={p_claro.title}
@@ -122,7 +122,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p3)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p3.image}
                     alt={p3.title}
@@ -176,7 +176,7 @@ export default function EditorialProjects({
               }}
               className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
             >
-              <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+              <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                 <img
                   src="https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg"
                   alt="Design and Illustration"
@@ -203,7 +203,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p2)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p2.image}
                     alt={p2.title}
@@ -232,7 +232,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p5)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p5.image}
                     alt={p5.title}
@@ -266,7 +266,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p1)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p1.image}
                     alt={p1.title}
@@ -295,7 +295,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p4)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[1/1] sm:aspect-[1/1] md:aspect-[4/4.2] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[1/1] sm:aspect-[1/1] md:aspect-[4/4.2] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p4.image}
                     alt={p4.title}
@@ -324,7 +324,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p6)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p6.image}
                     alt={p6.title}
@@ -353,7 +353,7 @@ export default function EditorialProjects({
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectProject?.(p_mono)}
                 className="group cursor-pointer block w-full outline-none focus-visible:ring-2 focus-visible:ring-white transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99]"
               >
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-900">
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] md:aspect-[16/10.5] overflow-hidden rounded-[4px] bg-neutral-100">
                   <img
                     src={p_mono.image}
                     alt={p_mono.title}

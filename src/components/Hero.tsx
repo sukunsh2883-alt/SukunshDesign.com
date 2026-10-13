@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -12,69 +13,89 @@ interface HeroProps {
   onHeroLoaded?: () => void;
 }
 
-const SVG_URL = "/artwork/main artwork.svg";
+const DESKTOP_SVG_URL = "/artwork/main artwork.svg";
+const MOBILE_SVG_URL = "/artwork/mobile-screen.svg";
 
-let cachedSvgMarkup: string | null = null;
-let svgPreloadPromise: Promise<string> | null = null;
+let cachedDesktopSvgMarkup: string | null = null;
+let cachedMobileSvgMarkup: string | null = null;
 
-export function preloadHeroSvg(): Promise<string> {
-  if (cachedSvgMarkup) return Promise.resolve(cachedSvgMarkup);
-  if (!svgPreloadPromise) {
-    svgPreloadPromise = fetch(SVG_URL)
-      .then((response) => response.text())
-      .then((svg) => {
-        cachedSvgMarkup = cleanSvg(svg);
-        return cachedSvgMarkup;
-      })
-      .catch((error) => {
-        console.error("Hero SVG failed to load.", error);
-        return "";
-      });
-  }
-  return svgPreloadPromise;
+export function preloadHeroSvg(isMobile = false): Promise<string> {
+  if (isMobile && cachedMobileSvgMarkup) return Promise.resolve(cachedMobileSvgMarkup);
+  if (!isMobile && cachedDesktopSvgMarkup) return Promise.resolve(cachedDesktopSvgMarkup);
+
+  const url = isMobile ? MOBILE_SVG_URL : DESKTOP_SVG_URL;
+  return fetch(encodeURI(url))
+    .then((response) => response.text())
+    .then((svg) => {
+      const cleaned = cleanSvg(svg);
+      if (isMobile) cachedMobileSvgMarkup = cleaned;
+      else cachedDesktopSvgMarkup = cleaned;
+      return cleaned;
+    })
+    .catch((error) => {
+      console.error("Hero SVG failed to load:", url, error);
+      return "";
+    });
 }
 
-// Preload SVG immediately on client
+// Preload both SVGs immediately on client
 if (typeof window !== "undefined") {
-  preloadHeroSvg();
+  preloadHeroSvg(false);
+  preloadHeroSvg(true);
 }
 
 const flowerIds = Array.from({ length: 9 }, (_, index) => `flower_${index + 1}`);
 const leafIds = [...Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`), "leaf_10-2"];
 const flowerPerches: Record<string, { x: number; y: number }> = {
-  flower_1: { x: 382, y: 468 },
-  flower_2: { x: 315, y: 494 },
-  flower_3: { x: 250, y: 405 },
-  flower_4: { x: 880, y: 472 },
-  flower_5: { x: 465, y: 548 },
-  flower_6: { x: 875, y: 522 },
-  flower_7: { x: 844, y: 424 },
-  flower_8: { x: 922, y: 452 },
-  flower_9: { x: 785, y: 510 },
+  flower_1: { x: 695, y: 526 },
+  flower_2: { x: 752, y: 570 },
+  flower_3: { x: 898, y: 615 },
+  flower_4: { x: 1201, y: 624 },
+  flower_5: { x: 824, y: 560 },
+  flower_6: { x: 1254, y: 592 },
+  flower_7: { x: 1350, y: 542 },
+  flower_8: { x: 1443, y: 526 },
+  flower_9: { x: 1385, y: 585 },
 };
 function cleanSvg(svg: string) {
   return svg
     .replace(/<\?xml[\s\S]*?\?>/g, "")
     .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/<text[^>]*>[\s\S]*?Welcome to my[\s\S]*?<\/text>/gi, "")
     .trim();
 }
 
 function findSvgElement<T extends Element>(svg: SVGSVGElement | null, id: string) {
   if (!svg) return null;
-  return Array.from(svg.querySelectorAll<T>("[id]")).find((element) => element.id === id) || null;
+  const elements = Array.from(svg.querySelectorAll<T>("[id]"));
+  return (
+    elements.find((el) => el.id === id) ||
+    elements.find((el) => el.id.startsWith(id + "_") || el.id.startsWith(id + "-")) ||
+    null
+  );
 }
 
 export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAboutMe, onOpenContact, onHeroLoaded }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    return typeof window !== "undefined" && window.innerWidth < 768;
+  });
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      const mobileNow = window.innerWidth < 768;
+      setIsMobile((prev) => (prev !== mobileNow ? mobileNow : prev));
+    };
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     let ctx: gsap.Context | null = null;
     let cleanupHero: (() => void) | null = null;
 
-    const setupHero = (svgMarkup: string) => {
+    const setupHero = (svgMarkup: string, isMobileMode: boolean) => {
       const section = sectionRef.current;
       const stage = stageRef.current;
       if (!section || !stage || cancelled) return;
@@ -86,26 +107,18 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       const svgElement = stage.querySelector("svg");
       if (!svgElement) return;
       svgElement.classList.add("hero-svg");
+      svgElement.setAttribute("preserveAspectRatio", "xMidYMax meet");
 
       const byId = <T extends SVGGraphicsElement>(id: string) => findSvgElement<T>(svgElement, id);
-      const heroText = byId("Sukunsh");
-
-      // Replace or configure background hero text to display "PORTFOLIO"
-      // Centered at x=864.1 in 1728.2 viewBox so it's fully visible and never clipped
-      if (heroText) {
-        const textNode = heroText.querySelector("text");
-        if (textNode) {
-          textNode.textContent = "PORTFOLIO";
-          textNode.setAttribute("class", "st1 st2 st3 hero-portfolio-text");
-          textNode.setAttribute("font-weight", "400");
-          textNode.style.fontWeight = "400";
-          textNode.setAttribute("letter-spacing", "-0.025em");
-          textNode.setAttribute("text-anchor", "middle");
-          textNode.setAttribute("x", "864.1");
-          textNode.setAttribute("y", "350");
-          textNode.removeAttribute("transform");
-        }
+      const existingHeroText = byId("Sukunsh");
+      if (existingHeroText) {
+        existingHeroText.remove();
       }
+      const existingParallax = byId("sukunsh_parallax_group");
+      if (existingParallax) {
+        existingParallax.remove();
+      }
+      const heroText: SVGGraphicsElement | null = null;
       const head = byId("head-2");
       const leftEye = byId("eye_ball_left");
       const rightEye = byId("eyes_ball_right");
@@ -131,23 +144,22 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         return group as SVGGElement;
       };
 
-      const characterElementIds = [
-        "blue_pen-2", "pink", "paper-2", "ipad-2", "red_bag-2", "pentab-2",
-        "Layer_136", "Layer_135", "Layer_134", "Layer_133", "Layer_152", "Layer_130", "Layer_129",
-        "right_arm_with_pen-2", "Layer_253", "Layer_252", "head-2", "Layer_123", "shirt-2", "green_bag",
-        "left_arm_and_details", "Layer_117", "Layer_118", "camera-2", "Layer_116", "Layer_114", "Layer_112",
-        "Layer_109", "Layer_108"
-      ];
-      const charElements = characterElementIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
-      const characterGroup = byId("character_group") || (charElements.length > 0 ? wrapSvgElements("character_group", charElements) : null);
+      const cameraElement = (byId("camera") || svgElement.querySelector('[id*="camera"]')) as SVGGraphicsElement | null;
+
+      // Group all elements comprising the cactus character
+      const cactusElements = Array.from(
+        svgElement.querySelectorAll<SVGGraphicsElement>(
+          "path.st210, path.st211, #Layer_252, #Layer_123, #Layer_112, #Layer_109, #Layer_108, #Layer_106, #Layer_100, #Layer_97"
+        )
+      );
+      const cactusGroup = wrapSvgElements("cactus_group", cactusElements);
 
       const backgroundLayer = byId("Layer_38");
       if (heroText?.parentNode === svgElement && backgroundLayer?.parentNode === svgElement) {
         svgElement.insertBefore(heroText, backgroundLayer.nextSibling);
       }
 
-      const sukunshParallax = heroText ? wrapSvgElements("sukunsh_parallax_group", [heroText]) : null;
-      const characterParallax = characterGroup ? wrapSvgElements("character_parallax_group", [characterGroup]) : null;
+      const cactusParallax = cactusGroup ? wrapSvgElements("cactus_parallax_group", [cactusGroup]) : null;
       const flowerParallax = wrapSvgElements("flower_parallax_group", flowers);
       const leafParallax = wrapSvgElements("leaf_parallax_group", leaves);
 
@@ -167,13 +179,13 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
 
         gsap.set(stage, { opacity: 1 });
         gsap.set(svgElement, { transformOrigin: "center bottom" });
-        gsap.set([sukunshParallax, characterParallax, flowerParallax, leafParallax].filter(Boolean), {
+        gsap.set([cactusParallax, flowerParallax, leafParallax].filter(Boolean), {
           transformBox: "fill-box",
           transformOrigin: "50% 50%",
         });
-        gsap.set(heroText, { transformOrigin: "center center" });
-        gsap.set(characterGroup, { transformBox: "fill-box", transformOrigin: "50% 70%" });
-        gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 95%" });
+        if (heroText) gsap.set(heroText, { transformOrigin: "center center" });
+        if (cactusGroup) gsap.set(cactusGroup, { transformOrigin: "1100px 750px" });
+        if (head) gsap.set(head, { transformBox: "fill-box", transformOrigin: "50% 95%" });
         gsap.set([leftEye, rightEye].filter(Boolean), { transformOrigin: "50% 50%" });
         gsap.set([...tagRects, ...tagTexts], { transformOrigin: "center center" });
 
@@ -283,21 +295,45 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
 
           parallaxTimeline
             .to(".hero-scroll-base", { yPercent: 0, ease: "none" }, 0)
-            .to(sukunshParallax, { yPercent: -9, opacity: 0.86, ease: "none" }, 0)
-            .to(characterParallax, { xPercent: 0.8, yPercent: -5, ease: "none" }, 0)
-            .to(flowerParallax, { xPercent: -0.9, yPercent: -10, ease: "none" }, 0)
-            .to(leafParallax, { xPercent: 1.1, yPercent: -8, ease: "none" }, 0);
+            .to(cactusParallax, { xPercent: 0.8, yPercent: 0, ease: "none" }, 0)
+            .to(flowerParallax, { xPercent: -0.9, yPercent: 0, ease: "none" }, 0)
+            .to(leafParallax, { xPercent: 1.1, yPercent: 0, ease: "none" }, 0);
           timelines.push(parallaxTimeline);
 
-          if (characterGroup) {
-            timelines.push(gsap.to(characterGroup, {
-              y: -0.8,
-              duration: 3.5,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-              overwrite: "auto",
-            }));
+          // The camera floating above the cactus hand
+          if (cameraElement) {
+            gsap.set(cameraElement, {
+              autoAlpha: 1,
+              transformOrigin: "1590px 310px",
+            });
+            timelines.push(
+              gsap.to(cameraElement, {
+                y: -14,
+                rotation: 2.2,
+                duration: 2.4,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                overwrite: "auto",
+              })
+            );
+          }
+
+          // Give the cactus a breathing motion
+          if (cactusGroup) {
+            gsap.set(cactusGroup, { transformOrigin: "1100px 750px" });
+            timelines.push(
+              gsap.to(cactusGroup, {
+                scaleY: 1.02,
+                scaleX: 1.008,
+                y: -3,
+                duration: 2.6,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                overwrite: "auto",
+              })
+            );
           }
         }
 
@@ -672,296 +708,200 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           // No automatic ticker needed for direct cursor follow, but we keep the empty function in case of any external dependency
         };
 
-        // -------------------------------------------------------------
-        // Global Beetle setup (enables flying across the entire page!)
-        // -------------------------------------------------------------
-        let globalSvg = document.getElementById("global-beetle-svg") as unknown as SVGSVGElement | null;
-        if (!globalSvg) {
-          globalSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg") as unknown as SVGSVGElement;
-          globalSvg.setAttribute("id", "global-beetle-svg");
-          globalSvg.setAttribute("viewBox", svgElement.getAttribute("viewBox") || "0 0 1728.2 758.1");
-          globalSvg.setAttribute("class", "fixed inset-0 w-screen h-screen pointer-events-none z-[99999] overflow-visible");
-          document.body.appendChild(globalSvg);
-        } else {
-          globalSvg.setAttribute("viewBox", svgElement.getAttribute("viewBox") || "0 0 1728.2 758.1");
-        }
-
-        // Copy styles to make sure classes render perfectly
-        const styleNode = svgElement.querySelector("style");
-        if (styleNode) {
-          let globalStyle = globalSvg.querySelector("style") as unknown as SVGStyleElement | null;
-          if (!globalStyle) {
-            globalStyle = document.createElementNS("http://www.w3.org/2000/svg", "style") as unknown as SVGStyleElement;
-            globalSvg.appendChild(globalStyle);
-          }
-          globalStyle.textContent = styleNode.textContent;
-        }
-
-        // Copy defs so gradients and filters are available locally
-        const defsNode = svgElement.querySelector("defs");
-        if (defsNode) {
-          let globalDefs = globalSvg.querySelector("defs");
-          if (!globalDefs) {
-            globalDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-            globalSvg.appendChild(globalDefs);
-          }
-          globalDefs.innerHTML = defsNode.innerHTML;
-        }
-
+        // Keep Beetle directly in svgElement (shared SVG coordinate system with flowers)
         if (sitPose && flyPose) {
-          globalSvg.appendChild(sitPose);
-          globalSvg.appendChild(flyPose);
+          if (sitPose.parentNode !== svgElement) svgElement.appendChild(sitPose);
+          if (flyPose.parentNode !== svgElement) svgElement.appendChild(flyPose);
           gsap.set([sitPose, flyPose], {
             transformOrigin: "50% 50%",
-            pointerEvents: "none",
+            cursor: "grab",
+            pointerEvents: "all",
           });
         }
 
         const pointerSvgPointFromCoords = (clientX: number, clientY: number) => {
-          if (!globalSvg) return null;
-          const point = globalSvg.createSVGPoint();
+          if (!svgElement) return null;
+          const point = svgElement.createSVGPoint();
           point.x = clientX;
           point.y = clientY;
 
-          const screen = globalSvg.getScreenCTM();
+          const screen = svgElement.getScreenCTM();
           if (!screen) return null;
           return point.matrixTransform(screen.inverse());
         };
 
-        const updateLandedBeetlePosition = () => {
-          if (currentState !== "landed") return;
+        // Exact SVG coordinate centers for sit and fly poses
+        const BEETLE_SIT_ORIGIN = { x: 765, y: 588 };
+        const BEETLE_FLY_ORIGIN = { x: 883, y: 467 };
 
-          let targetFlower: HTMLElement | null = null;
-          let isFooter = false;
+        let currentFlyX = flowerPerches["flower_1"].x;
+        let currentFlyY = flowerPerches["flower_1"].y;
+        let targetSvgX = currentFlyX;
+        let targetSvgY = currentFlyY;
+        let currentRot = 0;
+        let isLanding = false;
+        let idleTimer: any = null;
+        let flyToFlowerTimeline: gsap.core.Timeline | null = null;
 
-          if (currentFlowerIndex !== -1 && flowers[currentFlowerIndex]) {
-            targetFlower = flowers[currentFlowerIndex] as unknown as HTMLElement;
-          } else if (activeFooterFlowerId) {
-            targetFlower = document.getElementById(activeFooterFlowerId);
-            isFooter = true;
-          }
-
-          if (targetFlower && globalSvg && sitPose) {
-            const rect = targetFlower.getBoundingClientRect();
-            const screenX = rect.left + rect.width / 2;
-            const screenY = isFooter ? (rect.top + rect.height * 0.5) : (rect.top + rect.height * 0.28);
-
-            const pt = pointerSvgPointFromCoords(screenX, screenY);
-            if (pt) {
-              const rot = Number(gsap.getProperty(targetFlower, "rotation")) || 0;
+        const updateBeetleFrame = () => {
+          if (currentState === "landed" && sitPose) {
+            const flower = flowers[currentFlowerIndex];
+            if (flower) {
+              const perch = flowerPerches[flower.id] || flowerPerches["flower_1"];
+              const rot = Number(gsap.getProperty(flower, "rotation")) || 0;
+              const fy = Number(gsap.getProperty(flower, "y")) || 0;
+              // Track flower sway naturally around ground base
+              const rad = (rot * Math.PI) / 180;
+              const arm = Math.max(80, 750 - perch.y);
+              const swayX = Math.sin(rad) * arm * 0.7;
+              const swayY = fy + (1 - Math.cos(rad)) * arm * 0.7;
               gsap.set(sitPose, {
-                x: pt.x - sitBase.x,
-                y: pt.y - sitBase.y,
+                x: perch.x - BEETLE_SIT_ORIGIN.x + swayX,
+                y: perch.y - BEETLE_SIT_ORIGIN.y + swayY,
                 rotation: rot,
               });
             }
+          } else if (currentState === "flying" && flyPose && !isLanding) {
+            // Silky smooth damped lerp toward mouse cursor
+            const dx = targetSvgX - currentFlyX;
+            const dy = targetSvgY - currentFlyY;
+            const dist = Math.hypot(dx, dy);
+
+            // Responsive damping factor
+            const lerpFactor = dist > 250 ? 0.16 : 0.11;
+            currentFlyX += dx * lerpFactor;
+            currentFlyY += dy * lerpFactor;
+
+            // Organic heading angle interpolation
+            if (dist > 3) {
+              const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+              let diff = (targetAngle - currentRot) % 360;
+              if (diff > 180) diff -= 360;
+              if (diff < -180) diff += 360;
+              currentRot += diff * 0.16;
+            }
+
+            gsap.set(flyPose, {
+              x: currentFlyX - BEETLE_FLY_ORIGIN.x,
+              y: currentFlyY - BEETLE_FLY_ORIGIN.y,
+              rotation: currentRot,
+            });
           }
         };
 
-        gsap.ticker.add(updateLandedBeetlePosition);
+        gsap.ticker.add(updateBeetleFrame);
         cleanupFns.push(() => {
-          gsap.ticker.remove(updateLandedBeetlePosition);
+          gsap.ticker.remove(updateBeetleFrame);
         });
 
-        let mouseMoveTimeout: any = null;
-        let flyToFlowerTimeline: gsap.core.Timeline | null = null;
-        let currentMouseSvgX = 0;
-        let currentMouseSvgY = 0;
+        const landOnNearestAvailableFlower = () => {
+          if (!flyPose || !sitPose || !svgElement) return;
+          if (currentState !== "flying" || isLanding) return;
 
-        const flyToFlowerAndSit = (flowerIndex: number) => {
-          if (!flyPose || !sitPose || !globalSvg) return;
-          currentState = "flying";
+          isLanding = true;
 
-          const flower = flowers[flowerIndex];
-          if (!flower) return;
+          // Find the flower blossom strictly closest to current beetle flight position
+          let bestIndex = 0;
+          let bestDist = Infinity;
 
-          const rect = flower.getBoundingClientRect();
-          const screenX = rect.left + rect.width / 2;
-          const screenY = rect.top + rect.height * 0.28;
+          flowers.forEach((flower, index) => {
+            const perch = flowerPerches[flower.id] || flowerPerches["flower_1"];
+            if (isMobileMode && (perch.x < 840 || perch.x > 1660)) {
+              return;
+            }
+            const dist = Math.hypot(perch.x - currentFlyX, perch.y - currentFlyY);
+            if (dist < bestDist) {
+              bestDist = dist;
+              bestIndex = index;
+            }
+          });
 
-          const pt = pointerSvgPointFromCoords(screenX, screenY);
-          if (!pt) return;
+          const flower = flowers[bestIndex];
+          const perch = flowerPerches[flower?.id] || (isMobileMode ? { x: 1201, y: 624 } : { x: 695, y: 526 });
+          const targetFlyX = perch.x - BEETLE_FLY_ORIGIN.x;
+          const targetFlyY = perch.y - BEETLE_FLY_ORIGIN.y;
+          const targetSitX = perch.x - BEETLE_SIT_ORIGIN.x;
+          const targetSitY = perch.y - BEETLE_SIT_ORIGIN.y;
 
-          const endFlyX = pt.x - flyBase.x;
-          const endFlyY = pt.y - flyBase.y;
-          const endSitX = pt.x - sitBase.x;
-          const endSitY = pt.y - sitBase.y;
-
-          const startFlyX = gsap.getProperty(flyPose, "x") as number || 0;
-          const startFlyY = gsap.getProperty(flyPose, "y") as number || 0;
-
-          const dx = endFlyX - startFlyX;
-          const dy = endFlyY - startFlyY;
-          const rotation = gsap.utils.clamp(-45, 45, Math.atan2(dy, dx) * (180 / Math.PI) + 90);
-
-          const mid = {
-            x: (startFlyX + endFlyX) / 2 + gsap.utils.random(-25, 25),
-            y: Math.min(startFlyY, endFlyY) - gsap.utils.random(35, 60),
-          };
+          const dx = targetFlyX - (currentFlyX - BEETLE_FLY_ORIGIN.x);
+          const dy = targetFlyY - (currentFlyY - BEETLE_FLY_ORIGIN.y);
+          const rot = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
 
           if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
+          startFlyWingFlutter();
 
           flyToFlowerTimeline = gsap.timeline({
             onComplete: () => {
-              currentFlowerIndex = flowerIndex;
               currentState = "landed";
+              isLanding = false;
+              currentFlowerIndex = bestIndex;
               stopFlyWingFlutter();
-              showPose(sitPose);
-              hidePose(flyPose);
-              
               gsap.set(sitPose, {
-                x: endSitX,
-                y: endSitY,
-                rotation: 0,
-                scaleX: 1,
-                scaleY: 1
+                x: targetSitX,
+                y: targetSitY,
+                rotation: (gsap.getProperty(flower, "rotation") as number) || 0,
+                opacity: 1,
+                visibility: "visible",
               });
+              gsap.set(flyPose, { opacity: 0, visibility: "hidden" });
             },
           });
 
-          flyToFlowerTimeline
-            .to(flyPose, {
-              x: mid.x,
-              y: mid.y,
-              rotation,
-              duration: 0.5,
-              ease: "power2.out",
-              overwrite: "auto",
-            })
-            .to(flyPose, {
-              x: endFlyX,
-              y: endFlyY,
-              rotation: 0,
-              duration: 0.5,
-              ease: "power2.inOut",
-              overwrite: "auto",
-            });
+          flyToFlowerTimeline.to(flyPose, {
+            x: targetFlyX,
+            y: targetFlyY,
+            rotation: rot,
+            duration: 0.55,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
         };
 
-        const landOnNearestAvailableFlower = () => {
-          if (!flyPose || !sitPose || !globalSvg) return;
-          currentState = "flying";
-
-          const startFlyX = gsap.getProperty(flyPose, "x") as number || 0;
-          const startFlyY = gsap.getProperty(flyPose, "y") as number || 0;
-
-          const footerFlowerIds = ["yellow-flower", "red-flower", "white-flower-1"];
-          const footerFlowers = footerFlowerIds
-            .map((id) => document.getElementById(id))
-            .filter(Boolean) as HTMLElement[];
-
-          let bestFlowerPt: { x: number; y: number } | null = null;
-          let bestDist = Infinity;
-          let isFooterFlower = false;
-          let bestFlowerIndex = -1;
-          let bestFooterFlowerId: string | null = null;
-
-          // Check hero flowers
-          flowers.forEach((flower, index) => {
-            const rect = flower.getBoundingClientRect();
-            const screenX = rect.left + rect.width / 2;
-            const screenY = rect.top + rect.height * 0.28;
-            const pt = pointerSvgPointFromCoords(screenX, screenY);
-            if (pt) {
-              const fx = pt.x - flyBase.x;
-              const fy = pt.y - flyBase.y;
-              const dist = Math.hypot(fx - startFlyX, fy - startFlyY);
-              if (dist < bestDist) {
-                bestDist = dist;
-                bestFlowerPt = pt;
-                bestFlowerIndex = index;
-                isFooterFlower = false;
-                bestFooterFlowerId = null;
-              }
-            }
-          });
-
-          // Check footer flowers
-          footerFlowers.forEach((flower) => {
-            const rect = flower.getBoundingClientRect();
-            const screenX = rect.left + rect.width / 2;
-            const screenY = rect.top + rect.height * 0.5;
-            const pt = pointerSvgPointFromCoords(screenX, screenY);
-            if (pt) {
-              const fx = pt.x - flyBase.x;
-              const fy = pt.y - flyBase.y;
-              const dist = Math.hypot(fx - startFlyX, fy - startFlyY);
-              if (dist < bestDist) {
-                bestDist = dist;
-                bestFlowerPt = pt;
-                bestFlowerIndex = -1;
-                isFooterFlower = true;
-                bestFooterFlowerId = flower.id;
-              }
-            }
-          });
-
-          if (bestFlowerPt) {
-            const endFlyX = bestFlowerPt.x - flyBase.x;
-            const endFlyY = bestFlowerPt.y - flyBase.y;
-            const endSitX = bestFlowerPt.x - sitBase.x;
-            const endSitY = bestFlowerPt.y - sitBase.y;
-
-            const dx = endFlyX - startFlyX;
-            const dy = endFlyY - startFlyY;
-            const rotation = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-
-            if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
-
-            flyToFlowerTimeline = gsap.timeline({
-              onComplete: () => {
-                currentState = "landed";
-                stopFlyWingFlutter();
-                showPose(sitPose);
-                hidePose(flyPose);
-                if (!isFooterFlower) {
-                  currentFlowerIndex = bestFlowerIndex;
-                  activeFooterFlowerId = null;
-                } else {
-                  currentFlowerIndex = -1;
-                  activeFooterFlowerId = bestFooterFlowerId;
-                }
-                gsap.set(sitPose, {
-                  x: endSitX,
-                  y: endSitY,
-                  rotation: 0,
-                  scaleX: 1,
-                  scaleY: 1,
-                });
-              },
-            });
-
-            startFlyWingFlutter();
-
-            flyToFlowerTimeline.to(flyPose, {
-              x: endFlyX,
-              y: endFlyY,
-              rotation: rotation,
-              duration: 0.9,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-          } else {
-            currentState = "landed";
-            stopFlyWingFlutter();
-            showPose(sitPose);
-            hidePose(flyPose);
-          }
-        };
-
-        const handleFollowCursor = (event: PointerEvent) => {
-          if (event.pointerType === "touch") return;
+        const takeOffAndFollow = (svgX: number, svgY: number) => {
+          const wasLanding = isLanding;
           if (flyToFlowerTimeline) {
             flyToFlowerTimeline.kill();
             flyToFlowerTimeline = null;
           }
+          isLanding = false;
 
-          const target = (event.target as HTMLElement | null);
-          const isInHero = target ? !!target.closest("#home") : false;
-          const isInFooter = target ? !!target.closest("#contact") : false;
+          if (currentState !== "flying" || wasLanding) {
+            currentState = "flying";
+            if (wasLanding && flyPose) {
+              currentFlyX = (gsap.getProperty(flyPose, "x") as number) + BEETLE_FLY_ORIGIN.x;
+              currentFlyY = (gsap.getProperty(flyPose, "y") as number) + BEETLE_FLY_ORIGIN.y;
+            } else if (sitPose) {
+              const curSitX = (gsap.getProperty(sitPose, "x") as number) || 0;
+              const curSitY = (gsap.getProperty(sitPose, "y") as number) || 0;
+              currentFlyX = curSitX + BEETLE_SIT_ORIGIN.x;
+              currentFlyY = curSitY + BEETLE_SIT_ORIGIN.y;
+            }
+            gsap.set(flyPose, {
+              x: currentFlyX - BEETLE_FLY_ORIGIN.x,
+              y: currentFlyY - BEETLE_FLY_ORIGIN.y,
+              rotation: currentRot,
+              opacity: 1,
+              visibility: "visible",
+              pointerEvents: "all",
+            });
+            if (sitPose) gsap.set(sitPose, { opacity: 0, visibility: "hidden" });
+            startFlyWingFlutter();
+          }
 
-          if (!isInHero && !isInFooter) {
-            if (currentState === "flying") {
+          targetSvgX = svgX;
+          targetSvgY = svgY;
+        };
+
+        const handleFollowCursor = (event: PointerEvent) => {
+          const rect = section.getBoundingClientRect();
+          const isInsideHero =
+            event.clientX >= rect.left &&
+            event.clientX <= rect.right &&
+            event.clientY >= rect.top &&
+            event.clientY <= rect.bottom;
+
+          if (!isInsideHero) {
+            if (currentState === "flying" && !isLanding) {
               landOnNearestAvailableFlower();
             }
             return;
@@ -970,102 +910,55 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           const pt = pointerSvgPointFromCoords(event.clientX, event.clientY);
           if (!pt) return;
 
-          currentMouseSvgX = pt.x;
-          currentMouseSvgY = pt.y;
+          takeOffAndFollow(pt.x, pt.y);
 
-          const targetFlyX = pt.x - flyBase.x;
-          const targetFlyY = pt.y - flyBase.y;
-          const targetSitX = pt.x - sitBase.x;
-          const targetSitY = pt.y - sitBase.y;
-
-          const currentX = gsap.getProperty(flyPose, "x") as number || 0;
-          const currentY = gsap.getProperty(flyPose, "y") as number || 0;
-          const dx = targetFlyX - currentX;
-          const dy = targetFlyY - currentY;
-          const dist = Math.hypot(dx, dy);
-
-          if (dist > 1.0) {
-            const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-
-            if (currentState !== "flying") {
-              currentState = "flying";
-              showPose(flyPose);
-              hidePose(sitPose);
-              startFlyWingFlutter();
-            }
-
-            gsap.to(flyPose, {
-              x: targetFlyX,
-              y: targetFlyY,
-              rotation: angle,
-              duration: 1.8,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-
-            gsap.to(sitPose, {
-              x: targetSitX,
-              y: targetSitY,
-              rotation: angle,
-              duration: 1.8,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-          }
-
-          if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
-          mouseMoveTimeout = setTimeout(() => {
-            if (currentState === "flying") {
+          // When cursor stops, sit on flowers only
+          if (idleTimer) clearTimeout(idleTimer);
+          idleTimer = setTimeout(() => {
+            if (currentState === "flying" && !isLanding) {
               landOnNearestAvailableFlower();
             }
-          }, 800);
+          }, 950);
         };
 
         const handlePointerLeave = () => {
-          if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
-          if (currentState === "flying") {
+          if (currentState === "flying" && !isLanding) {
             landOnNearestAvailableFlower();
           }
         };
 
         if (sitPose && flyPose && flowers.length && section) {
           currentState = "landed";
+          const prefMobileIdx = flowers.findIndex((f) => f.id === "flower_4" || f.id === "flower_6");
+          currentFlowerIndex = isMobileMode && prefMobileIdx >= 0 ? prefMobileIdx : 0;
+          isLanding = false;
           showPose(sitPose);
           hidePose(flyPose);
-
-          setTimeout(() => {
-            const flower = flowers[0];
-            if (flower) {
-              const rect = flower.getBoundingClientRect();
-              const screenX = rect.left + rect.width / 2;
-              const screenY = rect.top + rect.height * 0.28;
-              const pt = pointerSvgPointFromCoords(screenX, screenY);
-              if (pt) {
-                gsap.set(sitPose, {
-                  x: pt.x - sitBase.x,
-                  y: pt.y - sitBase.y,
-                  rotation: 0,
-                  scaleX: 1,
-                  scaleY: 1
-                });
-              }
-            }
-          }, 100);
+          const activeFlower = flowers[currentFlowerIndex];
+          const p0 = flowerPerches[activeFlower?.id] || (isMobileMode ? { x: 1201, y: 624 } : { x: 695, y: 526 });
+          currentFlyX = p0.x;
+          currentFlyY = p0.y;
+          targetSvgX = p0.x;
+          targetSvgY = p0.y;
+          gsap.set(sitPose, {
+            x: p0.x - BEETLE_SIT_ORIGIN.x,
+            y: p0.y - BEETLE_SIT_ORIGIN.y,
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+          });
 
           window.addEventListener("pointermove", handleFollowCursor);
+          window.addEventListener("pointerdown", handleFollowCursor);
           window.addEventListener("pointerleave", handlePointerLeave);
+          document.addEventListener("mouseleave", handlePointerLeave);
           cleanupFns.push(() => {
             window.removeEventListener("pointermove", handleFollowCursor);
+            window.removeEventListener("pointerdown", handleFollowCursor);
             window.removeEventListener("pointerleave", handlePointerLeave);
-            if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
+            document.removeEventListener("mouseleave", handlePointerLeave);
+            if (idleTimer) clearTimeout(idleTimer);
             if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
-
-            if (sitPose && sitPose.parentNode) sitPose.parentNode.removeChild(sitPose);
-            if (flyPose && flyPose.parentNode) flyPose.parentNode.removeChild(flyPose);
-            const gSvg = document.getElementById("global-beetle-svg");
-            if (gSvg && gSvg.parentNode && !gSvg.querySelector("g")) {
-              gSvg.parentNode.removeChild(gSvg);
-            }
           });
         }
 
@@ -1075,12 +968,22 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           mainBeetleTimeline?.resume();
         };
 
+        const handleResize = () => {
+          resumeHeroAnimations();
+          ScrollTrigger.refresh();
+          updateBeetleFrame();
+        };
+
         window.addEventListener("scroll", resumeHeroAnimations, { passive: true });
+        window.addEventListener("resize", handleResize, { passive: true });
+        window.addEventListener("orientationchange", handleResize, { passive: true });
         window.addEventListener("focus", resumeHeroAnimations);
         window.addEventListener("pageshow", resumeHeroAnimations);
         document.addEventListener("visibilitychange", resumeHeroAnimations);
         cleanupFns.push(
           () => window.removeEventListener("scroll", resumeHeroAnimations),
+          () => window.removeEventListener("resize", handleResize),
+          () => window.removeEventListener("orientationchange", handleResize),
           () => window.removeEventListener("focus", resumeHeroAnimations),
           () => window.removeEventListener("pageshow", resumeHeroAnimations),
           () => document.removeEventListener("visibilitychange", resumeHeroAnimations),
@@ -1101,7 +1004,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       stage.innerHTML = svgMarkup;
 
       try {
-        setupHero(svgMarkup);
+        setupHero(svgMarkup, isMobile);
       } catch (error) {
         console.error("Hero animation setup failed; keeping static artwork.", error);
       } finally {
@@ -1109,24 +1012,20 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       }
     };
 
-    if (cachedSvgMarkup) {
-      applySvg(cachedSvgMarkup);
-    } else {
-      preloadHeroSvg()
-        .then((svgMarkup) => {
-          if (!cancelled && svgMarkup) {
-            applySvg(svgMarkup);
-          } else {
-            onHeroLoaded?.();
-          }
-        })
-        .catch((error) => {
-          console.error("Hero SVG failed to load.", error);
-          const stage = stageRef.current;
-          if (stage && !cancelled) stage.innerHTML = "";
+    preloadHeroSvg(isMobile)
+      .then((svgMarkup) => {
+        if (!cancelled && svgMarkup) {
+          applySvg(svgMarkup);
+        } else {
           onHeroLoaded?.();
-        });
-    }
+        }
+      })
+      .catch((error) => {
+        console.error("Hero SVG failed to load.", error);
+        const stage = stageRef.current;
+        if (stage && !cancelled) stage.innerHTML = "";
+        onHeroLoaded?.();
+      });
 
     return () => {
       cancelled = true;
@@ -1134,12 +1033,24 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       ctx?.revert();
       if (stageRef.current) stageRef.current.innerHTML = "";
     };
-  }, []);
+  }, [isMobile]);
 
   const handleNavClick = (sectionId: string) => {
-    const el = document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+    const target =
+      document.getElementById("cinematic-editorial-expand") ||
+      document.getElementById("scroll-demo") ||
+      document.getElementById(sectionId);
+    if (!target) return;
+
+    const lenis = (window as any).__lenis;
+    if (lenis) {
+      lenis.scrollTo(target, {
+        duration: 1.4,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+    } else {
+      const top = target.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({ top, behavior: "smooth" });
     }
   };
 
@@ -1148,15 +1059,20 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       ref={sectionRef}
       id="home"
       data-cursor-tag="Home"
-      className="hero relative h-[100dvh] md:h-screen min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none overflow-hidden bg-[#050505] text-white select-none touch-pan-y"
-      style={{ backgroundColor: "#050505" }}
+      className="hero relative h-[100dvh] min-h-[100dvh] max-h-[100dvh] w-full overflow-hidden text-white select-none touch-pan-y flex flex-col justify-end items-center"
+      style={{ backgroundColor: "#3B4DF7" }}
     >
-      {/* Central Interactive Artwork Canvas with Character & PORTFOLIO Typography */}
-      <div className="hero-inner relative flex h-full min-h-[100dvh] md:min-h-screen max-h-[100dvh] md:max-h-none items-center justify-center px-0 pt-0 md:pt-16 touch-pan-y">
-        <div className="hero-art relative flex justify-center items-center w-full touch-pan-y">
+      {/* Central Interactive Artwork Canvas: Anchored to the base of the hero section */}
+      <div className="hero-inner relative flex flex-col justify-end items-center h-full w-full p-0 m-0 touch-pan-y overflow-hidden">
+        <div className="hero-art relative flex flex-col justify-end items-center w-full h-full p-0 m-0 touch-pan-y overflow-hidden">
           <div
             ref={stageRef}
-            className="svg-stage relative mb-0 aspect-[1728.2/758.1] origin-center overflow-visible touch-pan-y"
+            className={`svg-stage relative flex justify-center items-end ${
+              isMobile
+                ? "w-full h-full max-h-[100dvh] aspect-[820/960]"
+                : "w-full h-full max-h-[100dvh] aspect-[1728.2/758.1]"
+            } touch-pan-y`}
+            style={{ marginBottom: 0, paddingBottom: 0 }}
           />
         </div>
       </div>
