@@ -740,7 +740,7 @@ export default function App() {
                    {isScrollShowcaseOpen ? (
                     <ScrollShowcase
                       onClose={() => setIsScrollShowcaseOpen(false)}
-                      onOpenProjects={() => window.open(profileState?.behance || "https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
+                      onOpenProjects={() => openPortal("projects")}
                       onOpenAIWork={() => openPortal("ai-work")}
                       onOpenDesignShowcase={() => openPortal("design-showcase")}
                       designs={designs}
@@ -780,7 +780,7 @@ export default function App() {
                           profile={profileState}
                           onSelectProject={handleSelectProject}
                           onOpenDesignShowcase={() => openPortal("design-showcase")}
-                          onOpenProjects={() => window.open(profileState?.behance || "https://www.behance.net/sukunshsharma", "_blank", "noopener,noreferrer")}
+                          onOpenProjects={() => openPortal("projects")}
                           onOpenAIWork={() => openPortal("ai-work")}
                           onOpenVideo={(videoUrl, title) => {
                             setLightbox({

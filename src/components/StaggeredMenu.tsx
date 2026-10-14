@@ -148,30 +148,35 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     if (!panel) return;
 
     gsap.killTweensOf(panel);
-    gsap.set(panel, { display: 'flex', pointerEvents: 'auto' });
+    gsap.set(panel, {
+      display: 'flex',
+      pointerEvents: 'auto',
+      opacity: 1,
+      clipPath: 'inset(0% 0% 100% 0%)',
+    });
 
     const items = panel.querySelectorAll('.sm-panel-item');
     const socials = panel.querySelector('.sm-socials');
 
-    gsap.fromTo(
-      panel,
-      { opacity: 0, y: -12, scale: 0.95 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.32, ease: 'back.out(1.4)' }
-    );
+    gsap.to(panel, {
+      clipPath: 'inset(0% 0% 0% 0%)',
+      duration: 0.9,
+      ease: 'expo.inOut',
+    });
 
     if (items.length) {
       gsap.fromTo(
         items,
-        { opacity: 0, x: -8 },
-        { opacity: 1, x: 0, duration: 0.25, stagger: 0.04, ease: 'power2.out', delay: 0.04 }
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'expo.out', delay: 0.2 }
       );
     }
 
     if (socials) {
       gsap.fromTo(
         socials,
-        { opacity: 0, y: 6 },
-        { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out', delay: 0.12 }
+        { opacity: 0, y: 8 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out', delay: 0.35 }
       );
     }
   }, []);
@@ -182,14 +187,12 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
     gsap.killTweensOf(panel);
     gsap.to(panel, {
-      opacity: 0,
-      y: -8,
-      scale: 0.96,
-      duration: 0.2,
-      ease: 'power2.in',
+      clipPath: 'inset(0% 0% 100% 0%)',
+      duration: 0.6,
+      ease: 'expo.inOut',
       onComplete: () => {
         gsap.set(panel, { display: 'none', pointerEvents: 'none' });
-      }
+      },
     });
   }, []);
 

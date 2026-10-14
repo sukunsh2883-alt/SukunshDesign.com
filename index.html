@@ -3,13 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Premium minimalist portfolio website for Suraj" />
-    <meta property="og:title" content="Suraj Portfolio" />
-    <meta property="og:description" content="Premium minimalist portfolio website for Suraj" />
-    <title>Suraj Portfolio</title>
+    <title>Suraj Kumar Sharma - Visual Designer</title>
+    <meta name="description" content="Visual designer and art director specializing in brand identity, kinetic typography, motion design, and cinematic AI films based in Delhi, India." />
+    <meta name="theme-color" content="#3B4DF7" />
+    <link rel="canonical" href="https://surajsharma.design" />
+
+    <!-- OpenGraph Metadata -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Suraj Kumar Sharma - Visual Designer" />
+    <meta property="og:description" content="Visual designer and art director specializing in brand identity, kinetic typography, motion design, and cinematic AI films based in Delhi, India." />
+    <meta property="og:image" content="https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Suraj Kumar Sharma - Visual Designer" />
+    <meta name="twitter:description" content="Visual designer and art director specializing in brand identity, kinetic typography, motion design, and cinematic AI films based in Delhi, India." />
+    <meta name="twitter:image" content="https://res.cloudinary.com/dylv5m3jk/image/upload/v1789397162/MacBook_Pro_16__-_1_yuqe2k.jpg" />
+
+    <link rel="icon" type="image/svg+xml" href="/artwork/flower1.svg" />
     <link rel="preload" href="/artwork/main artwork.svg" as="fetch" crossorigin="anonymous" />
+
+    <!-- Structured Data (Person JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Suraj Kumar Sharma",
+        "alternateName": "Sukunsh",
+        "jobTitle": "Visual Designer",
+        "email": "mailto:sukunsh2883@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Delhi",
+          "addressCountry": "India"
+        },
+        "alumniOf": [
+          {
+            "@type": "CollegeOrUniversity",
+            "name": "IDC School of Design, IIT Bombay"
+          },
+          {
+            "@type": "CollegeOrUniversity",
+            "name": "College of Art, Delhi"
+          }
+        ],
+        "sameAs": [
+          "https://www.linkedin.com/in/sukunsh",
+          "https://www.behance.net/sukunshsharma",
+          "https://github.com/surajsharma",
+          "https://www.instagram.com/sukunsh_"
+        ]
+      }
+    </script>
   </head>
   <body>
+    <!-- Accessibility Skip Link -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[999999] focus:bg-white focus:text-neutral-900 focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:border focus:border-neutral-900">
+      Skip to main content
+    </a>
+
+    <!-- Noscript Accessible Fallback -->
+    <noscript>
+      <div style="padding: 2rem; max-width: 800px; margin: 0 auto; font-family: sans-serif; color: #18181b;">
+        <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Suraj Kumar Sharma (Sukunsh)</h1>
+        <p style="font-size: 1.1rem; color: #52525b; margin-bottom: 1.5rem;">
+          Visual designer &amp; art director based in Delhi, India. Specializing in brand identity, typography, motion design, and cinematic AI films.
+        </p>
+        <p><strong>Education:</strong> M.Des - IDC School of Design, IIT Bombay | BFA, Visual Communication - College of Art, Delhi</p>
+        <p><strong>Contact:</strong> <a href="mailto:sukunsh2883@gmail.com">sukunsh2883@gmail.com</a></p>
+        <p>
+          <a href="https://www.linkedin.com/in/sukunsh">LinkedIn</a> |
+          <a href="https://www.behance.net/sukunshsharma">Behance</a> |
+          <a href="https://github.com/surajsharma">GitHub</a>
+        </p>
+      </div>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

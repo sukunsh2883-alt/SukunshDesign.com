@@ -9,6 +9,11 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   assetsInclude: ['**/*.glb'],
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+    allowedHosts: true,
+  },
   resolve: {
     alias: {
       '@': rootDir,

@@ -136,7 +136,7 @@ app.get("/api/auth/github/url", (req, res) => {
   }
 
   // Construct callback URL dynamically using origin or request host to match context
-  const host = req.headers.host || "ais-dev-b4zfs4435g3gge6l5tcgbv-515409363062.asia-east1.run.app";
+  const host = req.headers.host || "localhost:3000";
   const protocol = req.headers["x-forwarded-proto"] || "https";
   const redirectUri = `${protocol}://${host}/auth/callback`;
 
@@ -185,7 +185,7 @@ app.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
   }
 
   try {
-    const host = req.headers.host || "ais-dev-b4zfs4435g3gge6l5tcgbv-515409363062.asia-east1.run.app";
+    const host = req.headers.host || "localhost:3000";
     const protocol = req.headers["x-forwarded-proto"] || "https";
     const redirectUri = `${protocol}://${host}/auth/callback`;
 

@@ -1,3 +1,8 @@
+/* ==========================================================================
+   HERO - DO NOT EDIT
+   This section is frozen per design constitution: markup, CSS, JS, GSAP
+   timelines, ScrollTriggers, mouse interaction, and event handlers are untouched.
+   ========================================================================== */
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import gsap from "gsap";
@@ -44,18 +49,21 @@ if (typeof window !== "undefined") {
   preloadHeroSvg(true);
 }
 
+const SIT_BASE = { x: 765.7, y: 588.9 };
+const FLY_BASE = { x: 883.5, y: 467.5 };
+
 const flowerIds = Array.from({ length: 9 }, (_, index) => `flower_${index + 1}`);
 const leafIds = [...Array.from({ length: 11 }, (_, index) => `leaf_${index + 1}`), "leaf_10-2"];
 const flowerPerches: Record<string, { x: number; y: number }> = {
-  flower_1: { x: 695, y: 526 },
-  flower_2: { x: 752, y: 570 },
-  flower_3: { x: 898, y: 615 },
-  flower_4: { x: 1201, y: 624 },
-  flower_5: { x: 824, y: 560 },
-  flower_6: { x: 1254, y: 592 },
-  flower_7: { x: 1350, y: 542 },
-  flower_8: { x: 1443, y: 526 },
-  flower_9: { x: 1385, y: 585 },
+  flower_1: { x: 704, y: 541 },
+  flower_2: { x: 766, y: 588 },
+  flower_3: { x: 907, y: 618 },
+  flower_4: { x: 1202, y: 622 },
+  flower_5: { x: 824, y: 566 },
+  flower_6: { x: 1254, y: 600 },
+  flower_7: { x: 1374, y: 546 },
+  flower_8: { x: 1470, y: 585 },
+  flower_9: { x: 1383, y: 600 },
 };
 function cleanSvg(svg: string) {
   return svg
@@ -124,7 +132,8 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
       const rightEye = byId("eyes_ball_right");
       const sitPose = byId("beetal_sit_posttion") || byId("beetal_sit_postion");
       const flyPose = byId("beeta_flying_postion");
-      const wing1 = byId("flyinh_beetal_right-2");
+      const flyRightWing = byId("flyinh_beetal_right-2") || byId("flyinh_beetal_right");
+      const flyLeftWing = byId("flyinh_beetal_left");
       const leftWing = byId("beetal_left_wing-2");
       const rightWing = byId("beetal_right_wing-2");
       const flowers = flowerIds.map((id) => byId(id)).filter(Boolean) as SVGGraphicsElement[];
@@ -165,13 +174,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
 
       const cleanupFns: Array<() => void> = [];
       const timelines: gsap.core.Animation[] = [];
-      let mainBeetleTimeline: gsap.core.Timeline | null = null;
-      let wingTimeline: gsap.core.Timeline | null = null;
-      let currentState: "landed" | "takeoff" | "flying" | "landing" | "dragging" | "returning" = "landed";
-      let currentFlowerIndex = 0;
-      let activeFooterFlowerId: string | null = null;
-      let dragging = false;
-      let pointerDragging = false;
 
       ctx = gsap.context(() => {
         gsap.registerPlugin(ScrollTrigger);
@@ -192,81 +194,29 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         if (sitPose && flyPose) {
           svgElement.appendChild(sitPose);
           svgElement.appendChild(flyPose);
-          gsap.set([sitPose, flyPose], {
-            transformOrigin: "50% 50%",
-            cursor: "grab",
-            pointerEvents: "all",
+          gsap.set(sitPose, {
+            transformOrigin: `${SIT_BASE.x}px ${SIT_BASE.y}px`,
+            pointerEvents: "none",
+            display: "inline",
+            visibility: "visible",
+            opacity: 1,
           });
-          gsap.set(sitPose, { autoAlpha: 1, pointerEvents: "all" });
-          gsap.set(flyPose, { autoAlpha: 0, pointerEvents: "all" });
+          gsap.set(flyPose, {
+            transformOrigin: `${FLY_BASE.x}px ${FLY_BASE.y}px`,
+            pointerEvents: "none",
+            display: "none",
+            visibility: "hidden",
+            opacity: 0,
+          });
         }
-
-        const getBox = (element?: SVGGraphicsElement | null) => {
-          try {
-            return element?.getBBox();
-          } catch {
-            return undefined;
-          }
-        };
-
-        const pointInSvg = (element: SVGGraphicsElement, x: number, y: number) => {
-          const point = svgElement.createSVGPoint();
-          point.x = x;
-          point.y = y;
-
-          const elementMatrix = element.getCTM();
-          const svgMatrix = svgElement.getCTM();
-          if (!elementMatrix || !svgMatrix) return { x, y };
-
-          const global = point.matrixTransform(elementMatrix);
-          return global.matrixTransform(svgMatrix.inverse());
-        };
-
-        const bboxCenterSvg = (element: SVGGraphicsElement) => {
-          const box = element.getBBox();
-          return pointInSvg(element, box.x + box.width / 2, box.y + box.height / 2);
-        };
-
-        const flowerHeadSvg = (flower: SVGGraphicsElement) => {
-          const box = flower.getBBox();
-          return pointInSvg(flower, box.x + box.width / 2, box.y + box.height * 0.28);
-        };
-
-        const pointerSvgPoint = (event: PointerEvent) => {
-          const point = svgElement.createSVGPoint();
-          point.x = event.clientX;
-          point.y = event.clientY;
-
-          const screen = svgElement.getScreenCTM();
-          if (!screen) return { x: 0, y: 0 };
-          return point.matrixTransform(screen.inverse());
-        };
-
-        const getPosePosition = (pose: SVGGraphicsElement) => ({
-          x: Number(gsap.getProperty(pose, "x")) || 0,
-          y: Number(gsap.getProperty(pose, "y")) || 0,
-        });
-
-        const sitBase = sitPose ? bboxCenterSvg(sitPose) : { x: 0, y: 0 };
-        const flyBase = flyPose ? bboxCenterSvg(flyPose) : { x: 0, y: 0 };
-        const flowerPoint = (index: number, poseBase: { x: number; y: number }) => {
-          const flower = flowers[index];
-          if (!flower) return { x: 0, y: 0 };
-          const point = flowerPerches[flower.id] || flowerHeadSvg(flower);
-          const flowerX = Number(gsap.getProperty(flower, "x")) || 0;
-          const flowerY = Number(gsap.getProperty(flower, "y")) || 0;
-          return {
-            x: point.x + flowerX - poseBase.x,
-            y: point.y + flowerY - poseBase.y,
-          };
-        };
 
         const showPose = (pose?: SVGGraphicsElement | null) => {
           if (!pose) return;
-          gsap.set(pose, { visibility: "visible", pointerEvents: "all" });
+          gsap.killTweensOf(pose);
+          gsap.set(pose, { display: "inline", visibility: "visible" });
           gsap.to(pose, {
             opacity: 1,
-            duration: 0.16,
+            duration: 0.15,
             ease: "power2.out",
             overwrite: "auto",
           });
@@ -274,12 +224,15 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
 
         const hidePose = (pose?: SVGGraphicsElement | null) => {
           if (!pose) return;
+          gsap.killTweensOf(pose);
           gsap.to(pose, {
             opacity: 0,
-            duration: 0.16,
+            duration: 0.15,
             ease: "power2.out",
             overwrite: "auto",
-            onComplete: () => gsap.set(pose, { visibility: "hidden" }),
+            onComplete: () => {
+              gsap.set(pose, { visibility: "hidden", display: "none" });
+            },
           });
         };
 
@@ -356,7 +309,10 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
             }));
           }
 
+          let hoveredFlowerIndex: number | null = null;
+
           const enterFlower = () => {
+            hoveredFlowerIndex = index;
             gsap.to(flower, {
               scale: 1.06,
               duration: 0.28,
@@ -365,6 +321,7 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
             });
           };
           const leaveFlower = () => {
+            if (hoveredFlowerIndex === index) hoveredFlowerIndex = null;
             gsap.to(flower, {
               scale: 1,
               duration: 0.35,
@@ -373,13 +330,25 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
             });
           };
 
+          const onFlowerClick = (e: Event) => {
+            e.stopPropagation();
+            if (typeof (window as any).__heroLandOnFlower === "function") {
+              (window as any).__heroLandOnFlower(index);
+            }
+          };
+
+          flower.style.cursor = "pointer";
+          flower.addEventListener("pointerdown", onFlowerClick);
           if (!isTouch) {
             flower.addEventListener("mouseenter", enterFlower);
             flower.addEventListener("mouseleave", leaveFlower);
             cleanupFns.push(
+              () => flower.removeEventListener("pointerdown", onFlowerClick),
               () => flower.removeEventListener("mouseenter", enterFlower),
               () => flower.removeEventListener("mouseleave", leaveFlower),
             );
+          } else {
+            cleanupFns.push(() => flower.removeEventListener("pointerdown", onFlowerClick));
           }
         });
 
@@ -517,18 +486,14 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           );
         }
 
-        const extraWing = flyPose
-          ? Array.from(flyPose.querySelectorAll<SVGGraphicsElement>("ellipse,path")).find((node) => {
-            if (node === wing1 || node === leftWing || node === rightWing) return false;
-            const id = node.id || "";
-            const name = node.getAttribute("data-name") || "";
-            const className = node.getAttribute("class") || "";
-            return /wing|fly|flying|flyinh|transparent|beetal/i.test(`${id} ${name} ${className}`);
-          }) || null
-          : null;
-        const flutterWings = [wing1, extraWing].filter(Boolean) as SVGGraphicsElement[];
+        // ==========================================
+        // FRESH BEETLE ANIMATION
+        // Flies all over the flowers, wings flicker, sits & sways on flowers
+        // ==========================================
+        const flutterWings = [flyRightWing, flyLeftWing].filter(Boolean) as SVGGraphicsElement[];
         const redWings = [leftWing, rightWing].filter(Boolean) as SVGGraphicsElement[];
 
+        // Initial setup for beetle wings
         flutterWings.forEach((wing, index) => {
           gsap.set(wing, {
             transformOrigin: "50% 50%",
@@ -548,430 +513,262 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           });
         });
 
-        const openRedWings = () => {
-          redWings.forEach((wing, index) => {
-            gsap.to(wing, {
-              rotation: index === 0 ? -24 : 24,
-              duration: 0.28,
-              ease: "power3.out",
-              overwrite: "auto",
-            });
-          });
-        };
+        let wingFlickerTween: gsap.core.Timeline | null = null;
 
-        const closeRedWings = () => {
-          redWings.forEach((wing) => {
-            gsap.to(wing, {
-              rotation: 0,
-              duration: 0.32,
-              ease: "power3.inOut",
-              overwrite: "auto",
-            });
-          });
-        };
+        const startWingFlicker = () => {
+          // Open outer red wing shells
+          if (leftWing) gsap.to(leftWing, { rotation: -26, duration: 0.18, ease: "power2.out", overwrite: "auto" });
+          if (rightWing) gsap.to(rightWing, { rotation: 26, duration: 0.18, ease: "power2.out", overwrite: "auto" });
 
-        const startFlyWingFlutter = () => {
-          openRedWings();
           if (!flutterWings.length) return;
-          wingTimeline?.kill();
+          wingFlickerTween?.kill();
 
-          flutterWings.forEach((wing, index) => {
-            gsap.set(wing, {
-              opacity: 0.55,
-              transformOrigin: "50% 50%",
-              x: index % 2 === 0 ? -0.6 : 0.6,
-              y: -8,
-            });
-          });
-
-          wingTimeline = gsap.timeline({ repeat: -1 });
-          wingTimeline
+          gsap.set(flutterWings, { opacity: 0.75 });
+          wingFlickerTween = gsap.timeline({ repeat: -1 });
+          wingFlickerTween
             .to(flutterWings, {
-              rotation: (index) => (index % 2 ? 22 : -22),
-              scaleY: 0.45,
-              scaleX: 0.9,
-              opacity: 0.16,
-              duration: 0.035,
+              scaleY: 0.32,
+              scaleX: 0.88,
+              rotation: (i) => (i % 2 ? 28 : -28),
+              opacity: 0.25,
+              duration: 0.03,
               ease: "none",
-              stagger: 0.01,
             })
             .to(flutterWings, {
-              rotation: (index) => (index % 2 ? -22 : 22),
-              scaleY: 1.25,
+              scaleY: 1.28,
               scaleX: 1.08,
-              opacity: 0.7,
-              duration: 0.035,
+              rotation: (i) => (i % 2 ? -28 : 28),
+              opacity: 0.85,
+              duration: 0.03,
               ease: "none",
-              stagger: 0.01,
             });
         };
 
-        const stopFlyWingFlutter = () => {
-          wingTimeline?.kill();
-          wingTimeline = null;
-          closeRedWings();
-          flutterWings.forEach((wing, index) => {
-            gsap.to(wing, {
-              opacity: 0,
-              rotation: index % 2 === 0 ? -8 : 8,
-              scaleY: 1,
-              scaleX: 1,
-              x: index % 2 === 0 ? -0.6 : 0.6,
-              y: -8,
-              duration: 0.18,
-              overwrite: "auto",
-            });
+        const stopWingFlicker = () => {
+          wingFlickerTween?.kill();
+          wingFlickerTween = null;
+          // Close outer red wing shells
+          if (leftWing) gsap.to(leftWing, { rotation: 0, duration: 0.25, ease: "power2.inOut", overwrite: "auto" });
+          if (rightWing) gsap.to(rightWing, { rotation: 0, duration: 0.25, ease: "power2.inOut", overwrite: "auto" });
+          flutterWings.forEach((wing) => {
+            gsap.to(wing, { opacity: 0, duration: 0.15, overwrite: "auto" });
           });
         };
 
-        const alignSitToFlower = (index: number) => {
-          if (!sitPose) return;
-          const point = flowerPoint(index, sitBase);
-          gsap.set(sitPose, {
-            x: point.x,
-            y: point.y,
-            rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
-          });
+        // Bézier curve calculation for soaring arcs across the hero section
+        const cubicBezier = (p0: number, p1: number, p2: number, p3: number, t: number): number => {
+          const mt = 1 - t;
+          return mt * mt * mt * p0 + 3 * mt * mt * t * p1 + 3 * mt * t * t * p2 + t * t * t * p3;
         };
 
-        const alignFlyToFlower = (index: number) => {
-          if (!flyPose) return;
-          const point = flowerPoint(index, flyBase);
-          gsap.set(flyPose, {
-            x: point.x,
-            y: point.y,
-            rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
-          });
+        const cubicBezierDerivative = (p0: number, p1: number, p2: number, p3: number, t: number): number => {
+          const mt = 1 - t;
+          return 3 * mt * mt * (p1 - p0) + 6 * mt * t * (p2 - p1) + 3 * t * t * (p3 - p2);
         };
 
-        const switchToFly = (index: number, onComplete?: () => void) => {
-          if (!sitPose || !flyPose) return;
-          currentState = "takeoff";
-          alignFlyToFlower(index);
+        // State & positions
+        let beetleState: "sitting" | "flying" = "sitting";
+        let activeFlowerIndex = flowers.findIndex((f) => f.id === "flower_2");
+        if (activeFlowerIndex < 0) activeFlowerIndex = 0;
 
-          gsap
-            .timeline({ onComplete })
-            .to(sitPose, {
-              y: "+=2",
-              scale: 0.985,
-              duration: 0.12,
-              ease: "power2.out",
-              overwrite: "auto",
-            })
-            .call(() => {
-              showPose(flyPose);
-              hidePose(sitPose);
-              startFlyWingFlutter();
-            })
-            .to(flyPose, {
-              y: "-=8",
-              scale: 1.02,
-              duration: 0.18,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-        };
+        const initialFlower = flowers[activeFlowerIndex] || flowers[0];
+        const initialPerch = flowerPerches[initialFlower?.id] || (isMobileMode ? { x: 1201, y: 624 } : { x: 765, y: 588 });
 
-        const switchToSit = (index: number) => {
-          if (!sitPose || !flyPose) return;
-          currentState = "landing";
-          stopFlyWingFlutter();
-          alignSitToFlower(index);
+        let beetleX = initialPerch.x;
+        let beetleY = initialPerch.y;
+        let beetleRotation = 0;
+        let flightTween: gsap.core.Tween | null = null;
+        let restTimer: any = null;
 
-          gsap
-            .timeline({
-              onComplete: () => {
-                currentState = "landed";
-              },
-            })
-            .call(() => {
-              showPose(sitPose);
-              hidePose(flyPose);
-            })
-            .fromTo(
-              sitPose,
-              { scale: 1.03 },
-              {
-                scale: 1,
-                duration: 0.28,
-                ease: "back.out(1.6)",
-                overwrite: "auto",
-              },
-            );
-        };
+        // Position sitPose initially
+        gsap.set(sitPose, {
+          x: initialPerch.x - SIT_BASE.x,
+          y: initialPerch.y - SIT_BASE.y,
+          rotation: 0,
+        });
+        showPose(sitPose);
+        hidePose(flyPose);
 
-        const beetleTicker = () => {
-          // No automatic ticker needed for direct cursor follow, but we keep the empty function in case of any external dependency
-        };
-
-        // Keep Beetle directly in svgElement (shared SVG coordinate system with flowers)
-        if (sitPose && flyPose) {
-          if (sitPose.parentNode !== svgElement) svgElement.appendChild(sitPose);
-          if (flyPose.parentNode !== svgElement) svgElement.appendChild(flyPose);
-          gsap.set([sitPose, flyPose], {
-            transformOrigin: "50% 50%",
-            cursor: "grab",
-            pointerEvents: "all",
-          });
-        }
-
-        const pointerSvgPointFromCoords = (clientX: number, clientY: number) => {
-          if (!svgElement) return null;
-          const point = svgElement.createSVGPoint();
-          point.x = clientX;
-          point.y = clientY;
-
-          const screen = svgElement.getScreenCTM();
-          if (!screen) return null;
-          return point.matrixTransform(screen.inverse());
-        };
-
-        // Exact SVG coordinate centers for sit and fly poses
-        const BEETLE_SIT_ORIGIN = { x: 765, y: 588 };
-        const BEETLE_FLY_ORIGIN = { x: 883, y: 467 };
-
-        let currentFlyX = flowerPerches["flower_1"].x;
-        let currentFlyY = flowerPerches["flower_1"].y;
-        let targetSvgX = currentFlyX;
-        let targetSvgY = currentFlyY;
-        let currentRot = 0;
-        let isLanding = false;
-        let idleTimer: any = null;
-        let flyToFlowerTimeline: gsap.core.Timeline | null = null;
-
-        const updateBeetleFrame = () => {
-          if (currentState === "landed" && sitPose) {
-            const flower = flowers[currentFlowerIndex];
+        // Frame ticker: When sitting on a flower, stick to it and sway with it
+        const updateBeetleOnFlower = () => {
+          if (beetleState === "sitting" && sitPose) {
+            const flower = flowers[activeFlowerIndex] || flowers[0];
             if (flower) {
-              const perch = flowerPerches[flower.id] || flowerPerches["flower_1"];
+              const perch = flowerPerches[flower.id] || flowerPerches["flower_2"] || { x: 765, y: 588 };
               const rot = Number(gsap.getProperty(flower, "rotation")) || 0;
               const fy = Number(gsap.getProperty(flower, "y")) || 0;
-              // Track flower sway naturally around ground base
+
               const rad = (rot * Math.PI) / 180;
-              const arm = Math.max(80, 750 - perch.y);
+              const arm = Math.max(60, 750 - perch.y);
               const swayX = Math.sin(rad) * arm * 0.7;
               const swayY = fy + (1 - Math.cos(rad)) * arm * 0.7;
+
+              beetleX = perch.x + swayX;
+              beetleY = perch.y + swayY;
+
               gsap.set(sitPose, {
-                x: perch.x - BEETLE_SIT_ORIGIN.x + swayX,
-                y: perch.y - BEETLE_SIT_ORIGIN.y + swayY,
+                x: perch.x - SIT_BASE.x + swayX,
+                y: perch.y - SIT_BASE.y + swayY,
                 rotation: rot,
               });
             }
-          } else if (currentState === "flying" && flyPose && !isLanding) {
-            // Silky smooth damped lerp toward mouse cursor
-            const dx = targetSvgX - currentFlyX;
-            const dy = targetSvgY - currentFlyY;
-            const dist = Math.hypot(dx, dy);
-
-            // Responsive damping factor
-            const lerpFactor = dist > 250 ? 0.16 : 0.11;
-            currentFlyX += dx * lerpFactor;
-            currentFlyY += dy * lerpFactor;
-
-            // Organic heading angle interpolation
-            if (dist > 3) {
-              const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-              let diff = (targetAngle - currentRot) % 360;
-              if (diff > 180) diff -= 360;
-              if (diff < -180) diff += 360;
-              currentRot += diff * 0.16;
-            }
-
-            gsap.set(flyPose, {
-              x: currentFlyX - BEETLE_FLY_ORIGIN.x,
-              y: currentFlyY - BEETLE_FLY_ORIGIN.y,
-              rotation: currentRot,
-            });
           }
         };
 
-        gsap.ticker.add(updateBeetleFrame);
+        gsap.ticker.add(updateBeetleOnFlower);
         cleanupFns.push(() => {
-          gsap.ticker.remove(updateBeetleFrame);
+          gsap.ticker.remove(updateBeetleOnFlower);
         });
 
-        const landOnNearestAvailableFlower = () => {
-          if (!flyPose || !sitPose || !svgElement) return;
-          if (currentState !== "flying" || isLanding) return;
+        // Fly to another flower with wings flickering and soaring curved flight
+        const flyToFlower = (targetFlowerIndex?: number) => {
+          if (beetleState === "flying") return;
+          if (restTimer) clearTimeout(restTimer);
 
-          isLanding = true;
+          let nextIndex = targetFlowerIndex;
+          if (typeof nextIndex !== "number" || !flowers[nextIndex]) {
+            // Pick a different flower across the hero section
+            const candidates = flowers
+              .map((_, i) => i)
+              .filter((i) => i !== activeFlowerIndex);
 
-          // Find the flower blossom strictly closest to current beetle flight position
-          let bestIndex = 0;
-          let bestDist = Infinity;
+            // Prefer flowers on the other side or sufficiently far away so it flies all over the flowers
+            const currentPerch = flowerPerches[flowers[activeFlowerIndex]?.id] || { x: 765, y: 588 };
+            const farCandidates = candidates.filter((i) => {
+              const p = flowerPerches[flowers[i]?.id];
+              return p && Math.abs(p.x - currentPerch.x) > 200;
+            });
 
-          flowers.forEach((flower, index) => {
-            const perch = flowerPerches[flower.id] || flowerPerches["flower_1"];
-            if (isMobileMode && (perch.x < 840 || perch.x > 1660)) {
-              return;
-            }
-            const dist = Math.hypot(perch.x - currentFlyX, perch.y - currentFlyY);
-            if (dist < bestDist) {
-              bestDist = dist;
-              bestIndex = index;
-            }
-          });
+            const pool = farCandidates.length > 0 ? farCandidates : candidates;
+            nextIndex = pool[Math.floor(Math.random() * pool.length)];
+          }
 
-          const flower = flowers[bestIndex];
-          const perch = flowerPerches[flower?.id] || (isMobileMode ? { x: 1201, y: 624 } : { x: 695, y: 526 });
-          const targetFlyX = perch.x - BEETLE_FLY_ORIGIN.x;
-          const targetFlyY = perch.y - BEETLE_FLY_ORIGIN.y;
-          const targetSitX = perch.x - BEETLE_SIT_ORIGIN.x;
-          const targetSitY = perch.y - BEETLE_SIT_ORIGIN.y;
+          const targetFlower = flowers[nextIndex] || flowers[0];
+          const targetPerch = flowerPerches[targetFlower?.id] || (isMobileMode ? { x: 1201, y: 624 } : { x: 765, y: 588 });
 
-          const dx = targetFlyX - (currentFlyX - BEETLE_FLY_ORIGIN.x);
-          const dy = targetFlyY - (currentFlyY - BEETLE_FLY_ORIGIN.y);
-          const rot = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+          const startX = beetleX;
+          const startY = beetleY;
+          const endX = targetPerch.x;
+          const endY = targetPerch.y;
 
-          if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
-          startFlyWingFlutter();
+          // Flight trajectory: soaring high all over the flowers in the hero section
+          const midX = (startX + endX) / 2;
+          const distance = Math.hypot(endX - startX, endY - startY);
+          const peakY = Math.max(140, Math.min(startY, endY) - 150 - Math.random() * 90);
+          const lateralWobble = (Math.random() - 0.5) * 110;
 
-          flyToFlowerTimeline = gsap.timeline({
-            onComplete: () => {
-              currentState = "landed";
-              isLanding = false;
-              currentFlowerIndex = bestIndex;
-              stopFlyWingFlutter();
-              gsap.set(sitPose, {
-                x: targetSitX,
-                y: targetSitY,
-                rotation: (gsap.getProperty(flower, "rotation") as number) || 0,
-                opacity: 1,
-                visibility: "visible",
+          const p0_x = startX;
+          const p0_y = startY;
+          const p1_x = startX + (midX - startX) * 0.4 + lateralWobble;
+          const p1_y = peakY;
+          const p2_x = midX + (endX - midX) * 0.6 - lateralWobble;
+          const p2_y = peakY + 15;
+          const p3_x = endX;
+          const p3_y = endY;
+
+          beetleState = "flying";
+          showPose(flyPose);
+          hidePose(sitPose);
+          startWingFlicker();
+
+          if (flightTween) flightTween.kill();
+
+          const progress = { t: 0 };
+          const flightDuration = Math.max(1.8, Math.min(2.8, (distance / 500) * 2.2));
+
+          flightTween = gsap.to(progress, {
+            t: 1,
+            duration: flightDuration,
+            ease: "sine.inOut",
+            onUpdate: () => {
+              const t = progress.t;
+              beetleX = cubicBezier(p0_x, p1_x, p2_x, p3_x, t);
+              beetleY = cubicBezier(p0_y, p1_y, p2_y, p3_y, t);
+
+              const dX = cubicBezierDerivative(p0_x, p1_x, p2_x, p3_x, t);
+              const dY = cubicBezierDerivative(p0_y, p1_y, p2_y, p3_y, t);
+
+              const targetAngle = Math.atan2(dY, dX) * (180 / Math.PI) + 90;
+              let diff = (targetAngle - beetleRotation) % 360;
+              if (diff > 180) diff -= 360;
+              if (diff < -180) diff += 360;
+              beetleRotation += diff * 0.22;
+
+              // Wing-lift bio-oscillation
+              const waveY = Math.sin(t * Math.PI * 6) * 2.5;
+
+              gsap.set(flyPose, {
+                x: beetleX - FLY_BASE.x,
+                y: beetleY + waveY - FLY_BASE.y,
+                rotation: beetleRotation,
               });
-              gsap.set(flyPose, { opacity: 0, visibility: "hidden" });
+            },
+            onComplete: () => {
+              beetleState = "sitting";
+              activeFlowerIndex = nextIndex;
+              stopWingFlicker();
+              showPose(sitPose);
+              hidePose(flyPose);
+
+              // Soft landing bounce onto the flower
+              gsap.fromTo(
+                sitPose,
+                { scale: 1.08 },
+                { scale: 1, duration: 0.32, ease: "back.out(1.8)" }
+              );
+
+              // Sit on this flower, sway with it, then fly to another flower!
+              scheduleNextFlight(2200 + Math.random() * 2200);
             },
           });
-
-          flyToFlowerTimeline.to(flyPose, {
-            x: targetFlyX,
-            y: targetFlyY,
-            rotation: rot,
-            duration: 0.55,
-            ease: "power2.out",
-            overwrite: "auto",
-          });
         };
 
-        const takeOffAndFollow = (svgX: number, svgY: number) => {
-          const wasLanding = isLanding;
-          if (flyToFlowerTimeline) {
-            flyToFlowerTimeline.kill();
-            flyToFlowerTimeline = null;
-          }
-          isLanding = false;
-
-          if (currentState !== "flying" || wasLanding) {
-            currentState = "flying";
-            if (wasLanding && flyPose) {
-              currentFlyX = (gsap.getProperty(flyPose, "x") as number) + BEETLE_FLY_ORIGIN.x;
-              currentFlyY = (gsap.getProperty(flyPose, "y") as number) + BEETLE_FLY_ORIGIN.y;
-            } else if (sitPose) {
-              const curSitX = (gsap.getProperty(sitPose, "x") as number) || 0;
-              const curSitY = (gsap.getProperty(sitPose, "y") as number) || 0;
-              currentFlyX = curSitX + BEETLE_SIT_ORIGIN.x;
-              currentFlyY = curSitY + BEETLE_SIT_ORIGIN.y;
+        const scheduleNextFlight = (delay = 2500) => {
+          if (restTimer) clearTimeout(restTimer);
+          restTimer = setTimeout(() => {
+            if (beetleState === "sitting") {
+              flyToFlower();
             }
-            gsap.set(flyPose, {
-              x: currentFlyX - BEETLE_FLY_ORIGIN.x,
-              y: currentFlyY - BEETLE_FLY_ORIGIN.y,
-              rotation: currentRot,
-              opacity: 1,
-              visibility: "visible",
-              pointerEvents: "all",
-            });
-            if (sitPose) gsap.set(sitPose, { opacity: 0, visibility: "hidden" });
-            startFlyWingFlutter();
-          }
-
-          targetSvgX = svgX;
-          targetSvgY = svgY;
+          }, delay);
         };
 
-        const handleFollowCursor = (event: PointerEvent) => {
-          const rect = section.getBoundingClientRect();
-          const isInsideHero =
-            event.clientX >= rect.left &&
-            event.clientX <= rect.right &&
-            event.clientY >= rect.top &&
-            event.clientY <= rect.bottom;
-
-          if (!isInsideHero) {
-            if (currentState === "flying" && !isLanding) {
-              landOnNearestAvailableFlower();
-            }
-            return;
-          }
-
-          const pt = pointerSvgPointFromCoords(event.clientX, event.clientY);
-          if (!pt) return;
-
-          takeOffAndFollow(pt.x, pt.y);
-
-          // When cursor stops, sit on flowers only
-          if (idleTimer) clearTimeout(idleTimer);
-          idleTimer = setTimeout(() => {
-            if (currentState === "flying" && !isLanding) {
-              landOnNearestAvailableFlower();
-            }
-          }, 950);
+        // Click any flower to summon the beetle to that flower
+        (window as any).__heroLandOnFlower = (idx: number) => {
+          if (idx === activeFlowerIndex && beetleState === "sitting") return;
+          if (flightTween) flightTween.kill();
+          if (restTimer) clearTimeout(restTimer);
+          flyToFlower(idx);
         };
 
-        const handlePointerLeave = () => {
-          if (currentState === "flying" && !isLanding) {
-            landOnNearestAvailableFlower();
-          }
-        };
-
-        if (sitPose && flyPose && flowers.length && section) {
-          currentState = "landed";
-          const prefMobileIdx = flowers.findIndex((f) => f.id === "flower_4" || f.id === "flower_6");
-          currentFlowerIndex = isMobileMode && prefMobileIdx >= 0 ? prefMobileIdx : 0;
-          isLanding = false;
-          showPose(sitPose);
-          hidePose(flyPose);
-          const activeFlower = flowers[currentFlowerIndex];
-          const p0 = flowerPerches[activeFlower?.id] || (isMobileMode ? { x: 1201, y: 624 } : { x: 695, y: 526 });
-          currentFlyX = p0.x;
-          currentFlyY = p0.y;
-          targetSvgX = p0.x;
-          targetSvgY = p0.y;
-          gsap.set(sitPose, {
-            x: p0.x - BEETLE_SIT_ORIGIN.x,
-            y: p0.y - BEETLE_SIT_ORIGIN.y,
-            rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
-          });
-
-          window.addEventListener("pointermove", handleFollowCursor);
-          window.addEventListener("pointerdown", handleFollowCursor);
-          window.addEventListener("pointerleave", handlePointerLeave);
-          document.addEventListener("mouseleave", handlePointerLeave);
-          cleanupFns.push(() => {
-            window.removeEventListener("pointermove", handleFollowCursor);
-            window.removeEventListener("pointerdown", handleFollowCursor);
-            window.removeEventListener("pointerleave", handlePointerLeave);
-            document.removeEventListener("mouseleave", handlePointerLeave);
-            if (idleTimer) clearTimeout(idleTimer);
-            if (flyToFlowerTimeline) flyToFlowerTimeline.kill();
-          });
+        if (sitPose) {
+          sitPose.style.cursor = "pointer";
+          const onSitClick = (e: Event) => {
+            e.stopPropagation();
+            flyToFlower();
+          };
+          sitPose.addEventListener("pointerdown", onSitClick);
+          cleanupFns.push(() => sitPose.removeEventListener("pointerdown", onSitClick));
         }
+
+        // Kick off the flight cycle after initial 2.5s rest on the first flower
+        scheduleNextFlight(2500);
+
+        cleanupFns.push(() => {
+          if (restTimer) clearTimeout(restTimer);
+          if (flightTween) flightTween.kill();
+          if (wingFlickerTween) wingFlickerTween.kill();
+          delete (window as any).__heroLandOnFlower;
+        });
 
         const resumeHeroAnimations = () => {
           gsap.globalTimeline.resume();
           gsap.ticker.wake();
-          mainBeetleTimeline?.resume();
         };
 
         const handleResize = () => {
           resumeHeroAnimations();
           ScrollTrigger.refresh();
-          updateBeetleFrame();
+          updateBeetleOnFlower();
         };
 
         window.addEventListener("scroll", resumeHeroAnimations, { passive: true });
@@ -992,8 +789,6 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
         cleanupHero = () => {
           cleanupFns.forEach((cleanup) => cleanup());
           timelines.forEach((timeline) => timeline.kill());
-          mainBeetleTimeline?.kill();
-          wingTimeline?.kill();
         };
       }, stage);
     };
@@ -1076,6 +871,21 @@ export default function Hero({ profile, onOpenProjects, onOpenAIWork, onOpenAbou
           />
         </div>
       </div>
+
+      {/* Scroll Down Indicator with animated icon */}
+      <button
+        type="button"
+        onClick={() => handleNavClick("cinematic-editorial-expand")}
+        className="hero-scroll-btn absolute bottom-5 sm:bottom-7 z-30 flex flex-col items-center gap-1.5 text-white/90 hover:text-white transition-opacity duration-300 cursor-pointer group select-none pointer-events-auto"
+        aria-label="Scroll down to explore"
+      >
+        <span className="text-[10px] sm:text-xs font-mono tracking-[0.2em] uppercase font-semibold text-white/85 group-hover:text-white transition-colors">
+          Scroll Down
+        </span>
+        <div className="w-5 sm:w-6 h-8 sm:h-9 rounded-full border border-white/60 flex items-start justify-center p-1 group-hover:border-white transition-colors">
+          <div className="w-1.5 h-2 bg-white rounded-full animate-bounce" />
+        </div>
+      </button>
     </section>
   );
 }

@@ -266,22 +266,6 @@ export default function CinematicEditorialScroll({
         ref={stageRef}
         className="relative flex h-screen min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-white"
       >
-        {/* Seamless blend transition connecting flush to hero artwork base */}
-        <div
-          className="pointer-events-none absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black/20 to-transparent z-20"
-          aria-hidden="true"
-        />
-
-        {/* Background Ambient Glow - pure black subtle gradient */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0 opacity-20"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0) 70%)",
-          }}
-          aria-hidden="true"
-        />
-
         {/* 1. EDITORIAL TEXT COMPOSITION */}
         <div
           ref={typographyWrapRef}
@@ -290,15 +274,15 @@ export default function CinematicEditorialScroll({
           {/* Top Line: VISUAL DESIGN & ART DIRECTION */}
           <div
             ref={line1Ref}
-            className="w-full font-sans text-[clamp(1.95rem,4.4vw,3.85rem)] font-bold uppercase italic tracking-[-0.02em] text-black leading-[0.88] select-none text-center"
+            className="w-full font-sans text-[clamp(1.95rem,4.4vw,3.85rem)] font-bold uppercase italic tracking-[-0.02em] text-black leading-[0.8] select-none text-center"
             style={{ fontWeight: 700, fontStyle: "italic", color: "#000000" }}
           >
             {line1Text}
           </div>
 
-          {/* Bottom Line: EXPLORE [ VIDEO SLOT ] SELECTED WORKS. (Tightly stacked with zero awkward gap) */}
+          {/* Bottom Line: EXPLORE [ VIDEO SLOT ] SELECTED WORKS. (Decreased gap, tight and punchy) */}
           <div
-            className="-mt-3 sm:-mt-5 md:-mt-6 lg:-mt-7 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(1.95rem,4.4vw,3.85rem)] font-bold uppercase italic tracking-[-0.02em] text-black leading-[0.88] select-none"
+            className="-mt-5 sm:-mt-8 md:-mt-11 lg:-mt-13 grid grid-cols-[1fr_auto_1fr] items-center w-full font-sans text-[clamp(1.95rem,4.4vw,3.85rem)] font-bold uppercase italic tracking-[-0.02em] text-black leading-[0.8] select-none"
             style={{ fontWeight: 700, fontStyle: "italic", color: "#000000" }}
           >
             {/* Left Word (Right-aligned to touch center video slot equally) */}
@@ -315,7 +299,7 @@ export default function CinematicEditorialScroll({
             {/* In-flow Video Slot: Houses the video directly between words */}
             <div
               ref={videoSlotRef}
-              className="relative inline-flex items-center justify-center shrink-0 aspect-[16/10] w-[125px] sm:w-[185px] md:w-[245px] lg:w-[280px] max-w-[32vw] rounded-[6px] sm:rounded-[8px] overflow-visible z-30"
+              className="relative inline-flex items-center justify-center shrink-0 aspect-[16/10] w-[125px] sm:w-[185px] md:w-[245px] lg:w-[280px] max-w-[32vw] rounded-none overflow-visible z-30"
             >
               <div
                 ref={videoCardRef}
@@ -325,10 +309,9 @@ export default function CinematicEditorialScroll({
                 data-cursor-project="true"
                 data-project-card="true"
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onExploreClick?.()}
-                className="expanding-video group z-30 cursor-pointer overflow-hidden rounded-[6px] sm:rounded-[8px] bg-black border-0 shadow-[0_16px_40px_rgba(0,0,0,0.85)] outline-none focus-visible:ring-2 focus-visible:ring-black w-full h-full"
+                className="expanding-video group z-30 cursor-pointer overflow-hidden rounded-none bg-black border border-black/15 shadow-none outline-none focus-visible:ring-2 focus-visible:ring-black w-full h-full"
                 style={{
-                  willChange: "transform, border-radius",
-                  boxShadow: "0 16px 40px rgba(0, 0, 0, 0.85)",
+                  willChange: "transform",
                   transformOrigin: "center center",
                 }}
               >

@@ -129,21 +129,16 @@ export function UserCursor({ zIndex = 9999999, children }: UserCursorProps) {
           mass: 0.28,
         }}
       >
-        {/* Small transparent outline circle: no fill, crisp white outline, VIEW PROJECT text */}
+        {/* Rectilinear sharp rectangular View tag per No curves rule */}
         <div
           style={{
             transform: "translate(-50%, -50%)",
           }}
-          className="w-14 h-14 sm:w-[58px] sm:h-[58px] rounded-full bg-neutral-950/90 border border-white/20 shadow-xl flex flex-col items-center justify-center select-none backdrop-blur-xs"
+          className="w-16 h-7 rounded-none bg-neutral-950 border border-white/30 flex items-center justify-center select-none pointer-events-none"
         >
-          <div className="flex flex-col items-center justify-center text-center select-none pointer-events-none leading-none gap-0.5">
-            <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] font-extrabold tracking-[0.14em] uppercase text-white">
-              VIEW
-            </span>
-            <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] font-extrabold tracking-[0.14em] uppercase text-white">
-              PROJECT
-            </span>
-          </div>
+          <span className="font-mono text-[9px] font-bold tracking-[0.18em] uppercase text-white leading-none">
+            VIEW
+          </span>
         </div>
       </motion.div>
     </div>

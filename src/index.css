@@ -150,28 +150,12 @@ video,
   border-radius: 0 !important;
 }
 
-header,
-header *,
-#home,
-#home *,
-#projects,
-#projects *,
-#showreel,
-#showreel *,
-#about-me,
-#about-me *,
-#explorations,
-#explorations *,
-#contact,
-#contact *,
-img,
-[data-project-card],
-[data-cursor-project],
-.project-card,
-.thumbnail,
-.editorial-card,
-.film-card {
+/* Strictly no shadows on any website element */
+*,
+*::before,
+*::after {
   box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 /* Custom font styles settings */

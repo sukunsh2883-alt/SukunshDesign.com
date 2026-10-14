@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import StaggeredMenu from "./StaggeredMenu";
 
 interface NavbarProps {
@@ -19,6 +21,63 @@ export default function Navbar({
   onOpenAIWork,
   onOpenGitHub,
 }: NavbarProps) {
+  const headerRef = useRef<HTMLElement | null>(null);
+  const progressLineRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const header = headerRef.current;
+    const progressLine = progressLineRef.current;
+    if (!header || !progressLine) return;
+
+    // 1. Thin scroll-progress hairline (scaleX, scrubbed from 0 to 1)
+    gsap.set(progressLine, { scaleX: 0, transformOrigin: "left center" });
+    const progressTrigger = ScrollTrigger.create({
+      start: "top top",
+      end: "max",
+      onUpdate: (self) => {
+        gsap.to(progressLine, {
+          scaleX: self.progress,
+          duration: 0.1,
+          ease: "none",
+          overwrite: "auto",
+        });
+      },
+    });
+
+    // 2. Header hides on scroll down and returns on scroll up (0.5s power3.out)
+    let lastScroll = 0;
+    const scrollTrigger = ScrollTrigger.create({
+      onUpdate: (self) => {
+        const currentScroll = self.scroll();
+        if (currentScroll > lastScroll && currentScroll > 80) {
+          // Scrolling down - hide header
+          gsap.to(header, {
+            yPercent: -100,
+            duration: 0.5,
+            ease: "power3.out",
+            overwrite: "auto",
+          });
+        } else if (currentScroll < lastScroll) {
+          // Scrolling up - show header
+          gsap.to(header, {
+            yPercent: 0,
+            duration: 0.5,
+            ease: "power3.out",
+            overwrite: "auto",
+          });
+        }
+        lastScroll = currentScroll;
+      },
+    });
+
+    return () => {
+      progressTrigger.kill();
+      scrollTrigger.kill();
+    };
+  }, []);
+
   const handleNavClick = (href: string) => {
     if (href === "#projects" && onOpenProjects) {
       onOpenProjects();
@@ -90,7 +149,16 @@ export default function Navbar({
   ];
 
   return (
-    <div className="navbar fixed inset-x-0 top-0 z-[150] pointer-events-none">
+    <header
+      ref={headerRef}
+      className="navbar fixed inset-x-0 top-0 z-[150] pointer-events-none will-change-transform"
+    >
+      {/* Thin scroll-progress hairline (scaleX, scrubbed) */}
+      <div
+        ref={progressLineRef}
+        className="fixed top-0 left-0 right-0 h-[2px] bg-[#3B4DF7] z-[160] origin-left pointer-events-none"
+      />
+
       <StaggeredMenu
         position="right"
         isFixed={true}
@@ -106,7 +174,7 @@ export default function Navbar({
         colors={["#0c0c0e", "#18181b", "#27272a"]}
         accentColor="#f97316"
       />
-    </div>
+    </header>
   );
 }
 
