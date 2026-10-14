@@ -620,7 +620,7 @@ export default function App() {
     if (isLoading) return;
 
     const handleScroll = () => {
-      const sections = ["home", "about", "scroll-demo", "contact"];
+      const sections = ["home", "about", "scroll-demo"];
       const triggerY = window.innerHeight * 0.35; // 35% down the screen
       
       let currentSection = "home";
@@ -768,7 +768,9 @@ export default function App() {
                         onOpenProjects={() => handleNavigate("#projects")}
                         onOpenAIWork={() => handleNavigate("#ai-work")}
                         onOpenAboutMe={() => handleNavigate("#about")}
-                        onOpenContact={() => handleNavigate("#contact")}
+                        onOpenContact={() => {
+                          window.location.href = `mailto:${profileState?.email || "sukunsh2883@gmail.com"}`;
+                        }}
                       />
 
                       {/* Dynamic GSAP Scroll Showcase Section */}

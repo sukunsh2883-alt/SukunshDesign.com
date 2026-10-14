@@ -123,9 +123,11 @@ export default function Navbar({
     },
     {
       label: "Contact",
-      ariaLabel: "Go to contact section",
-      link: "#contact",
-      onClick: () => handleNavClick("#contact"),
+      ariaLabel: "Get in touch via email",
+      link: `mailto:${profile?.email || "sukunsh2883@gmail.com"}`,
+      onClick: () => {
+        window.location.href = `mailto:${profile?.email || "sukunsh2883@gmail.com"}`;
+      },
     },
   ];
 
